@@ -117,5 +117,12 @@ class TenantController extends Controller
         return view('newSubscribersFinanceUpdate', ['responseNewSubscribersFinanceUpdate'=> $responseNewSubscribersFinanceUpdate]);
     }
 
+    public function subscriptionDueThisMonth(){
+
+        $responseSubscriptionDueThisMonth = Http::get("https://api.smallsmall.com/api/subscription-due-this-month-api");
+        //$responseLandlord->body();
+        $subscriptionDueThisMonth = $responseSubscriptionDueThisMonth->json();
+        return view('subscriptionDueThisMonth', ['subscriptionDueThisMonth'=>$subscriptionDueThisMonth]);
+    }
     
 }

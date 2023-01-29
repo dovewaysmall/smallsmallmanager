@@ -38,7 +38,7 @@ Route::get('/assign-account-manager/{id}',[App\Http\Controllers\TenantController
 Route::get('/account-manager-update-success',[App\Http\Controllers\TenantController::class,'accountManagerUpdateSuccess'])->middleware('auth');
 Route::get('/converted-tenants',[App\Http\Controllers\TenantController::class,'convertedTenants'])->middleware('auth');
 Route::get('/new-subscribers-finance',[App\Http\Controllers\TenantController::class,'newSubscribersFinance'])->middleware('auth');
-Route::get('/new-subscribers-finance-update/{id}',[App\Http\Controllers\TenantController::class,'newSubscribersFinanceUpdate'])->middleware('auth');
+Route::get('/subscription-due-this-month',[App\Http\Controllers\TenantController::class,'subscriptionDueThisMonth'])->middleware('auth');
 Route::get('/recurring-subscribers-finance',[App\Http\Controllers\TenantController::class,'recurringSubscribersFinance'])->middleware('auth');
 
 

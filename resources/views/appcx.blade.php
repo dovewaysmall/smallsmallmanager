@@ -1098,6 +1098,7 @@
 						</a>
 						<ul aria-expanded="false">
 							<li><a href="{{url('/new-subscribers-finance')}}">New Subscribers</a></li>
+							<li><a href="{{url('/subscription-due-this-month')}}">Subscription Due This Month</a></li>
 							<li><a href="{{url('/recurring-subscribers-finance')}}">Recurrent Subscribers</a></li>
 						</ul>
 					</li>
