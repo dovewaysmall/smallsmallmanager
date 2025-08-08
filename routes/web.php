@@ -8,6 +8,13 @@ use App\Http\Controllers\AuthController;
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+
+// Test route to clear session manually
+Route::get('/test-expire', function () {
+    session()->flush();
+    return redirect()->route('dashboard');
+})->name('test.expire');
+
 Route::get('/dashboard', function () {
     $userCount = 0;
     $inspectionCount = 0;
@@ -77,4 +84,9 @@ Route::get('/dashboard', function () {
     
     return view('dashboard', compact('userCount', 'inspectionCount', 'transactionCount', 'tenantCount'));
 })->name('dashboard');
+
+Route::get('/users', function () {
+    return view('users');
+})->name('users');
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
