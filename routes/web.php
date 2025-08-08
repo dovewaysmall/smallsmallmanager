@@ -17,6 +17,11 @@ Route::get('/dashboard', function () {
     try {
         $accessToken = session('access_token');
         
+        if (!$accessToken) {
+            session()->flush();
+            return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+        }
+        
         if ($accessToken) {
             $headers = [
                 'Authorization' => 'Bearer ' . $accessToken,
@@ -28,6 +33,9 @@ Route::get('/dashboard', function () {
             if ($userResponse->successful()) {
                 $userData = $userResponse->json();
                 $userCount = $userData['count'] ?? $userData['total'] ?? $userData['users_count'] ?? 0;
+            } elseif ($userResponse->status() === 401) {
+                session()->flush();
+                return redirect()->route('login')->with('error', 'Session expired. Please login again.');
             }
             
             // Fetch inspection count
@@ -35,6 +43,9 @@ Route::get('/dashboard', function () {
             if ($inspectionResponse->successful()) {
                 $inspectionData = $inspectionResponse->json();
                 $inspectionCount = $inspectionData['count'] ?? $inspectionData['total'] ?? $inspectionData['inspections_count'] ?? 0;
+            } elseif ($inspectionResponse->status() === 401) {
+                session()->flush();
+                return redirect()->route('login')->with('error', 'Session expired. Please login again.');
             }
             
             // Fetch transaction count
@@ -42,6 +53,9 @@ Route::get('/dashboard', function () {
             if ($transactionResponse->successful()) {
                 $transactionData = $transactionResponse->json();
                 $transactionCount = $transactionData['count'] ?? $transactionData['total'] ?? $transactionData['transactions_count'] ?? 0;
+            } elseif ($transactionResponse->status() === 401) {
+                session()->flush();
+                return redirect()->route('login')->with('error', 'Session expired. Please login again.');
             }
             
             // Fetch tenant count
@@ -49,6 +63,9 @@ Route::get('/dashboard', function () {
             if ($tenantResponse->successful()) {
                 $tenantData = $tenantResponse->json();
                 $tenantCount = $tenantData['count'] ?? $tenantData['total'] ?? $tenantData['tenants_count'] ?? 0;
+            } elseif ($tenantResponse->status() === 401) {
+                session()->flush();
+                return redirect()->route('login')->with('error', 'Session expired. Please login again.');
             }
         }
     } catch (\Exception $e) {
