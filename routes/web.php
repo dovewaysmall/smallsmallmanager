@@ -1,5 +1,6 @@
 <?php
 
+// SmallSmall Manager Routes
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\AuthController;
