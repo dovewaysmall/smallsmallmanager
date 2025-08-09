@@ -2822,7 +2822,7 @@
                           <h6 class="fw-normal fs-3 mb-1">Total Inspections</h6>
                           <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1">
                             {{ number_format($inspectionCount ?? 0) }}</h4>
-                          <a href="javascript:void(0)" class="btn btn-white fs-2 fw-semibold text-nowrap">View
+                          <a href="{{ route('inspections') }}" class="btn btn-white fs-2 fw-semibold text-nowrap">View
                             Details</a>
                         </div>
                       </div>
@@ -2836,7 +2836,7 @@
                           <h6 class="fw-normal fs-3 mb-1">Total Transactions</h6>
                           <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1">
                             {{ number_format($transactionCount ?? 0) }}</h4>
-                          <a href="javascript:void(0)" class="btn btn-white fs-2 fw-semibold text-nowrap">View
+                          <a href="{{ route('transactions') }}" class="btn btn-white fs-2 fw-semibold text-nowrap">View
                             Details</a>
                         </div>
                       </div>
@@ -2864,7 +2864,7 @@
                           <h6 class="fw-normal fs-3 mb-1">Total Tenants</h6>
                           <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1">
                             {{ number_format($tenantCount ?? 0) }}</h4>
-                          <a href="javascript:void(0)" class="btn btn-white fs-2 fw-semibold text-nowrap">View
+                          <a href="{{ route('tenants') }}" class="btn btn-white fs-2 fw-semibold text-nowrap">View
                             Details</a>
                         </div>
                       </div>

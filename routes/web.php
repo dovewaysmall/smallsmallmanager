@@ -89,4 +89,16 @@ Route::get('/users', function () {
     return view('users');
 })->name('users');
 
+Route::get('/inspections', function () {
+    return view('inspections');
+})->name('inspections');
+
+Route::get('/transactions', function () {
+    return view('transactions');
+})->name('transactions');
+
+Route::get('/tenants', function () {
+    return view('tenants');
+})->name('tenants');
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
