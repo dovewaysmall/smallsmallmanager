@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\InspectionsController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
@@ -89,9 +90,8 @@ Route::get('/dashboard', function () {
 Route::get('/users', [UsersController::class, 'index'])->name('users');
 Route::post('/users/load', [UsersController::class, 'loadUsers'])->name('users.load');
 
-Route::get('/inspections', function () {
-    return view('inspections');
-})->name('inspections');
+Route::get('/inspections', [InspectionsController::class, 'index'])->name('inspections');
+Route::post('/inspections/load', [InspectionsController::class, 'loadInspections'])->name('inspections.load');
 
 Route::get('/transactions', function () {
     return view('transactions');
