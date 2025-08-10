@@ -4,6 +4,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UsersController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
@@ -85,9 +86,8 @@ Route::get('/dashboard', function () {
     return view('dashboard', compact('userCount', 'inspectionCount', 'transactionCount', 'tenantCount'));
 })->name('dashboard');
 
-Route::get('/users', function () {
-    return view('users');
-})->name('users');
+Route::get('/users', [UsersController::class, 'index'])->name('users');
+Route::post('/users/load', [UsersController::class, 'loadUsers'])->name('users.load');
 
 Route::get('/inspections', function () {
     return view('inspections');
@@ -102,3 +102,4 @@ Route::get('/tenants', function () {
 })->name('tenants');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout.get'); // Fallback for expired sessions

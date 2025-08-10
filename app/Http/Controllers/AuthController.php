@@ -42,9 +42,15 @@ class AuthController extends Controller
         }
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        Session::flush();
-        return redirect()->route('login');
+        try {
+            Session::flush();
+            return redirect()->route('login')->with('success', 'You have been logged out successfully.');
+        } catch (\Exception $e) {
+            // If there's any error (including CSRF), still flush and redirect
+            Session::flush();
+            return redirect()->route('login')->with('info', 'Session expired. Please login again.');
+        }
     }
 }
