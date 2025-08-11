@@ -18,7 +18,7 @@
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 
-  <title>MatDash Bootstrap Admin</title>
+  <title>Smallsmall Manager</title>
 </head>
 
 <body>

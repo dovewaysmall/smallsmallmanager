@@ -243,80 +243,8 @@
               <!-- ============================= -->
               <!-- PAGES -->
               <!-- ============================= -->
-              <li class="nav-small-cap">
-                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                <span class="hide-menu">PAGES</span>
-              </li>
-              <li class="sidebar-item">
-                <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                  <span>
-                    <iconify-icon icon="solar:notes-line-duotone" class="ti"></iconify-icon>
-                  </span>
-                  <span class="hide-menu">Pages</span>
-                </a>
-                <ul aria-expanded="false" class="collapse first-level">
-                  <li class="sidebar-item">
-                    <a href="../main/page-faq.html" class="sidebar-link">
-                      <i class="ti ti-help"></i>
-                      <span class="hide-menu">FAQ</span>
-                    </a>
-                  </li>
-                  <li class="sidebar-item">
-                    <a href="../main/page-account-settings.html" class="sidebar-link">
-                      <i class="ti ti-user-circle"></i>
-                      <span class="hide-menu">Account Setting</span>
-                    </a>
-                  </li>
-                  <li class="sidebar-item">
-                    <a href="../main/page-pricing.html" class="sidebar-link">
-                      <i class="ti ti-currency-dollar"></i>
-                      <span class="hide-menu">Pricing</span>
-                    </a>
-                  </li>
-                  <li class="sidebar-item">
-                    <a href="../main/widgets-cards.html" class="sidebar-link">
-                      <i class="ti ti-cards"></i>
-                      <span class="hide-menu">Card</span>
-                    </a>
-                  </li>
-                  <li class="sidebar-item">
-                    <a href="../main/widgets-banners.html" class="sidebar-link">
-                      <i class="ti ti-ad"></i>
-                      <span class="hide-menu">Banner</span>
-                    </a>
-                  </li>
-                  <li class="sidebar-item">
-                    <a href="../main/widgets-charts.html" class="sidebar-link">
-                      <i class="ti ti-chart-bar"></i>
-                      <span class="hide-menu">Charts</span>
-                    </a>
-                  </li>
-                  <li class="sidebar-item">
-                    <a href="../main/starter.html" class="sidebar-link">
-                      <i class="ti ti-file"></i>
-                      <span class="hide-menu">Starter</span>
-                    </a>
-                  </li>
-                  <li class="sidebar-item">
-                    <a href="../landingpage/dashboard" class="sidebar-link">
-                      <i class="ti ti-app-window"></i>
-                      <span class="hide-menu">Landing Page</span>
-                    </a>
-                  </li>
-                  <li class="sidebar-item">
-                    <a href="../main/icon-tabler.html" class="sidebar-link">
-                      <i class="ti ti-mood-smile"></i>
-                      <span class="hide-menu">Tabler Icon</span>
-                    </a>
-                  </li>
-                  <li class="sidebar-item">
-                    <a href="../main/icon-solar.html" class="sidebar-link">
-                      <i class="ti ti-mood-smile"></i>
-                      <span class="hide-menu">Solar Icon</span>
-                    </a>
-                  </li>
-                </ul>
-              </li>
+             
+            
               <!-- ============================= -->
               <!-- UI -->
               <!-- ============================= -->
