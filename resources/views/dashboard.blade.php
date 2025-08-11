@@ -204,7 +204,7 @@
                 <div class="card">
                   <div class="card-body">
                     <h5 class="card-title fw-semibold">Performance This Month</h5>
-                    <p class="card-subtitle mb-0 lh-base">Last check on 25 february</p>
+                    <p class="card-subtitle mb-0 lh-base">Last check on 25</p>
 
                     <div class="row mt-4">
                       <div class="col-md-6">
