@@ -13,6 +13,11 @@ class TenantsController extends Controller
         return view('tenants');
     }
 
+    public function show($userID)
+    {
+        return view('tenant-detail', compact('userID'));
+    }
+
     public function loadTenants(Request $request)
     {
         try {

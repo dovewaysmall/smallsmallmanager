@@ -203,7 +203,7 @@
                 <!-- -------------------------------------------- -->
                 <div class="card">
                   <div class="card-body">
-                    <h5 class="card-title fw-semibold">Your Performance</h5>
+                    <h5 class="card-title fw-semibold">Performance This Month</h5>
                     <p class="card-subtitle mb-0 lh-base">Last check on 25 february</p>
 
                     <div class="row mt-4">
@@ -214,8 +214,8 @@
                               <iconify-icon icon="solar:shop-2-linear" class="fs-7 text-primary"></iconify-icon>
                             </div>
                             <div>
-                              <h6 class="mb-0 text-nowrap">64 new orders</h6>
-                              <span>Processing</span>
+                              <h6 class="mb-0 text-nowrap">{{ $newUsersThisMonth ?? 0 }} </h6>
+                              <span>New Users</span>
                             </div>
 
                           </div>
@@ -224,8 +224,8 @@
                               <iconify-icon icon="solar:filters-outline" class="fs-7 text-danger"></iconify-icon>
                             </div>
                             <div>
-                              <h6 class="mb-0">4 orders</h6>
-                              <span>On hold</span>
+                              <h6 class="mb-0">444</h6>
+                              <span>New Subscribers</span>
                             </div>
 
                           </div>
@@ -234,8 +234,8 @@
                               <iconify-icon icon="solar:pills-3-linear" class="fs-7 text-secondary"></iconify-icon>
                             </div>
                             <div>
-                              <h6 class="mb-0">12 orders</h6>
-                              <span>Delivered</span>
+                              <h6 class="mb-0">12</h6>
+                              <span>Pending Inspections</span>
                             </div>
 
                           </div>
@@ -244,10 +244,9 @@
                       <div class="col-md-6">
                         <div class="text-center mt-sm-n7">
                           <div id="your-preformance"></div>
-                          <h2 class="fs-8">275</h2>
+                          <h2 class="fs-8">{{ $inspectionsThisMonth ?? 0 }}</h2>
                           <p class="mb-0">
-                            Learn insigs how to manage all aspects of your
-                            startup.
+                            Number of inspections booked this month
                           </p>
                         </div>
                       </div>

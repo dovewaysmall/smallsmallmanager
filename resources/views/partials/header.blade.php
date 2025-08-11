@@ -121,7 +121,7 @@
             </ul>
 
             <div class="d-block d-lg-none py-9 py-xl-0">
-              <img src="{{ asset('assets/images/logos/logo.svg')}}" alt="matdash-img" />
+              <img src="{{ asset('assets/images/logos/rentsmallsmall-logo-blue.png')}}" alt="matdash-img" style="max-width: 120px; height: auto;" />
             </div>
             <a class="navbar-toggler p-0 border-0 nav-icon-hover-bg rounded-circle" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
               <iconify-icon icon="solar:menu-dots-bold-duotone" class="fs-6"></iconify-icon>
@@ -345,7 +345,7 @@
             <nav class="sidebar-nav scroll-sidebar">
               <div class="offcanvas-header justify-content-between">
                 <a href="../dashboard" class="text-nowrap logo-img">
-                  <img src="{{ asset('assets/images/logos/logo.svg')}}" alt="Logo" /> <img src="../assets/images/logos/logo-icon.svg" alt="Logo" />
+                  <img src="{{ asset('assets/images/logos/rentsmallsmall-logo-blue.png')}}" alt="Logo" style="max-width: 120px; height: auto;" /> <img src="../assets/images/logos/logo-icon.svg" alt="Logo" />
                 </a>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
               </div>
@@ -464,7 +464,7 @@
               </li>
               <li class="nav-item d-none d-xl-flex align-items-center">
                 <a href="../dashboard" class="text-nowrap nav-link">
-                  <img src="{{ asset('assets/images/logos/logo.svg')}}" alt="matdash-img" /> <img src="{{ asset('assets/images/logos/logo.svg')}}" alt="matdash-img" />
+                  <img src="{{ asset('assets/images/logos/rentsmallsmall-logo-blue.png')}}" alt="matdash-img" style="max-width: 120px; height: auto;" /> <img src="{{ asset('assets/images/logos/rentsmallsmall-logo-blue.png')}}" alt="matdash-img" style="max-width: 120px; height: auto;" />
                 </a>
               </li>
               <li class="nav-item d-none d-xl-flex align-items-center nav-icon-hover-bg rounded-circle">
@@ -578,7 +578,7 @@
             </ul>
             <div class="d-block d-xl-none">
               <a href="../dashboard" class="text-nowrap nav-link">
-                <img src="{{ asset('assets/images/logos/logo.svg')}}" srcset="{{ asset('assets/images/logos/logo.svg')}}" alt="matdash-img" /> <img src="{{ asset('assets/images/logos/logo.svg')}}" srcset="{{ asset('assets/images/logos/logo.svg')}}" alt="matdash-img" />
+                <img src="{{ asset('assets/images/logos/rentsmallsmall-logo-blue.png')}}" srcset="{{ asset('assets/images/logos/rentsmallsmall-logo-blue.png')}}" alt="matdash-img" /> <img src="{{ asset('assets/images/logos/rentsmallsmall-logo-blue.png')}}" srcset="{{ asset('assets/images/logos/rentsmallsmall-logo-blue.png')}}" alt="matdash-img" />
               </a>
             </div>
             <a class="navbar-toggler nav-icon-hover p-0 border-0 nav-icon-hover-bg rounded-circle" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

@@ -37,7 +37,7 @@
                     <div class="col-lg-11">
                       <div class="card-body">
                         <a href="../main/index.html" class="text-nowrap logo-img d-block mb-4 w-100">
-                          <img src="{{ asset('assets/images/logos/logo.svg')}}" width="180" alt="Logo" /> <img src="{{ asset('assets/images/logos/logo.svg')}}" class="dark-logo" alt="Logo-Dark" />
+                          <img src="{{ asset('assets/images/logos/rentsmallsmall-logo-blue.png')}}" width="180" alt="Logo" />
                         </a>
                         <h2 class="lh-base mb-4">Let's get you signed in</h2>
                         <div class="row">
@@ -102,30 +102,24 @@
                           <div class="carousel-item active">
                             <div class="d-flex align-items-center justify-content-center w-100 h-100 flex-column gap-9 text-center">
                               <img src="{{ asset('assets/images/backgrounds/login-side.png')}}" alt="login-side-img" width="300" class="img-fluid" /> 
-                              <h4 class="mb-0">Feature Rich 3D Charts</h4>
-                              <p class="fs-12 mb-0">Donec justo tortor, malesuada vitae faucibus ac, tristique sit amet
-                                massa.
-                                Aliquam dignissim nec felis quis imperdiet.</p>
+                              <h4 class="mb-0">Smallsmall Manager</h4>
+                              <p class="fs-12 mb-0">Analytics dashboard to manage everything small small.</p>
                               <a href="javascript:void(0)" class="btn btn-primary rounded-1">Learn More</a>
                             </div>
                           </div>
                           <div class="carousel-item">
                             <div class="d-flex align-items-center justify-content-center w-100 h-100 flex-column gap-9 text-center">
                               <img src="{{ asset('assets/images/backgrounds/login-side.png')}}" alt="login-side-img" width="300" class="img-fluid" /> 
-                              <h4 class="mb-0">Feature Rich 2D Charts</h4>
-                              <p class="fs-12 mb-0">Donec justo tortor, malesuada vitae faucibus ac, tristique sit amet
-                                massa.
-                                Aliquam dignissim nec felis quis imperdiet.</p>
+                              <h4 class="mb-0">Manage More</h4>
+                              <p class="fs-12 mb-0">Manage subscribers, inspections, verifications and more.</p>
                               <a href="javascript:void(0)" class="btn btn-primary rounded-1">Learn More</a>
                             </div>
                           </div>
                           <div class="carousel-item">
                             <div class="d-flex align-items-center justify-content-center w-100 h-100 flex-column gap-9 text-center">
                               <img src="{{ asset('assets/images/backgrounds/login-side.png')}}" alt="login-side-img" width="300" class="img-fluid" /> 
-                              <h4 class="mb-0">Feature Rich 1D Charts</h4>
-                              <p class="fs-12 mb-0">Donec justo tortor, malesuada vitae faucibus ac, tristique sit amet
-                                massa.
-                                Aliquam dignissim nec felis quis imperdiet.</p>
+                              <h4 class="mb-0">All in One</h4>
+                              <p class="fs-12 mb-0">All dashboards in one place.</p>
                               <a href="javascript:void(0)" class="btn btn-primary rounded-1">Learn More</a>
                             </div>
                           </div>

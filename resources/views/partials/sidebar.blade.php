@@ -100,7 +100,7 @@
           <div class="sidebarmenu">
             <div class="brand-logo d-flex align-items-center nav-logo">
               <a href="../dashboard" class="text-nowrap logo-img">
-                <img src="{{ asset('assets/images/logos/logo.svg')}}" alt="Logo" />
+                <img src="{{ asset('assets/images/logos/rentsmallsmall-logo-blue.png')}}" alt="Logo" style="max-width: 120px; height: auto;" />
               </a>
 
             </div>
@@ -113,7 +113,7 @@
                 <!-- Home -->
                 <!-- ---------------------------------- -->
                 <li class="nav-small-cap">
-                  <span class="hide-menu">Dashboards</span>
+                  <span class="hide-menu">Dashboard</span>
                 </li>
                 <!-- ---------------------------------- -->
                 <!-- Dashboard -->
@@ -121,8 +121,111 @@
                 <li class="sidebar-item">
                   <a class="sidebar-link" href="" id="get-url" aria-expanded="false">
                     <iconify-icon icon="solar:atom-line-duotone"></iconify-icon>
-                    <span class="hide-menu">Dashboard 1</span>
+                    <span class="hide-menu">Users</span>
                   </a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                    <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Subscribers</span>
+                  </a>
+                  <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="../main/frontend-landingpage.html">
+                        <span class="icon-small"></span>
+                        Total Subscribers
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="../main/frontend-blogpage.html">
+                        <span class="icon-small"></span>
+                        Subscribers(This Week)
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="../main/frontend-aboutpage.html">
+                        <span class="icon-small"></span>
+                        Subscribers(This Month)
+                      </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="../main/frontend-blogdetailpage.html">
+                        <span class="icon-small"></span>
+                        Subscribers(This Year)
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+
+                <li class="sidebar-item">
+                  <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                    <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Inspections</span>
+                  </a>
+                  <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="../main/frontend-landingpage.html">
+                        <span class="icon-small"></span>
+                        Total Inspections
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="../main/frontend-blogpage.html">
+                        <span class="icon-small"></span>
+                        Inspections(This Week)
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="../main/frontend-aboutpage.html">
+                        <span class="icon-small"></span>
+                        Inspections(This Month)
+                      </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="../main/frontend-blogdetailpage.html">
+                        <span class="icon-small"></span>
+                        Inspections(This Year)
+                      </a>
+                    </li>
+                    
+                  </ul>
+                </li>
+
+                <li class="sidebar-item">
+                  <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                    <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Transactions</span>
+                  </a>
+                  <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="../main/frontend-landingpage.html">
+                        <span class="icon-small"></span>
+                        Total Transactions
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="../main/frontend-blogpage.html">
+                        <span class="icon-small"></span>
+                        Transactions(This Week)
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="../main/frontend-aboutpage.html">
+                        <span class="icon-small"></span>
+                        Transactions(This Month)
+                      </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="../main/frontend-blogdetailpage.html">
+                        <span class="icon-small"></span>
+                        Transactions(This Year)
+                      </a>
+                    </li>
+                    
+                  </ul>
                 </li>
 
                 <li class="sidebar-item">
@@ -139,56 +242,7 @@
                   </a>
                 </li>
 
-                <li class="sidebar-item">
-                  <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                    <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
-                    <span class="hide-menu">Front Pages</span>
-                  </a>
-                  <ul aria-expanded="false" class="collapse first-level">
-                    <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-landingpage.html">
-                        <span class="icon-small"></span>
-                        Homepage
-                      </a>
-                    </li>
-                    <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-aboutpage.html">
-                        <span class="icon-small"></span>
-                        About Us
-                      </a>
-                    </li>
-                    <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-blogpage.html">
-                        <span class="icon-small"></span>
-                        Blog
-                      </a>
-                    </li>
-                    <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-blogdetailpage.html">
-                        <span class="icon-small"></span>
-                        Blog Details
-                      </a>
-                    </li>
-                    <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-contactpage.html">
-                        <span class="icon-small"></span>
-                        Contact Us
-                      </a>
-                    </li>
-                    <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-portfoliopage.html">
-                        <span class="icon-small"></span>
-                        Portfolio
-                      </a>
-                    </li>
-                    <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-pricingpage.html">
-                        <span class="icon-small"></span>
-                        Pricing
-                      </a>
-                    </li>
-                  </ul>
-                </li>
+                
 
                 <li>
                   <span class="sidebar-divider"></span>

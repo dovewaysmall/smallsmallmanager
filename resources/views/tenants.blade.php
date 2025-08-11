@@ -45,7 +45,7 @@
                             </a>
                         </div>
                         <a href="javascript:void(0)" class="btn btn-primary d-flex align-items-center">
-                            <i class="ti ti-user-plus text-white me-1 fs-5"></i> Add Tenant
+                            Add Tenant
                         </a>
                     </div>
                 </div>
@@ -208,6 +208,7 @@ function renderTenants() {
         const globalIndex = startIndex + index;
         
         // Handle different possible field names from API
+        const userID = tenant.userID;
         const firstName = tenant.first_name || tenant.firstName || 'N/A';
         const lastName = tenant.last_name || tenant.lastName || '';
         const email = tenant.email || 'N/A';
@@ -268,8 +269,8 @@ function renderTenants() {
                 </td>
                 <td>
                     <div class="action-btn">
-                        <a href="javascript:void(0)" class="text-primary edit">
-                            <i class="ti ti-eye fs-5"></i>
+                        <a href="/tenant/${userID}" class="btn btn-sm btn-primary me-2">
+                            View More
                         </a>
                         <a href="javascript:void(0)" class="text-dark delete ms-2">
                             <i class="ti ti-trash fs-5"></i>
