@@ -319,7 +319,7 @@
                           <a href="../main/page-account-settings.html" class="p-2 dropdown-item h6 rounded-1">
                             Account Settings
                           </a>
-                          <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="p-2 dropdown-item h6 rounded-1">
+                          <a href="{{ route('logout.get') }}" class="p-2 dropdown-item h6 rounded-1">
                             Sign Out
                           </a>
                         </div>
@@ -779,7 +779,7 @@
                           <a href="../main/page-account-settings.html" class="p-2 dropdown-item h6 rounded-1">
                             Account Settings
                           </a>
-                          <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="p-2 dropdown-item h6 rounded-1">
+                          <a href="{{ route('logout.get') }}" class="p-2 dropdown-item h6 rounded-1">
                             Sign Out
                           </a>
                         </div>
