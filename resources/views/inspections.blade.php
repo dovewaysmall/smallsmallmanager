@@ -45,7 +45,7 @@
                             </a>
                         </div>
                         <a href="javascript:void(0)" class="btn btn-primary d-flex align-items-center">
-                            <i class="ti ti-file-check text-white me-1 fs-5"></i> Add Inspection
+                            <i class="ti ti-file-check text-white me-1 fs-5"></i> Apartment Not Available
                         </a>
                     </div>
                 </div>
@@ -267,12 +267,7 @@ function renderInspections() {
                 </td>
                 <td>
                     <div class="d-flex align-items-center">
-                        <div class="ms-3">
-                            <div class="user-meta-info">
-                                <h6 class="user-name mb-0">${fullName || 'N/A'}</h6>
-                                
-                            </div>
-                        </div>
+                        <h6 class="user-name mb-0">${fullName || 'N/A'}</h6>
                     </div>
                 </td>
                 <td>

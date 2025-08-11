@@ -344,7 +344,7 @@
           <div class="offcanvas offcanvas-start pt-0" data-bs-scroll="true" tabindex="-1" id="mobilenavbar" aria-labelledby="offcanvasWithBothOptionsLabel">
             <nav class="sidebar-nav scroll-sidebar">
               <div class="offcanvas-header justify-content-between">
-                <a href="../main/index.html" class="text-nowrap logo-img">
+                <a href="../dashboard" class="text-nowrap logo-img">
                   <img src="{{ asset('assets/images/logos/logo.svg')}}" alt="Logo" /> <img src="../assets/images/logos/logo-icon.svg" alt="Logo" />
                 </a>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -463,7 +463,7 @@
                 </a>
               </li>
               <li class="nav-item d-none d-xl-flex align-items-center">
-                <a href="../main/index.html" class="text-nowrap nav-link">
+                <a href="../dashboard" class="text-nowrap nav-link">
                   <img src="{{ asset('assets/images/logos/logo.svg')}}" alt="matdash-img" /> <img src="{{ asset('assets/images/logos/logo.svg')}}" alt="matdash-img" />
                 </a>
               </li>
@@ -577,7 +577,7 @@
               </li>
             </ul>
             <div class="d-block d-xl-none">
-              <a href="../main/index.html" class="text-nowrap nav-link">
+              <a href="../dashboard" class="text-nowrap nav-link">
                 <img src="{{ asset('assets/images/logos/logo.svg')}}" srcset="{{ asset('assets/images/logos/logo.svg')}}" alt="matdash-img" /> <img src="{{ asset('assets/images/logos/logo.svg')}}" srcset="{{ asset('assets/images/logos/logo.svg')}}" alt="matdash-img" />
               </a>
             </div>

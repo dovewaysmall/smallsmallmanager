@@ -9,8 +9,8 @@
               <div class="col-12">
                 <div class="card">
                   <div class="card-body p-4 pb-0" data-simplebar="">
-                    <div class="row flex-nowrap">
-                      <div class="col">
+                    <div class="row">
+                      <div class="col-xl col-md-6 col-sm-12">
                         <div class="card primary-gradient">
                           <div class="card-body text-center px-9 pb-4">
                             <div class="d-flex align-items-center justify-content-center round-48 rounded text-bg-primary flex-shrink-0 mb-3 mx-auto">
@@ -24,7 +24,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col">
+                      <div class="col-xl col-md-6 col-sm-12">
                         <div class="card warning-gradient">
                           <div class="card-body text-center px-9 pb-4">
                             <div class="d-flex align-items-center justify-content-center round-48 rounded text-bg-warning flex-shrink-0 mb-3 mx-auto">
@@ -38,7 +38,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col">
+                      <div class="col-xl col-md-6 col-sm-12">
                         <div class="card secondary-gradient">
                           <div class="card-body text-center px-9 pb-4">
                             <div class="d-flex align-items-center justify-content-center round-48 rounded text-bg-secondary flex-shrink-0 mb-3 mx-auto">
@@ -52,7 +52,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col">
+                      <div class="col-xl col-md-6 col-sm-12">
                         <div class="card danger-gradient">
                           <div class="card-body text-center px-9 pb-4">
                             <div class="d-flex align-items-center justify-content-center round-48 rounded text-bg-danger flex-shrink-0 mb-3 mx-auto">
@@ -66,7 +66,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col">
+                      <div class="col-xl col-md-6 col-sm-12">
                         <div class="card success-gradient">
                           <div class="card-body text-center px-9 pb-4">
                             <div class="d-flex align-items-center justify-content-center round-48 rounded text-bg-success flex-shrink-0 mb-3 mx-auto">
@@ -888,3 +888,39 @@
       </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+// Activate the dashboard sidebar section when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Activate the dashboard mini-nav item
+    const dashboardMiniNav = document.getElementById('mini-1');
+    if (dashboardMiniNav) {
+        dashboardMiniNav.classList.add('selected');
+        
+        // Show the dashboard submenu
+        const dashboardMenu = document.getElementById('menu-right-mini-1');
+        if (dashboardMenu) {
+            dashboardMenu.style.display = 'block';
+            dashboardMenu.classList.add('show');
+        }
+        
+        // Hide other menu sections
+        for (let i = 2; i <= 10; i++) {
+            const otherMenu = document.getElementById(`menu-right-mini-${i}`);
+            if (otherMenu) {
+                otherMenu.style.display = 'none';
+                otherMenu.classList.remove('show');
+            }
+        }
+        
+        // Remove selected class from other mini-nav items
+        document.querySelectorAll('.mini-nav-item').forEach(item => {
+            if (item.id !== 'mini-1') {
+                item.classList.remove('selected');
+            }
+        });
+    }
+});
+</script>
+@endpush

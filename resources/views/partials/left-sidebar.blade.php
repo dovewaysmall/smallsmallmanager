@@ -21,7 +21,7 @@
                 </a>
                 <ul aria-expanded="false" class="collapse first-level">
                   <li class="sidebar-item">
-                    <a href="../main/index.html" class="sidebar-link">
+                    <a href="../dashboard" class="sidebar-link">
                       <i class="ti ti-aperture"></i>
                       <span class="hide-menu">Dashboard 1</span>
                     </a>
@@ -298,7 +298,7 @@
                     </a>
                   </li>
                   <li class="sidebar-item">
-                    <a href="../landingpage/index.html" class="sidebar-link">
+                    <a href="../landingpage/dashboard" class="sidebar-link">
                       <i class="ti ti-app-window"></i>
                       <span class="hide-menu">Landing Page</span>
                     </a>
@@ -707,7 +707,7 @@
                 </a>
                 <ul aria-expanded="false" class="collapse first-level">
                   <li class="sidebar-item">
-                    <a href="https://adminmart.github.io/premium-documentation/bootstrap/matdash/index.html" class="sidebar-link">
+                    <a href="https://adminmart.github.io/premium-documentation/bootstrap/matdash/dashboard" class="sidebar-link">
                       <i class="ti ti-circle"></i>
                       <span class="hide-menu">Documentation</span>
                     </a>

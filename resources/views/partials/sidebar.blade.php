@@ -99,7 +99,7 @@
           </div>
           <div class="sidebarmenu">
             <div class="brand-logo d-flex align-items-center nav-logo">
-              <a href="../main/index.html" class="text-nowrap logo-img">
+              <a href="../dashboard" class="text-nowrap logo-img">
                 <img src="{{ asset('assets/images/logos/logo.svg')}}" alt="Logo" />
               </a>
 
@@ -303,7 +303,7 @@
                   <span class="hide-menu">Pages</span>
                 </li>
                 <li class="sidebar-item">
-                  <a href="../landingpage/index.html" class="sidebar-link">
+                  <a href="../landingpage/dashboard" class="sidebar-link">
                     <iconify-icon icon="solar:notes-line-duotone"></iconify-icon>
                     <span class="hide-menu">Landingpage</span>
                   </a>
@@ -1099,7 +1099,7 @@
                   <span class="hide-menu">Documentation</span>
                 </li>
                 <li class="sidebar-item">
-                  <a href="https://adminmart.github.io/premium-documentation/bootstrap/matdash/index.html" class="sidebar-link">
+                  <a href="https://adminmart.github.io/premium-documentation/bootstrap/matdash/dashboard" class="sidebar-link">
                     <iconify-icon icon="solar:settings-line-duotone"></iconify-icon>
                     <span class="hide-menu">Getting Started</span>
                   </a>

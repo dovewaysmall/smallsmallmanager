@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\InspectionsController;
+use App\Http\Controllers\TransactionsController;
+use App\Http\Controllers\TenantsController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
@@ -93,13 +95,11 @@ Route::post('/users/load', [UsersController::class, 'loadUsers'])->name('users.l
 Route::get('/inspections', [InspectionsController::class, 'index'])->name('inspections');
 Route::post('/inspections/load', [InspectionsController::class, 'loadInspections'])->name('inspections.load');
 
-Route::get('/transactions', function () {
-    return view('transactions');
-})->name('transactions');
+Route::get('/transactions', [TransactionsController::class, 'index'])->name('transactions');
+Route::post('/transactions/load', [TransactionsController::class, 'loadTransactions'])->name('transactions.load');
 
-Route::get('/tenants', function () {
-    return view('tenants');
-})->name('tenants');
+Route::get('/tenants', [TenantsController::class, 'index'])->name('tenants');
+Route::post('/tenants/load', [TenantsController::class, 'loadTenants'])->name('tenants.load');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout.get'); // Fallback for expired sessions

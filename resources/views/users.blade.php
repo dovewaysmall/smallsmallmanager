@@ -221,13 +221,7 @@ function renderUsers() {
                 </td>
                 <td>
                     <div class="d-flex align-items-center">
-                        <img src="{{ asset('assets/images/profile/user-') }}${avatarIndex}.jpg" alt="avatar" class="rounded-circle" width="35" />
-                        <div class="ms-3">
-                            <div class="user-meta-info">
-                                <h6 class="user-name mb-0">${fullName || 'N/A'}</h6>
-                                <span class="user-work fs-3">User</span>
-                            </div>
-                        </div>
+                        <h6 class="user-name mb-0">${fullName || 'N/A'}</h6>
                     </div>
                 </td>
                 <td>
