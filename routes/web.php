@@ -19,6 +19,32 @@ Route::get('/test-expire', function () {
     return redirect()->route('dashboard');
 })->name('test.expire');
 
+// Test API connectivity
+Route::get('/test-api', function () {
+    try {
+        $response = \Illuminate\Support\Facades\Http::timeout(10)->get('http://api2.smallsmall.com');
+        return response()->json([
+            'status' => 'success',
+            'api_status' => $response->status(),
+            'api_response' => $response->body(),
+            'message' => 'API server is reachable'
+        ]);
+    } catch (\Illuminate\Http\Client\ConnectionException $e) {
+        return response()->json([
+            'status' => 'connection_error',
+            'message' => 'Cannot connect to API server',
+            'error' => $e->getMessage()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'API test failed',
+            'error' => $e->getMessage(),
+            'error_class' => get_class($e)
+        ]);
+    }
+})->name('test.api');
+
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::get('/users', [UsersController::class, 'index'])->name('users');

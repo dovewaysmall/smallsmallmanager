@@ -299,10 +299,10 @@
                         <div class="d-flex align-items-center mb-3 pb-3 border-bottom gap-6">
                           <img src="../assets/images/profile/user-1.jpg" class="rounded-circle" width="56" height="56" alt="matdash-img" />
                           <div>
-                            <h5 class="mb-0 fs-12">David McMichael <span class="text-success fs-11">Pro</span>
+                            <h5 class="mb-0 fs-12">{{ (session('user_data.user.firstName') ? session('user_data.user.firstName') . ' ' . session('user_data.user.lastName') : session('user_data.user.name')) ?? 'User' }}
                             </h5>
                             <p class="mb-0 text-dark">
-                              david@wrappixel.com
+                              {{ session('user_data.user.email') ?? 'user@email.com' }}
                             </p>
                           </div>
                         </div>
@@ -759,10 +759,10 @@
                         <div class="d-flex align-items-center mb-3 pb-3 border-bottom gap-6">
                           <img src="../assets/images/profile/user-1.jpg" class="rounded-circle" width="56" height="56" alt="matdash-img" />
                           <div>
-                            <h5 class="mb-0 fs-12">David McMichael <span class="text-success fs-11">Pro</span>
+                            <h5 class="mb-0 fs-12">{{ (session('user_data.user.firstName') ? session('user_data.user.firstName') . ' ' . session('user_data.user.lastName') : session('user_data.user.name')) ?? 'User' }} <span class="text-success fs-11">Pro</span>
                             </h5>
                             <p class="mb-0 text-dark">
-                              david@wrappixel.com
+                              {{ session('user_data.user.email') ?? 'user@email.com' }}
                             </p>
                           </div>
                         </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -21,10 +22,14 @@ class AuthController extends Controller
         ]);
 
         try {
-            $response = Http::post('http://api2.smallsmall.com/api/login', [
+            Log::info('Attempting login for email: ' . $request->email);
+            
+            $response = Http::timeout(30)->post('http://api2.smallsmall.com/api/login', [
                 'email' => $request->email,
                 'password' => $request->password,
             ]);
+            
+            Log::info('Login response status: ' . $response->status());
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -35,10 +40,24 @@ class AuthController extends Controller
                 
                 return redirect()->route('dashboard');
             } else {
-                return redirect()->back()->with('error', 'Invalid credentials. Please try again.');
+                $statusCode = $response->status();
+                if ($statusCode === 401 || $statusCode === 422) {
+                    return redirect()->back()->with('error', 'Invalid credentials. Please try again.');
+                } elseif ($statusCode >= 500) {
+                    return redirect()->back()->with('error', 'Server error. Please try again later.');
+                } else {
+                    return redirect()->back()->with('error', 'Login failed. Please try again.');
+                }
             }
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            Log::error('Connection error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Unable to connect to the API server. The server may be down or under maintenance.');
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            Log::error('Request error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Request timeout. The server may be temporarily unavailable.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Unable to connect to the server. Please try again later.');
+            Log::error('Login error: ' . $e->getMessage() . ' | Class: ' . get_class($e));
+            return redirect()->back()->with('error', 'Connection failed. The API server appears to be unresponsive.');
         }
     }
 

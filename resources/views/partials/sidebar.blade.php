@@ -131,7 +131,7 @@
                   </a>
                   <ul aria-expanded="false" class="collapse first-level">
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-landingpage.html">
+                      <a class="sidebar-link" href="../tenants">
                         <span class="icon-small"></span>
                         Total Subscribers
                       </a>
