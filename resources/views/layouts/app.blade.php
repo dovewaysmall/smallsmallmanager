@@ -19,6 +19,46 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 
   <title>Smallsmall Manager</title>
+  
+  <!-- Theme Persistence Script (must run early) -->
+  <script>
+    (function() {
+      // Default settings
+      const defaultSettings = {
+        Layout: "vertical",
+        SidebarType: "full",
+        BoxedLayout: true,
+        Direction: "ltr",
+        Theme: "light",
+        ColorTheme: "Blue_Theme",
+        cardBorder: false
+      };
+      
+      // Load saved theme settings
+      const savedSettings = JSON.parse(localStorage.getItem('smallsmallThemeSettings')) || defaultSettings;
+      
+      // Apply theme immediately to prevent flash
+      document.documentElement.setAttribute("data-bs-theme", savedSettings.Theme);
+      document.documentElement.setAttribute("data-color-theme", savedSettings.ColorTheme);
+      document.documentElement.setAttribute("data-layout", savedSettings.Layout);
+      
+      if (savedSettings.Direction === "rtl") {
+        document.documentElement.setAttribute("dir", "rtl");
+      }
+      
+      if (savedSettings.BoxedLayout) {
+        document.documentElement.setAttribute("data-boxed-layout", "boxed");
+      } else {
+        document.documentElement.setAttribute("data-boxed-layout", "full");
+      }
+      
+      if (savedSettings.cardBorder) {
+        document.documentElement.setAttribute("data-card", "border");
+      } else {
+        document.documentElement.setAttribute("data-card", "shadow");
+      }
+    })();
+  </script>
 </head>
 
 <body>
@@ -194,6 +234,10 @@
       <script>
   function handleColorTheme(e) {
     document.documentElement.setAttribute("data-color-theme", e);
+    if (typeof userSettings !== 'undefined') {
+      userSettings.ColorTheme = e;
+      if (typeof saveSettings === 'function') saveSettings();
+    }
   }
 </script>
     </div>
