@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Inspections This Week')
+@section('title', 'Transactions This Month')
 
 @section('content')
     <div class="body-wrapper">
@@ -9,7 +9,7 @@
             <div class="row align-items-center">
               <div class="col-12">
                 <div class="d-sm-flex align-items-center justify-space-between">
-                  <h4 class="mb-4 mb-sm-0 card-title">Inspections(This Week)</h4>
+                  <h4 class="mb-4 mb-sm-0 card-title">Transactions(This Month)</h4>
                   <nav aria-label="breadcrumb" class="ms-auto">
                     <ol class="breadcrumb">
                       <li class="breadcrumb-item d-flex align-items-center">
@@ -19,7 +19,7 @@
                       </li>
                       <li class="breadcrumb-item" aria-current="page">
                         <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
-                          Inspections(This Week)
+                          Transactions(This Month)
                         </span>
                       </li>
                     </ol>
@@ -34,7 +34,7 @@
                 <div class="row">
                     <div class="col-md-4 col-xl-3">
                         <form class="position-relative">
-                            <input type="text" class="form-control product-search ps-5" id="searchInput" placeholder="Search Inspections..." disabled />
+                            <input type="text" class="form-control product-search ps-5" id="searchInput" placeholder="Search Transactions..." disabled />
                             <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
                         </form>
                     </div>
@@ -45,7 +45,7 @@
                             </a>
                         </div>
                         <a href="javascript:void(0)" class="btn btn-primary d-flex align-items-center">
-                            <i class="ti ti-file-check text-white me-1 fs-5"></i> Apartment Not Available
+                            Add Transaction
                         </a>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
 
             <div class="card card-body">
                 <div class="table-responsive">
-                    <table id="inspectionsTable" class="table search-table align-middle text-nowrap">
+                    <table id="transactionsTable" class="table search-table align-middle text-nowrap">
                         <thead class="header-item">
                             <tr>
                                 <th>
@@ -64,28 +64,27 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Property Title</th>
-                                <th>Phone</th>
-                                <th>Inspection Date</th>
+                                <th>Reference</th>
+                                <th>Amount</th>
+                                <th>Type</th>
+                                <th>Date</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="inspectionsTableBody">
+                        <tbody id="transactionsTableBody">
                             <tr>
-                                <td colspan="8" class="text-center py-5">
+                                <td colspan="7" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center" id="loadingState">
                                         <div class="spinner-border text-primary mb-3" role="status">
                                             <span class="visually-hidden">Loading...</span>
                                         </div>
-                                        <p class="mb-0 text-muted">Loading inspections...</p>
+                                        <p class="mb-0 text-muted">Loading transactions...</p>
                                     </div>
                                     <div class="d-flex flex-column align-items-center d-none" id="errorState">
                                         <iconify-icon icon="solar:info-circle-line-duotone" class="fs-8 text-danger mb-2"></iconify-icon>
                                         <p class="mb-2 text-danger" id="errorMessage"></p>
-                                        <button onclick="loadInspections()" class="btn btn-sm btn-outline-primary">
+                                        <button onclick="loadTransactions()" class="btn btn-sm btn-outline-primary">
                                             <i class="ti ti-refresh me-1"></i> Retry
                                         </button>
                                     </div>
@@ -114,8 +113,8 @@
 
 @push('scripts')
 <script>
-let allInspections = [];
-let filteredInspections = [];
+let allTransactions = [];
+let filteredTransactions = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 let totalPages = 1;
@@ -129,10 +128,10 @@ function showState(stateName) {
     }
 }
 
-function loadInspections() {
+function loadTransactions() {
     showState('loadingState');
     
-    fetch('{{ route("inspections.this-week.load") }}', {
+    fetch('{{ route("transactions.this-month.load") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -151,9 +150,9 @@ function loadInspections() {
         if (!data) return;
         
         if (data.success) {
-            allInspections = data.inspections;
-            filteredInspections = allInspections;
-            renderInspections();
+            allTransactions = data.transactions;
+            filteredTransactions = allTransactions;
+            renderTransactions();
             document.getElementById('searchInput').disabled = false;
         } else {
             if (data.error && data.error.includes('Session expired')) {
@@ -161,7 +160,7 @@ function loadInspections() {
                 window.location.href = '{{ route("login") }}';
                 return;
             }
-            showError(data.error || 'Failed to load inspections');
+            showError(data.error || 'Failed to load transactions');
         }
     })
     .catch(error => {
@@ -171,7 +170,7 @@ function loadInspections() {
             window.location.href = '{{ route("login") }}';
             return;
         }
-        showError('An error occurred while loading inspections');
+        showError('An error occurred while loading transactions');
     });
 }
 
@@ -180,16 +179,16 @@ function showError(message) {
     showState('errorState');
 }
 
-function renderInspections() {
-    const tbody = document.getElementById('inspectionsTableBody');
+function renderTransactions() {
+    const tbody = document.getElementById('transactionsTableBody');
     
-    if (filteredInspections.length === 0) {
+    if (filteredTransactions.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="8" class="text-center py-5">
+                <td colspan="7" class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
-                        <iconify-icon icon="solar:file-check-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
-                        <p class="mb-0 text-muted">No inspections found</p>
+                        <iconify-icon icon="solar:card-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
+                        <p class="mb-0 text-muted">No transactions found</p>
                     </div>
                 </td>
             </tr>
@@ -200,33 +199,35 @@ function renderInspections() {
     }
     
     // Calculate pagination
-    totalPages = Math.ceil(filteredInspections.length / itemsPerPage);
+    totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentPageInspections = filteredInspections.slice(startIndex, endIndex);
+    const currentPageTransactions = filteredTransactions.slice(startIndex, endIndex);
     
     let html = '';
-    currentPageInspections.forEach((inspection, index) => {
+    currentPageTransactions.forEach((transaction, index) => {
         const globalIndex = startIndex + index;
         
         // Handle different possible field names from API
-        const firstName = inspection.firstName || 'N/A';
-        const lastName = inspection.lastName || 'N/A';
-        const email = inspection.email || 'N/A';
-        const phone = inspection.phone || 'N/A';
-        const propertyTitle = inspection.propertyTitle || inspection.property_name || inspection.property || 'N/A';
-        const inspectionDate = inspection.inspection_date || inspection.inspectionDate || inspection.date || inspection.created_at || 'N/A';
-        const status = inspection.status || inspection.inspection_status || 'Pending';
+        const reference = transaction.reference || transaction.id || 'N/A';
+        const amount = transaction.amount || '0';
+        const type = transaction.type || transaction.transaction_type || 'N/A';
+        const date = transaction.date || transaction.created_at || transaction.transaction_date || 'N/A';
+        const status = transaction.status || 'Pending';
         
-        const fullName = `${firstName} ${lastName}`.trim();
+        // Format amount
+        const formattedAmount = new Intl.NumberFormat('en-NG', {
+            style: 'currency',
+            currency: 'NGN'
+        }).format(amount);
         
-        // Format date if it exists
-        let formattedDate = inspectionDate;
-        if (inspectionDate !== 'N/A' && inspectionDate) {
+        // Format date
+        let formattedDate = 'N/A';
+        if (date !== 'N/A') {
             try {
-                formattedDate = new Date(inspectionDate).toLocaleDateString();
+                formattedDate = new Date(date).toLocaleDateString();
             } catch (e) {
-                formattedDate = inspectionDate;
+                formattedDate = date;
             }
         }
         
@@ -234,23 +235,40 @@ function renderInspections() {
         let statusClass = 'bg-secondary';
         switch (status.toLowerCase()) {
             case 'completed':
-            case 'passed':
-            case 'approved':
+            case 'success':
+            case 'successful':
                 statusClass = 'bg-success';
                 break;
             case 'failed':
-            case 'rejected':
             case 'declined':
+            case 'error':
                 statusClass = 'bg-danger';
                 break;
             case 'pending':
-            case 'scheduled':
+            case 'processing':
                 statusClass = 'bg-warning text-dark';
                 break;
-            case 'in_progress':
-            case 'ongoing':
-            case 'in-progress':
+            case 'cancelled':
+            case 'canceled':
                 statusClass = 'bg-info';
+                break;
+        }
+        
+        // Type badge color
+        let typeClass = 'bg-primary';
+        switch (type.toLowerCase()) {
+            case 'credit':
+            case 'deposit':
+            case 'payment_received':
+                typeClass = 'bg-success';
+                break;
+            case 'debit':
+            case 'withdrawal':
+            case 'payment':
+                typeClass = 'bg-danger';
+                break;
+            case 'transfer':
+                typeClass = 'bg-info';
                 break;
         }
         
@@ -266,17 +284,14 @@ function renderInspections() {
                 </td>
                 <td>
                     <div class="d-flex align-items-center">
-                        <h6 class="user-name mb-0">${fullName || 'N/A'}</h6>
+                        <h6 class="user-name mb-0">${reference}</h6>
                     </div>
                 </td>
                 <td>
-                    <span class="usr-email-addr">${email}</span>
+                    <span class="usr-amount">${formattedAmount}</span>
                 </td>
                 <td>
-                    <span class="usr-location">${propertyTitle}</span>
-                </td>
-                <td>
-                    <span class="usr-ph-no">${phone}</span>
+                    <span class="badge ${typeClass}">${type}</span>
                 </td>
                 <td>
                     <span class="usr-date">${formattedDate}</span>
@@ -286,8 +301,8 @@ function renderInspections() {
                 </td>
                 <td>
                     <div class="action-btn">
-                        <a href="javascript:void(0)" class="text-primary edit">
-                            <i class="ti ti-eye fs-5"></i>
+                        <a href="javascript:void(0)" class="btn btn-sm btn-primary me-2">
+                            View Details
                         </a>
                         <a href="javascript:void(0)" class="text-dark delete ms-2">
                             <i class="ti ti-trash fs-5"></i>
@@ -309,29 +324,29 @@ document.getElementById('searchInput').addEventListener('input', function() {
     const searchTerm = this.value.toLowerCase().trim();
     
     if (searchTerm === '') {
-        filteredInspections = allInspections;
+        filteredTransactions = allTransactions;
     } else {
-        filteredInspections = allInspections.filter(inspection => {
-            const fullName = `${inspection.firstName || ''} ${inspection.lastName || ''}`.toLowerCase();
-            const email = (inspection.email || '').toLowerCase();
-            const phone = (inspection.phone || '').toLowerCase();
-            const propertyTitle = (inspection.propertyTitle || inspection.property_name || inspection.property || '').toLowerCase();
-            const status = (inspection.status || inspection.inspection_status || '').toLowerCase();
+        filteredTransactions = allTransactions.filter(transaction => {
+            const reference = (transaction.reference || transaction.id || '').toString().toLowerCase();
+            const amount = (transaction.amount || '').toString().toLowerCase();
+            const type = (transaction.type || transaction.transaction_type || '').toLowerCase();
+            const status = (transaction.status || '').toLowerCase();
+            const date = (transaction.date || transaction.created_at || transaction.transaction_date || '').toLowerCase();
             
-            return fullName.includes(searchTerm) || 
-                   email.includes(searchTerm) || 
-                   phone.includes(searchTerm) ||
-                   propertyTitle.includes(searchTerm) ||
-                   status.includes(searchTerm);
+            return reference.includes(searchTerm) || 
+                   amount.includes(searchTerm) || 
+                   type.includes(searchTerm) ||
+                   status.includes(searchTerm) ||
+                   date.includes(searchTerm);
         });
     }
     
     currentPage = 1;
-    renderInspections();
+    renderTransactions();
 });
 
 function updatePaginationInfo() {
-    const totalItems = filteredInspections.length;
+    const totalItems = filteredTransactions.length;
     
     if (totalItems === 0) {
         document.getElementById('paginationInfo').textContent = 'Showing 0 to 0 of 0 entries';
@@ -339,7 +354,7 @@ function updatePaginationInfo() {
     }
     
     const startItem = (currentPage - 1) * itemsPerPage + 1;
-    const endItem = Math.min(currentPage * itemsPerPage, filteredInspections.length);
+    const endItem = Math.min(currentPage * itemsPerPage, filteredTransactions.length);
     
     document.getElementById('paginationInfo').textContent = 
         `Showing ${startItem} to ${endItem} of ${totalItems} entries`;
@@ -420,15 +435,15 @@ function changePage(page) {
     }
     
     currentPage = page;
-    renderInspections();
+    renderTransactions();
     
     // Prevent default link behavior
     event.preventDefault();
 }
 
-// Auto-load inspections when page is ready
+// Auto-load transactions when page is ready
 document.addEventListener('DOMContentLoaded', function() {
-    loadInspections();
+    loadTransactions();
 });
 </script>
 @endpush

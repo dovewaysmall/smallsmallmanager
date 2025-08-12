@@ -128,26 +128,26 @@
                   </a>
                   <ul aria-expanded="false" class="collapse first-level">
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-landingpage.html">
+                      <a class="sidebar-link" href="{{ route('transactions') }}">
                         <span class="icon-small"></span>
                         Total Transactions
                       </a>
                     </li>
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-blogpage.html">
+                      <a class="sidebar-link" href="{{ route('transactions.this-week') }}">
                         <span class="icon-small"></span>
                         Transactions(This Week)
                       </a>
                     </li>
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-aboutpage.html">
+                      <a class="sidebar-link" href="{{ route('transactions.this-month') }}">
                         <span class="icon-small"></span>
                         Transactions(This Month)
                       </a>
                     </li>
                     
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-blogdetailpage.html">
+                      <a class="sidebar-link" href="{{ route('transactions.this-year') }}">
                         <span class="icon-small"></span>
                         Transactions(This Year)
                       </a>

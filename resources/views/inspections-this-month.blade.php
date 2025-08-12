@@ -13,7 +13,7 @@
                   <nav aria-label="breadcrumb" class="ms-auto">
                     <ol class="breadcrumb">
                       <li class="breadcrumb-item d-flex align-items-center">
-                        <a class="text-muted text-decoration-none d-flex" href="../main/index.html">
+                        <a class="text-muted text-decoration-none d-flex" href="{{ route('dashboard') }}">
                           <iconify-icon icon="solar:home-2-line-duotone" class="fs-6"></iconify-icon>
                         </a>
                       </li>
@@ -194,7 +194,8 @@ function renderInspections() {
                 </td>
             </tr>
         `;
-        document.getElementById('paginationContainer').style.display = 'none';
+        updatePaginationInfo();
+        document.getElementById('paginationContainer').style.display = 'flex';
         return;
     }
     
@@ -330,9 +331,15 @@ document.getElementById('searchInput').addEventListener('input', function() {
 });
 
 function updatePaginationInfo() {
-    const startItem = filteredInspections.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
-    const endItem = Math.min(currentPage * itemsPerPage, filteredInspections.length);
     const totalItems = filteredInspections.length;
+    
+    if (totalItems === 0) {
+        document.getElementById('paginationInfo').textContent = 'Showing 0 to 0 of 0 entries';
+        return;
+    }
+    
+    const startItem = (currentPage - 1) * itemsPerPage + 1;
+    const endItem = Math.min(currentPage * itemsPerPage, filteredInspections.length);
     
     document.getElementById('paginationInfo').textContent = 
         `Showing ${startItem} to ${endItem} of ${totalItems} entries`;

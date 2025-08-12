@@ -61,6 +61,12 @@ Route::post('/inspections/this-year/load', [InspectionsController::class, 'loadI
 
 Route::get('/transactions', [TransactionsController::class, 'index'])->name('transactions');
 Route::post('/transactions/load', [TransactionsController::class, 'loadTransactions'])->name('transactions.load');
+Route::get('/transactions/this-week', [TransactionsController::class, 'thisWeek'])->name('transactions.this-week');
+Route::post('/transactions/this-week/load', [TransactionsController::class, 'loadTransactionsThisWeek'])->name('transactions.this-week.load');
+Route::get('/transactions/this-month', [TransactionsController::class, 'thisMonth'])->name('transactions.this-month');
+Route::post('/transactions/this-month/load', [TransactionsController::class, 'loadTransactionsThisMonth'])->name('transactions.this-month.load');
+Route::get('/transactions/this-year', [TransactionsController::class, 'thisYear'])->name('transactions.this-year');
+Route::post('/transactions/this-year/load', [TransactionsController::class, 'loadTransactionsThisYear'])->name('transactions.this-year.load');
 
 Route::get('/tenants', [TenantsController::class, 'index'])->name('tenants');
 Route::post('/tenants/load', [TenantsController::class, 'loadTenants'])->name('tenants.load');
