@@ -61,7 +61,7 @@
                     <li class="sidebar-item">
                       <a class="sidebar-link" href="{{ route('tenants') }}">
                         <span class="icon-small"></span>
-                        Total Subscribers
+                        Total Subscribers 
                       </a>
                     </li>
                     <li class="sidebar-item">
@@ -93,13 +93,13 @@
                   </a>
                   <ul aria-expanded="false" class="collapse first-level">
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-landingpage.html">
+                      <a class="sidebar-link" href="../dashboard">
                         <span class="icon-small"></span>
                         Total Inspections
                       </a>
                     </li>
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-blogpage.html">
+                      <a class="sidebar-link" href="../dashboard">
                         <span class="icon-small"></span>
                         Inspections(This Week)
                       </a>
