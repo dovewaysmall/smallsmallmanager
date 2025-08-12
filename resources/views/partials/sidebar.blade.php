@@ -59,26 +59,26 @@
                   </a>
                   <ul aria-expanded="false" class="collapse first-level">
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../tenants">
+                      <a class="sidebar-link" href="{{ route('tenants') }}">
                         <span class="icon-small"></span>
                         Total Subscribers
                       </a>
                     </li>
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-blogpage.html">
+                      <a class="sidebar-link" href="{{ route('tenants.this-week') }}">
                         <span class="icon-small"></span>
                         Subscribers(This Week)
                       </a>
                     </li>
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-aboutpage.html">
+                      <a class="sidebar-link" href="{{ route('tenants.this-month') }}">
                         <span class="icon-small"></span>
                         Subscribers(This Month)
                       </a>
                     </li>
                     
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-blogdetailpage.html">
+                      <a class="sidebar-link" href="{{ route('tenants.this-year') }}">
                         <span class="icon-small"></span>
                         Subscribers(This Year)
                       </a>

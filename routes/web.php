@@ -58,6 +58,12 @@ Route::post('/transactions/load', [TransactionsController::class, 'loadTransacti
 
 Route::get('/tenants', [TenantsController::class, 'index'])->name('tenants');
 Route::post('/tenants/load', [TenantsController::class, 'loadTenants'])->name('tenants.load');
+Route::get('/tenants/this-week', [TenantsController::class, 'thisWeek'])->name('tenants.this-week');
+Route::post('/tenants/this-week/load', [TenantsController::class, 'loadTenantsThisWeek'])->name('tenants.this-week.load');
+Route::get('/tenants/this-month', [TenantsController::class, 'thisMonth'])->name('tenants.this-month');
+Route::post('/tenants/this-month/load', [TenantsController::class, 'loadTenantsThisMonth'])->name('tenants.this-month.load');
+Route::get('/tenants/this-year', [TenantsController::class, 'thisYear'])->name('tenants.this-year');
+Route::post('/tenants/this-year/load', [TenantsController::class, 'loadTenantsThisYear'])->name('tenants.this-year.load');
 Route::get('/tenant/{userID}', [TenantsController::class, 'show'])->name('tenant.show');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
