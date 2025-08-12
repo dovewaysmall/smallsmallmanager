@@ -93,26 +93,26 @@
                   </a>
                   <ul aria-expanded="false" class="collapse first-level">
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../dashboard">
+                      <a class="sidebar-link" href="{{ route('inspections') }}">
                         <span class="icon-small"></span>
                         Total Inspections
                       </a>
                     </li>
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../dashboard">
+                      <a class="sidebar-link" href="{{ route('inspections.this-week') }}">
                         <span class="icon-small"></span>
                         Inspections(This Week)
                       </a>
                     </li>
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-aboutpage.html">
+                      <a class="sidebar-link" href="{{ route('inspections.this-month') }}">
                         <span class="icon-small"></span>
                         Inspections(This Month)
                       </a>
                     </li>
                     
                     <li class="sidebar-item">
-                      <a class="sidebar-link" href="../main/frontend-blogdetailpage.html">
+                      <a class="sidebar-link" href="{{ route('inspections.this-year') }}">
                         <span class="icon-small"></span>
                         Inspections(This Year)
                       </a>

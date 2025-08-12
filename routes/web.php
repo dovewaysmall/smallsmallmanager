@@ -52,6 +52,12 @@ Route::post('/users/load', [UsersController::class, 'loadUsers'])->name('users.l
 
 Route::get('/inspections', [InspectionsController::class, 'index'])->name('inspections');
 Route::post('/inspections/load', [InspectionsController::class, 'loadInspections'])->name('inspections.load');
+Route::get('/inspections/this-week', [InspectionsController::class, 'thisWeek'])->name('inspections.this-week');
+Route::post('/inspections/this-week/load', [InspectionsController::class, 'loadInspectionsThisWeek'])->name('inspections.this-week.load');
+Route::get('/inspections/this-month', [InspectionsController::class, 'thisMonth'])->name('inspections.this-month');
+Route::post('/inspections/this-month/load', [InspectionsController::class, 'loadInspectionsThisMonth'])->name('inspections.this-month.load');
+Route::get('/inspections/this-year', [InspectionsController::class, 'thisYear'])->name('inspections.this-year');
+Route::post('/inspections/this-year/load', [InspectionsController::class, 'loadInspectionsThisYear'])->name('inspections.this-year.load');
 
 Route::get('/transactions', [TransactionsController::class, 'index'])->name('transactions');
 Route::post('/transactions/load', [TransactionsController::class, 'loadTransactions'])->name('transactions.load');
