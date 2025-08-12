@@ -58,9 +58,9 @@
                             <div class="d-flex align-items-center justify-content-center round-48 rounded text-bg-danger flex-shrink-0 mb-3 mx-auto">
                               <iconify-icon icon="ic:baseline-sync-problem" class="fs-7 text-white"></iconify-icon>
                             </div>
-                            <h6 class="fw-normal fs-3 mb-1">Cancel Orders</h6>
+                            <h6 class="fw-normal fs-3 mb-1">Total Properties</h6>
                             <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1">
-                              64</h4>
+                              {{ number_format($propertyCount ?? 0) }}</h4>
                             <a href="javascript:void(0)" class="btn btn-white fs-2 fw-semibold text-nowrap">View
                               Details</a>
                           </div>

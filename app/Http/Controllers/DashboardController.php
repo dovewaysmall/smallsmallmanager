@@ -13,6 +13,7 @@ class DashboardController extends Controller
         $inspectionCount = 0;
         $transactionCount = 0;
         $tenantCount = 0;
+        $propertyCount = 0;
         $newUsersThisMonth = 0;
         $inspectionsThisMonth = 0;
         
@@ -70,6 +71,16 @@ class DashboardController extends Controller
                     return redirect()->route('login')->with('error', 'Session expired. Please login again.');
                 }
                 
+                // Fetch property count
+                $propertyResponse = Http::withHeaders($headers)->get('http://api2.smallsmall.com/api/properties/count');
+                if ($propertyResponse->successful()) {
+                    $propertyData = $propertyResponse->json();
+                    $propertyCount = $propertyData['count'] ?? $propertyData['total'] ?? $propertyData['properties_count'] ?? 0;
+                } elseif ($propertyResponse->status() === 401) {
+                    session()->flush();
+                    return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+                }
+                
                 // Fetch new users this month count
                 $newUsersResponse = Http::withHeaders($headers)->get('http://api2.smallsmall.com/api/users/count/monthly');
                 if ($newUsersResponse->successful()) {
@@ -96,10 +107,11 @@ class DashboardController extends Controller
             $inspectionCount = 0;
             $transactionCount = 0;
             $tenantCount = 0;
+            $propertyCount = 0;
             $newUsersThisMonth = 0;
             $inspectionsThisMonth = 0;
         }
         
-        return view('dashboard', compact('userCount', 'inspectionCount', 'transactionCount', 'tenantCount', 'newUsersThisMonth', 'inspectionsThisMonth'));
+        return view('dashboard', compact('userCount', 'inspectionCount', 'transactionCount', 'tenantCount', 'propertyCount', 'newUsersThisMonth', 'inspectionsThisMonth'));
     }
 }
