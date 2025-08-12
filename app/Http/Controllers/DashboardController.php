@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -72,7 +71,7 @@ class DashboardController extends Controller
                 }
                 
                 // Fetch new users this month count
-                $newUsersResponse = Http::withHeaders($headers)->get('http://api2.smallsmall.com/api/users/new-this-month');
+                $newUsersResponse = Http::withHeaders($headers)->get('http://api2.smallsmall.com/api/users/count/monthly');
                 if ($newUsersResponse->successful()) {
                     $newUsersData = $newUsersResponse->json();
                     $newUsersThisMonth = $newUsersData['count'] ?? $newUsersData['total'] ?? $newUsersData['new_users_count'] ?? 0;
@@ -82,7 +81,7 @@ class DashboardController extends Controller
                 }
                 
                 // Fetch inspections this month count
-                $inspectionsThisMonthResponse = Http::withHeaders($headers)->get('http://api2.smallsmall.com/api/inspections/this-month');
+                $inspectionsThisMonthResponse = Http::withHeaders($headers)->get('http://api2.smallsmall.com/api/inspections/count/monthly');
                 if ($inspectionsThisMonthResponse->successful()) {
                     $inspectionsThisMonthData = $inspectionsThisMonthResponse->json();
                     $inspectionsThisMonth = $inspectionsThisMonthData['count'] ?? $inspectionsThisMonthData['total'] ?? $inspectionsThisMonthData['inspections_count'] ?? 0;
