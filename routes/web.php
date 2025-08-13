@@ -5,9 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\UnconvertedUsersController;
 use App\Http\Controllers\InspectionsController;
 use App\Http\Controllers\TransactionsController;
 use App\Http\Controllers\TenantsController;
+use App\Http\Controllers\PropertiesController;
+use App\Http\Controllers\VerificationsController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
@@ -50,6 +53,15 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::get('/users', [UsersController::class, 'index'])->name('users');
 Route::post('/users/load', [UsersController::class, 'loadUsers'])->name('users.load');
 
+Route::get('/unconverted-users', [UnconvertedUsersController::class, 'index'])->name('unconverted-users');
+Route::post('/unconverted-users/load', [UnconvertedUsersController::class, 'loadUnconvertedUsers'])->name('unconverted-users.load');
+Route::get('/unconverted-users/this-week', [UnconvertedUsersController::class, 'thisWeek'])->name('unconverted-users.this-week');
+Route::post('/unconverted-users/this-week/load', [UnconvertedUsersController::class, 'loadUnconvertedUsersThisWeek'])->name('unconverted-users.this-week.load');
+Route::get('/unconverted-users/this-month', [UnconvertedUsersController::class, 'thisMonth'])->name('unconverted-users.this-month');
+Route::post('/unconverted-users/this-month/load', [UnconvertedUsersController::class, 'loadUnconvertedUsersThisMonth'])->name('unconverted-users.this-month.load');
+Route::get('/unconverted-users/this-year', [UnconvertedUsersController::class, 'thisYear'])->name('unconverted-users.this-year');
+Route::post('/unconverted-users/this-year/load', [UnconvertedUsersController::class, 'loadUnconvertedUsersThisYear'])->name('unconverted-users.this-year.load');
+
 Route::get('/inspections', [InspectionsController::class, 'index'])->name('inspections');
 Route::post('/inspections/load', [InspectionsController::class, 'loadInspections'])->name('inspections.load');
 Route::get('/inspections/this-week', [InspectionsController::class, 'thisWeek'])->name('inspections.this-week');
@@ -79,6 +91,24 @@ Route::post('/tenants/this-month/load', [TenantsController::class, 'loadTenantsT
 Route::get('/tenants/this-year', [TenantsController::class, 'thisYear'])->name('tenants.this-year');
 Route::post('/tenants/this-year/load', [TenantsController::class, 'loadTenantsThisYear'])->name('tenants.this-year.load');
 Route::get('/tenant/{userID}', [TenantsController::class, 'show'])->name('tenant.show');
+
+Route::get('/properties', [PropertiesController::class, 'index'])->name('properties');
+Route::post('/properties/load', [PropertiesController::class, 'loadProperties'])->name('properties.load');
+Route::get('/properties/this-week', [PropertiesController::class, 'thisWeek'])->name('properties.this-week');
+Route::post('/properties/this-week/load', [PropertiesController::class, 'loadPropertiesThisWeek'])->name('properties.this-week.load');
+Route::get('/properties/this-month', [PropertiesController::class, 'thisMonth'])->name('properties.this-month');
+Route::post('/properties/this-month/load', [PropertiesController::class, 'loadPropertiesThisMonth'])->name('properties.this-month.load');
+Route::get('/properties/this-year', [PropertiesController::class, 'thisYear'])->name('properties.this-year');
+Route::post('/properties/this-year/load', [PropertiesController::class, 'loadPropertiesThisYear'])->name('properties.this-year.load');
+
+Route::get('/verifications', [VerificationsController::class, 'index'])->name('verifications');
+Route::post('/verifications/load', [VerificationsController::class, 'loadVerifications'])->name('verifications.load');
+Route::get('/verifications/this-week', [VerificationsController::class, 'thisWeek'])->name('verifications.this-week');
+Route::post('/verifications/this-week/load', [VerificationsController::class, 'loadVerificationsThisWeek'])->name('verifications.this-week.load');
+Route::get('/verifications/this-month', [VerificationsController::class, 'thisMonth'])->name('verifications.this-month');
+Route::post('/verifications/this-month/load', [VerificationsController::class, 'loadVerificationsThisMonth'])->name('verifications.this-month.load');
+Route::get('/verifications/this-year', [VerificationsController::class, 'thisYear'])->name('verifications.this-year');
+Route::post('/verifications/this-year/load', [VerificationsController::class, 'loadVerificationsThisYear'])->name('verifications.this-year.load');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout.get'); // Fallback for expired sessions

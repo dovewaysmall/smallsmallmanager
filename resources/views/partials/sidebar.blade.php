@@ -46,12 +46,56 @@
                 <!-- ---------------------------------- -->
                 <!-- Dashboard -->
                 <!-- ---------------------------------- -->
+                
                 <li class="sidebar-item">
-                  <a class="sidebar-link" href="" id="get-url" aria-expanded="false">
-                    <iconify-icon icon="solar:atom-line-duotone"></iconify-icon>
+                  <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                    <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
                     <span class="hide-menu">Users</span>
                   </a>
+                  <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('users') }}">
+                        <span class="icon-small"></span>
+                        Total Users 
+                      </a>
+                    </li>
+                  </ul>
                 </li>
+                
+                <li class="sidebar-item">
+                  <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                    <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Unconverted</span>
+                  </a>
+                  <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('unconverted-users') }}">
+                        <span class="icon-small"></span>
+                        Total Unconverted 
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('unconverted-users.this-week') }}">
+                        <span class="icon-small"></span>
+                        Unconverted(This Week)
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('unconverted-users.this-month') }}">
+                        <span class="icon-small"></span>
+                        Unconverted(This Month)
+                      </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('unconverted-users.this-year') }}">
+                        <span class="icon-small"></span>
+                        Unconverted(This Year)
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+
                 <li class="sidebar-item">
                   <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
                     <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
@@ -150,6 +194,76 @@
                       <a class="sidebar-link" href="{{ route('transactions.this-year') }}">
                         <span class="icon-small"></span>
                         Transactions(This Year)
+                      </a>
+                    </li>
+                    
+                  </ul>
+                </li>
+
+                <li class="sidebar-item">
+                  <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                    <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Property</span>
+                  </a>
+                  <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('properties') }}">
+                        <span class="icon-small"></span>
+                        Total Properties
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('properties.this-week') }}">
+                        <span class="icon-small"></span>
+                        Properties(This Week)
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('properties.this-month') }}">
+                        <span class="icon-small"></span>
+                        Properties(This Month)
+                      </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('properties.this-year') }}">
+                        <span class="icon-small"></span>
+                        Properties(This Year)
+                      </a>
+                    </li>
+                    
+                  </ul>
+                </li>
+
+                <li class="sidebar-item">
+                  <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                    <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Verifications</span>
+                  </a>
+                  <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('verifications') }}">
+                        <span class="icon-small"></span>
+                        Total Verifications
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('verifications.this-week') }}">
+                        <span class="icon-small"></span>
+                        Verifications(This Week)
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('verifications.this-month') }}">
+                        <span class="icon-small"></span>
+                        Verifications(This Month)
+                      </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('verifications.this-year') }}">
+                        <span class="icon-small"></span>
+                        Verifications(This Year)
                       </a>
                     </li>
                     

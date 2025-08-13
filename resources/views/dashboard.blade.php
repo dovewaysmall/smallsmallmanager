@@ -61,7 +61,7 @@
                             <h6 class="fw-normal fs-3 mb-1">Total Properties</h6>
                             <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1">
                               {{ number_format($propertyCount ?? 0) }}</h4>
-                            <a href="javascript:void(0)" class="btn btn-white fs-2 fw-semibold text-nowrap">View
+                            <a href="{{ route('properties') }}" class="btn btn-white fs-2 fw-semibold text-nowrap">View
                               Details</a>
                           </div>
                         </div>
