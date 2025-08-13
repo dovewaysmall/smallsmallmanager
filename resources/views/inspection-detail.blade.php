@@ -47,8 +47,22 @@
                     </div>
                   @endif
 
+                  @if(session('success'))
+                    <div class="alert alert-success">
+                      {{ session('success') }}
+                    </div>
+                  @endif
 
-                  <form action="" class="form-horizontal">
+                  @if(session('error'))
+                    <div class="alert alert-danger">
+                      {{ session('error') }}
+                    </div>
+                  @endif
+
+
+                  <form action="{{ route('inspection.update', $id) }}" method="POST" class="form-horizontal">
+                    @csrf
+                    @method('PUT')
                     <div class="mb-4">
                       <label class="form-label">User ID <span class="text-danger">*</span></label>
                       <input type="text" class="form-control" placeholder="User ID" value="{{ $inspection['data']['userID'] ?? 'N/A' }}" readonly>
@@ -68,14 +82,12 @@
                       <label class="form-label mt-3">Phone</label>
                       <input type="text" class="form-control" placeholder="Phone" value="{{ trim($inspection['data']['phone'] ?? '') }}" readonly>
                     </div>
-                  </form>
                 </div>
               </div>
               
               <div class="card">
                 <div class="card-body">
                   <h4 class="card-title mb-7">Inspection Details</h4>
-                  <form>
                     <div class="mb-4">
                       <label class="form-label">Property ID</label>
                       <input type="text" class="form-control" placeholder="Property ID" value="{{ $inspection['data']['propertyID'] ?? '' }}" readonly>
@@ -96,14 +108,15 @@
                       <div class="col-md-6">
                         <div class="mb-4">
                           <label class="form-label">Updated Inspection Date</label>
-                          <input type="datetime-local" class="form-control" value="{{ isset($inspection['data']['updated_inspection_date']) ? date('Y-m-d\TH:i', strtotime($inspection['data']['updated_inspection_date'])) : '' }}">
+                          <input type="datetime-local" class="form-control" name="updated_inspection_date" value="{{ isset($inspection['data']['updated_inspection_date']) ? date('Y-m-d\TH:i', strtotime($inspection['data']['updated_inspection_date'])) : '' }}">
                         </div>
                       </div>
                     </div>
 
                     <div class="mb-4">
                       <label class="form-label">Status</label>
-                      <select class="form-select">
+                      <select class="form-select" name="inspection_status">
+                        <option value="">Select Status</option>
                         <option value="pending" {{ ($inspection['data']['inspection_status'] ?? '') == 'pending' ? 'selected' : '' }}>Pending</option>
                         <option value="pending-assigned" {{ ($inspection['data']['inspection_status'] ?? '') == 'pending-assigned' ? 'selected' : '' }}>Pending Assigned</option>
                         <option value="completed" {{ ($inspection['data']['inspection_status'] ?? '') == 'completed' ? 'selected' : '' }}>Completed</option>
@@ -141,7 +154,7 @@
                       <div class="col-md-6">
                         <div class="mb-4">
                           <label class="form-label">Inspection Type</label>
-                          <select class="form-select">
+                          <select class="form-select" name="inspectionType">
                             <option value="">Select inspection type</option>
                             <option value="Physical" {{ ($inspection['data']['inspectionType'] ?? '') == 'Physical' ? 'selected' : '' }}>Physical</option>
                             <option value="Virtual" {{ ($inspection['data']['inspectionType'] ?? '') == 'Virtual' ? 'selected' : '' }}>Virtual</option>
@@ -153,7 +166,7 @@
                       <div class="col-md-6">
                         <div class="mb-4">
                           <label class="form-label">Platform</label>
-                          <input type="text" class="form-control" placeholder="Platform" value="{{ $inspection['data']['platform'] ?? '' }}">
+                          <input type="text" class="form-control" name="platform" placeholder="Platform" value="{{ $inspection['data']['platform'] ?? '' }}">
                           <p class="fs-2">Platform used for the inspection.</p>
                         </div>
                       </div>
@@ -163,7 +176,7 @@
                       <div class="col-md-6">
                         <div class="mb-4">
                           <label class="form-label">Customer Feedback</label>
-                          <select class="form-select">
+                          <select class="form-select" name="customer_inspec_feedback">
                             <option value="">Select feedback</option>
                             <option value="excellent" {{ ($inspection['data']['customer_inspec_feedback'] ?? '') == 'excellent' ? 'selected' : '' }}>Excellent</option>
                             <option value="good" {{ ($inspection['data']['customer_inspec_feedback'] ?? '') == 'good' ? 'selected' : '' }}>Good</option>
@@ -175,7 +188,7 @@
                       <div class="col-md-6">
                         <div class="mb-4">
                           <label class="form-label">Verified Status</label>
-                          <select class="form-select">
+                          <select class="form-select" name="verified">
                             <option value="yes" {{ ($inspection['data']['verified'] ?? '') == 'yes' ? 'selected' : '' }}>Yes</option>
                             <option value="no" {{ ($inspection['data']['verified'] ?? '') == 'no' ? 'selected' : '' }}>No</option>
                           </select>
@@ -185,35 +198,35 @@
 
                     <div class="mb-4">
                       <label class="form-label">Customer Feedback Details</label>
-                      <textarea class="form-control" rows="3" placeholder="Customer feedback details">{{ $inspection['data']['cx_feedback_details'] ?? '' }}</textarea>
+                      <textarea class="form-control" name="cx_feedback_details" rows="3" placeholder="Customer feedback details">{{ $inspection['data']['cx_feedback_details'] ?? '' }}</textarea>
                     </div>
 
                     <div class="mb-4">
                       <label class="form-label">Inspection Remarks</label>
-                      <textarea class="form-control" rows="3" placeholder="Inspection remarks">{{ $inspection['data']['inspection_remarks'] ?? '' }}</textarea>
+                      <textarea class="form-control" name="inspection_remarks" rows="3" placeholder="Inspection remarks">{{ $inspection['data']['inspection_remarks'] ?? '' }}</textarea>
                     </div>
 
                     <div class="mb-4">
                       <label class="form-label">Comments</label>
-                      <textarea class="form-control" rows="3" placeholder="Additional comments">{{ $inspection['data']['comment'] ?? '' }}</textarea>
+                      <textarea class="form-control" name="comment" rows="3" placeholder="Additional comments">{{ $inspection['data']['comment'] ?? '' }}</textarea>
                     </div>
 
                     <div class="mb-4">
                       <label class="form-label">Date of Entry</label>
                       <input type="datetime-local" class="form-control" value="{{ isset($inspection['data']['dateOfEntry']) ? date('Y-m-d\TH:i', strtotime($inspection['data']['dateOfEntry'])) : '' }}" readonly>
                     </div>
-                  </form>
+
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary">
+                        Save changes
+                      </button>
+                      <button type="button" class="btn bg-danger-subtle text-danger ms-6">
+                        Cancel
+                      </button>
+                    </div>
                 </div>
               </div>
-              
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
-                  Save changes
-                </button>
-                <button type="button" class="btn bg-danger-subtle text-danger ms-6">
-                  Cancel
-                </button>
-              </div>
+              </form>
             </div>
             <div class="col-lg-4">
               <div class="offcanvas-lg offcanvas-end overflow-auto" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">

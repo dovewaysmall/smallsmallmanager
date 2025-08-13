@@ -59,6 +59,7 @@ Route::post('/inspections/this-month/load', [InspectionsController::class, 'load
 Route::get('/inspections/this-year', [InspectionsController::class, 'thisYear'])->name('inspections.this-year');
 Route::post('/inspections/this-year/load', [InspectionsController::class, 'loadInspectionsThisYear'])->name('inspections.this-year.load');
 Route::get('/inspection/{id}', [InspectionsController::class, 'show'])->name('inspection.show');
+Route::put('/inspection/{id}', [InspectionsController::class, 'update'])->name('inspection.update');
 
 Route::get('/transactions', [TransactionsController::class, 'index'])->name('transactions');
 Route::post('/transactions/load', [TransactionsController::class, 'loadTransactions'])->name('transactions.load');

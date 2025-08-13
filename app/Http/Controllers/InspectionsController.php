@@ -46,6 +46,102 @@ class InspectionsController extends Controller
         }
     }
 
+    public function update($id, Request $request)
+    {
+        try {
+            $accessToken = session('access_token');
+            
+            if (!$accessToken) {
+                return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+            }
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ];
+
+            // Prepare data for API update - start with safe fields only
+            $updateData = [];
+            
+            // Add fields one by one to identify which ones cause issues
+            if ($request->assigned_tsr) {
+                $updateData['assigned_tsr'] = $request->assigned_tsr;
+            }
+            
+            if ($request->inspectionType) {
+                $updateData['inspectionType'] = $request->inspectionType;
+            }
+            
+            if ($request->platform) {
+                $updateData['platform'] = $request->platform;
+            }
+            
+            if ($request->verified) {
+                $updateData['verified'] = $request->verified;
+            }
+            
+            if ($request->comment) {
+                $updateData['comment'] = $request->comment;
+            }
+            
+            // Try status last since it was causing issues
+            if ($request->inspection_status && $request->inspection_status !== '') {
+                $updateData['inspection_status'] = $request->inspection_status;
+            }
+
+            // Remove null values and handle data format issues
+            $updateData = array_filter($updateData, function($value) {
+                return $value !== null && $value !== '';
+            });
+
+            // Handle potential database field length issues
+            if (isset($updateData['inspection_status'])) {
+                // Map longer status names to shorter database values if needed
+                $statusMap = [
+                    'pending-assigned' => 'assigned',  // If the database expects shorter values
+                    'in_progress' => 'progress',
+                ];
+                
+                if (isset($statusMap[$updateData['inspection_status']])) {
+                    $updateData['inspection_status'] = $statusMap[$updateData['inspection_status']];
+                }
+            }
+
+            Log::info('Inspection Update Request Data: ' . json_encode($updateData));
+            
+            // Try different HTTP methods to find the correct one
+            $response = Http::timeout(30)->withHeaders($headers)->patch("http://api2.smallsmall.com/api/inspections/{$id}", $updateData);
+            
+            // If PATCH doesn't work, try PUT
+            if (!$response->successful() && $response->status() === 405) {
+                Log::info('PATCH failed with 405, trying PUT');
+                $response = Http::timeout(30)->withHeaders($headers)->put("http://api2.smallsmall.com/api/inspections/{$id}", $updateData);
+            }
+            
+            // If PUT doesn't work, try different endpoint with POST
+            if (!$response->successful() && $response->status() === 405) {
+                Log::info('PUT failed with 405, trying POST to update endpoint');
+                $response = Http::timeout(30)->withHeaders($headers)->post("http://api2.smallsmall.com/api/inspections/update/{$id}", $updateData);
+            }
+
+            Log::info('Inspection Update Response Status: ' . $response->status());
+            Log::info('Inspection Update Response Body: ' . $response->body());
+
+            if ($response->successful()) {
+                return redirect()->route('inspection.show', $id)->with('success', 'Inspection updated successfully.');
+            } elseif ($response->status() === 401) {
+                return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+            } else {
+                Log::error('Inspection Update API Error - Status: ' . $response->status() . ' - Body: ' . $response->body());
+                return redirect()->route('inspection.show', $id)->with('error', 'Failed to update inspection. Status: ' . $response->status() . '. Please check the logs for details.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Inspection Update API Error: ' . $e->getMessage());
+            return redirect()->route('inspection.show', $id)->with('error', 'An error occurred while updating inspection data.');
+        }
+    }
+
     public function thisWeek()
     {
         return view('inspections-this-week');
