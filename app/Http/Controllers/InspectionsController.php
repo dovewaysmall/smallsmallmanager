@@ -13,6 +13,39 @@ class InspectionsController extends Controller
         return view('inspections');
     }
 
+    public function show($id)
+    {
+        try {
+            $accessToken = session('access_token');
+            
+            if (!$accessToken) {
+                return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+            }
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+            ];
+
+            $response = Http::timeout(30)->withHeaders($headers)->get("http://api2.smallsmall.com/api/inspections/{$id}");
+
+            if ($response->successful()) {
+                $apiData = $response->json();
+                Log::info('Inspection API Response: ' . json_encode($apiData));
+                
+                // Pass the complete API response to access assigned_tsr and available_tsrs
+                return view('inspection-detail', ['inspection' => $apiData, 'id' => $id]);
+            } elseif ($response->status() === 401) {
+                return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+            } else {
+                return view('inspection-detail', ['inspection' => null, 'id' => $id, 'error' => 'Failed to load inspection data.']);
+            }
+        } catch (\Exception $e) {
+            Log::error('Inspection Detail API Error: ' . $e->getMessage());
+            return view('inspection-detail', ['inspection' => null, 'id' => $id, 'error' => 'An error occurred while loading inspection data.']);
+        }
+    }
+
     public function thisWeek()
     {
         return view('inspections-this-week');
