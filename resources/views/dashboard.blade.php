@@ -890,6 +890,86 @@
 
 @push('scripts')
 <script>
+// Update conversion rate chart with real data
+function updateConversionChart(monthlyBreakdown) {
+    // Ensure we have data
+    if (!monthlyBreakdown || monthlyBreakdown.length === 0) {
+        console.log('No monthly breakdown data available');
+        return;
+    }
+    
+    console.log('Updating chart with monthly breakdown data:', monthlyBreakdown);
+    
+    // Add small delay to ensure DOM is ready and original chart is cleared
+    setTimeout(() => {
+        // Extract converted users count from monthly breakdown
+        const monthlyConvertedUsers = monthlyBreakdown.map(month => month.converted_users);
+        const monthNames = monthlyBreakdown.map(month => month.month); // Full month names
+        
+        console.log('Monthly converted users:', monthlyConvertedUsers);
+        
+        // Chart configuration
+        var options = {
+        chart: {
+            id: "annual-profit",
+            type: "area",
+            height: 80,
+            sparkline: {
+                enabled: true,
+            },
+            group: "sparklines",
+            fontFamily: "inherit",
+            foreColor: "#adb0bb",
+        },
+        series: [
+            {
+                name: "Converted Users",
+                color: "var(--bs-primary)",
+                data: monthlyConvertedUsers,
+            },
+        ],
+        stroke: {
+            curve: "smooth",
+            width: 2,
+        },
+        fill: {
+            type: "gradient",
+            color: "var(--bs-primary)",
+            gradient: {
+                shadeIntensity: 0,
+                inverseColors: false,
+                opacityFrom: 0.1,
+                opacityTo: 0.1,
+                stops: [100],
+            },
+        },
+        markers: {
+            size: 0,
+        },
+        tooltip: {
+            theme: "dark",
+            fixed: {
+                enabled: true,
+                position: "right",
+            },
+            x: {
+                show: true,
+            },
+        },
+        xaxis: {
+            categories: monthNames,
+        },
+    };
+    
+        // Clear existing chart and render new one
+        const chartElement = document.querySelector("#annual-profit");
+        if (chartElement) {
+            chartElement.innerHTML = ''; // Clear existing chart
+            new ApexCharts(chartElement, options).render();
+        }
+    }, 500); // 500ms delay
+}
+
 // Fetch conversion rate from API
 function loadConversionRate() {
     console.log('Starting conversion rate fetch...');
@@ -943,6 +1023,11 @@ function loadConversionRate() {
                 const unconvertedPercentage = 100 - conversionPercentage;
                 console.log('Setting unconverted users percentage to:', unconvertedPercentage + '%');
                 unconvertedUsersPercentageElement.textContent = unconvertedPercentage + '%';
+                
+                // Update the conversion rate chart with monthly data
+                if (data.monthly_breakdown) {
+                    updateConversionChart(data.monthly_breakdown);
+                }
             } else {
                 console.log('Condition failed - setting to 0%');
                 console.log('Full data:', data);
@@ -967,7 +1052,7 @@ function loadConversionRate() {
 
 // Activate the dashboard sidebar section when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    // Load conversion rate
+    // Load conversion rate (this will also update the chart)
     loadConversionRate();
     // Activate the dashboard mini-nav item
     const dashboardMiniNav = document.getElementById('mini-1');
