@@ -99,11 +99,11 @@
                       <div class="hstack gap-9 mt-4 mt-md-0">
                         <div class="d-flex align-items-center gap-2">
                           <span class="d-block flex-shrink-0 round-10 bg-primary rounded-circle"></span>
-                          <span class="text-nowrap text-muted">2024</span>
+                          <span class="text-nowrap text-muted">2025</span>
                         </div>
                         <div class="d-flex align-items-center gap-2">
                           <span class="d-block flex-shrink-0 round-10 bg-danger rounded-circle"></span>
-                          <span class="text-nowrap text-muted">2023</span>
+                          <span class="text-nowrap text-muted">2026</span>
                         </div>
                       </div>
                     </div>
@@ -117,19 +117,19 @@
                             <iconify-icon icon="solar:pie-chart-2-linear" class="fs-7 text-dark"></iconify-icon>
                           </span>
                           <div>
-                            <span>Total</span>
-                            <h5 class="mt-1 fw-medium mb-0">$96,640</h5>
+                            <span>Revenue</span>
+                            <h5 class="mt-1 fw-medium mb-0">₦120,000,000</h5>
                           </div>
                         </div>
                       </div>
                       <div class="col-md-4">
                         <div class="hstack gap-6 mb-3 mb-md-0">
                           <span class="d-flex align-items-center justify-content-center round-48 bg-primary-subtle rounded">
-                            <iconify-icon icon="solar:dollar-minimalistic-linear" class="fs-7 text-primary"></iconify-icon>
+                            <iconify-icon icon="solar:cash-out-linear" class="fs-7 text-primary"></iconify-icon>
                           </span>
                           <div>
                             <span>Profit</span>
-                            <h5 class="mt-1 fw-medium mb-0">$48,820</h5>
+                            <h5 class="mt-1 fw-medium mb-0">₦70,000,000</h5>
                           </div>
                         </div>
                       </div>
@@ -139,8 +139,8 @@
                             <iconify-icon icon="solar:database-linear" class="fs-7 text-danger"></iconify-icon>
                           </span>
                           <div>
-                            <span>Earnings</span>
-                            <h5 class="mt-1 fw-medium mb-0">$48,820</h5>
+                            <span>Expenses</span>
+                            <h5 class="mt-1 fw-medium mb-0">₦50,000,000</h5>
                           </div>
                         </div>
                       </div>
@@ -204,7 +204,7 @@
                 <div class="card">
                   <div class="card-body">
                     <h5 class="card-title fw-semibold">Performance This Month</h5>
-                    <p class="card-subtitle mb-0 lh-base">Last check on 25</p>
+                    <p class="card-subtitle mb-0 lh-base"></p>
 
                     <div class="row mt-4">
                       <div class="col-md-6">
@@ -254,6 +254,7 @@
 
                   </div>
                 </div>
+                
               </div>
               <div class="col-lg-7">
                 <div class="row">
@@ -310,492 +311,7 @@
                 </div>
 
               </div>
-              <div class="col-lg-8">
-                <!-- -------------------------------------------- -->
-                <!-- Revenue by Product -->
-                <!-- -------------------------------------------- -->
-                <div class="card">
-                  <div class="card-body">
-                    <div class="d-flex flex-wrap gap-3 mb-9 justify-content-between align-items-center">
-                      <h5 class="card-title fw-semibold mb-0">Revenue by Product</h5>
-                      <select class="form-select w-auto fw-semibold">
-                        <option value="1">Sep 2024</option>
-                        <option value="2">Oct 2024</option>
-                        <option value="3">Nov 2024</option>
-                      </select>
-                    </div>
-
-                    <div class="table-responsive">
-                      <ul class="nav nav-tabs theme-tab gap-3 flex-nowrap" role="tablist">
-                        <li class="nav-item">
-                          <a class="nav-link active" data-bs-toggle="tab" href="#app" role="tab">
-                            <div class="hstack gap-2">
-                              <iconify-icon icon="solar:widget-linear" class="fs-4"></iconify-icon>
-                              <span>App</span>
-                            </div>
-
-                          </a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" data-bs-toggle="tab" href="#mobile" role="tab">
-                            <div class="hstack gap-2">
-                              <iconify-icon icon="solar:smartphone-line-duotone" class="fs-4"></iconify-icon>
-                              <span>Mobile</span>
-                            </div>
-                          </a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" data-bs-toggle="tab" href="#saas" role="tab">
-                            <div class="hstack gap-2">
-                              <iconify-icon icon="solar:calculator-linear" class="fs-4"></iconify-icon>
-                              <span>SaaS</span>
-                            </div>
-                          </a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" data-bs-toggle="tab" href="#other" role="tab">
-                            <div class="hstack gap-2">
-                              <iconify-icon icon="solar:folder-open-outline" class="fs-4"></iconify-icon>
-                              <span>Others</span>
-                            </div>
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="tab-content mb-n3">
-                      <div class="tab-pane active" id="app" role="tabpanel">
-                        <div class="table-responsive" data-simplebar>
-                          <table class="table text-nowrap align-middle table-custom mb-0 last-items-borderless">
-                            <thead>
-                              <tr>
-                                <th scope="col" class="fw-normal ps-0">Assigned
-                                </th>
-                                <th scope="col" class="fw-normal">Progress</th>
-                                <th scope="col" class="fw-normal">Priority</th>
-                                <th scope="col" class="fw-normal">Budget</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-1.jpg')}}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Minecraf App</h6>
-                                      <span>Jason Roy</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-success-subtle text-success">Low</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-2.jpg')}}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Web App Project</h6>
-                                      <span>Mathew Flintoff</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-warning-subtle text-warning">Medium</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-3.jpg')}}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Modernize Dashboard</h6>
-                                      <span>Anil Kumar</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-secondary-subtle text-secondary">Very
-                                    High</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-4.jpg')}}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Dashboard Co</h6>
-                                      <span>George Cruize</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-danger-subtle text-danger">High</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                      <div class="tab-pane" id="mobile" role="tabpanel">
-                        <div class="table-responsive" data-simplebar>
-                          <table class="table text-nowrap align-middle table-custom mb-0 last-items-borderless">
-                            <thead>
-                              <tr>
-                                <th scope="col" class="fw-normal ps-0">Assigned
-                                </th>
-                                <th scope="col" class="fw-normal">Progress</th>
-                                <th scope="col" class="fw-normal">Priority</th>
-                                <th scope="col" class="fw-normal">Budget</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-2.jpg')}}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Web App Project</h6>
-                                      <span>Mathew Flintoff</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-warning-subtle text-warning">Medium</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-3.jpg')}}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Modernize Dashboard</h6>
-                                      <span>Anil Kumar</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-secondary-subtle text-secondary">Very
-                                    High</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-1.jpg')}}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Minecraf App</h6>
-                                      <span>Jason Roy</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-success-subtle text-success">Low</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-4.jpg')}}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Dashboard Co</h6>
-                                      <span>George Cruize</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-danger-subtle text-danger">High</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                      <div class="tab-pane" id="saas" role="tabpanel">
-                        <div class="table-responsive" data-simplebar>
-                          <table class="table text-nowrap align-middle table-custom mb-0 last-items-borderless">
-                            <thead>
-                              <tr>
-                                <th scope="col" class="fw-normal ps-0">Assigned
-                                </th>
-                                <th scope="col" class="fw-normal">Progress</th>
-                                <th scope="col" class="fw-normal">Priority</th>
-                                <th scope="col" class="fw-normal">Budget</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-2.jpg')}}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Web App Project</h6>
-                                      <span>Mathew Flintoff</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-warning-subtle text-warning">Medium</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-1.jpg')}}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Minecraf App</h6>
-                                      <span>Jason Roy</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-success-subtle text-success">Low</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-3.jpg')}}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Modernize Dashboard</h6>
-                                      <span>Anil Kumar</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-secondary-subtle text-secondary">Very
-                                    High</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-4.jpg')}}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Dashboard Co</h6>
-                                      <span>George Cruize</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-danger-subtle text-danger">High</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-
-                      <div class="tab-pane" id="other" role="tabpanel">
-                        <div class="table-responsive" data-simplebar>
-                          <table class="table text-nowrap align-middle table-custom mb-0 last-items-borderless">
-                            <thead>
-                              <tr>
-                                <th scope="col" class="fw-normal ps-0">Assigned
-                                </th>
-                                <th scope="col" class="fw-normal">Progress</th>
-                                <th scope="col" class="fw-normal">Priority</th>
-                                <th scope="col" class="fw-normal">Budget</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-1.jpg') }}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Minecraf App</h6>
-                                      <span>Jason Roy</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-success-subtle text-success">Low</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-3.jpg') }}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Modernize Dashboard</h6>
-                                      <span>Anil Kumar</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-secondary-subtle text-secondary">Very
-                                    High</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-2.jpg') }}" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Web App Project</h6>
-                                      <span>Mathew Flintoff</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-warning-subtle text-warning">Medium</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-
-                              <tr>
-                                <td class="ps-0">
-                                  <div class="d-flex align-items-center gap-6">
-                                    <img src="{{ asset('assets/images/products/dash-prd-4.jpg') }}" alt="prd1" width="48" class="rounded" src="assets/images/products/dash-prd-4.jpg" alt="prd1" width="48" class="rounded" />
-                                    <div>
-                                      <h6 class="mb-0">Dashboard Co</h6>
-                                      <span>George Cruize</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span>73.2%</span>
-                                </td>
-                                <td>
-                                  <span class="badge bg-danger-subtle text-danger">High</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-light">$3.5k</span>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-
-
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4">
-                <!-- -------------------------------------------- -->
-                <!-- Total settlements -->
-                <!-- -------------------------------------------- -->
-                <div class="card bg-primary-subtle">
-                  <div class="card-body">
-                    <div class="hstack align-items-center gap-3 mb-4">
-                      <span class="d-flex align-items-center justify-content-center round-48 bg-white rounded flex-shrink-0">
-                        <iconify-icon icon="solar:box-linear" class="fs-7 text-primary"></iconify-icon>
-                      </span>
-                      <div>
-                        <p class="mb-1 text-dark-light">Total settlements</p>
-                        <h4 class="mb-0 fw-bolder">$122,580</h5>
-                      </div>
-                    </div>
-                    <div style="height: 278px;">
-                      <div id="settlements"></div>
-                    </div>
-                    <div class="row mt-4 mb-2">
-                      <div class="col-md-6 text-center">
-                        <p class="mb-1 text-dark-light lh-lg">Total balance</p>
-                        <h4 class="mb-0 text-nowrap">$122,580</h4>
-                      </div>
-                      <div class="col-md-6 text-center mt-3 mt-md-0">
-                        <p class="mb-1 text-dark-light lh-lg">Withdrawals</p>
-                        <h4 class="mb-0">$31,640</h4>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      
               <div class="col-12">
                 <div class="card mb-0">
                   <div class="card-body calender-sidebar app-calendar">
@@ -1050,10 +566,192 @@ function loadConversionRate() {
         });
 }
 
+// Create performance semi-circle chart
+function createPerformanceChart() {
+    console.log('Inside createPerformanceChart function');
+    
+    var options = {
+        series: [20, 20, 20, 20, 20],
+        labels: ["245", "45", "14", "78", "95"],
+        chart: {
+            height: 205,
+            fontFamily: "inherit",
+            type: "donut",
+        },
+        plotOptions: {
+            pie: {
+                startAngle: -90,
+                endAngle: 90,
+                offsetY: 10,
+                donut: {
+                    size: "90%",
+                },
+            },
+        },
+        grid: {
+            padding: {
+                bottom: -80,
+            },
+        },
+        legend: {
+            show: false,
+        },
+        dataLabels: {
+            enabled: false,
+            name: {
+                show: false,
+            },
+        },
+        stroke: {
+            width: 2,
+            colors: "var(--bs-card-bg)",
+        },
+        tooltip: {
+            fillSeriesColor: false,
+        },
+        colors: [
+            "var(--bs-danger)",
+            "var(--bs-warning)",
+            "var(--bs-warning-bg-subtle)",
+            "var(--bs-secondary-bg-subtle)",
+            "var(--bs-secondary)",
+        ],
+        responsive: [{
+            breakpoint: 1400,
+            options: {
+                chart: {
+                    height: 170
+                },
+            },
+        }],
+    };
+    
+    const chartElement = document.querySelector("#your-preformance");
+    console.log('Chart element:', chartElement);
+    
+    if (chartElement) {
+        console.log('Clearing and creating chart...');
+        chartElement.innerHTML = ''; // Clear existing content
+        
+        try {
+            const chart = new ApexCharts(chartElement, options);
+            chart.render();
+            console.log('Chart rendered successfully');
+        } catch (error) {
+            console.error('Error creating chart:', error);
+        }
+    } else {
+        console.error('Chart element #your-preformance not found');
+    }
+}
+
 // Activate the dashboard sidebar section when page loads
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard DOM loaded - starting initialization...');
+    
     // Load conversion rate (this will also update the chart)
     loadConversionRate();
+    
+    // Immediate check for chart element
+    const element = document.querySelector('#your-preformance');
+    console.log('Performance chart element check:', element);
+    console.log('ApexCharts library check:', typeof ApexCharts);
+    
+    // Wait for everything to load, then create chart
+    setTimeout(() => {
+        console.log('Attempting chart creation after longer delay...');
+        
+        // Try multiple selectors
+        let chartEl = document.getElementById('your-preformance');
+        if (!chartEl) {
+            chartEl = document.querySelector('#your-preformance');
+        }
+        
+        console.log('Element found:', chartEl);
+        console.log('Element parent:', chartEl ? chartEl.parentElement : 'No parent');
+        console.log('Element visible:', chartEl ? getComputedStyle(chartEl).display : 'No element');
+        
+        if (!chartEl) {
+            console.error('Element still not found after delay');
+            // Create the element if it doesn't exist
+            const parentEl = document.querySelector('.col-md-6 .text-center');
+            if (parentEl) {
+                chartEl = document.createElement('div');
+                chartEl.id = 'your-preformance';
+                chartEl.style.height = '200px';
+                parentEl.insertBefore(chartEl, parentEl.firstChild);
+                console.log('Created new chart element');
+            }
+        }
+        
+        if (typeof ApexCharts === 'undefined') {
+            console.error('ApexCharts still not loaded');
+            return;
+        }
+        
+        if (chartEl) {
+            console.log('Creating chart with valid element...');
+            
+            // Ensure element is properly mounted
+            chartEl.innerHTML = '';
+            chartEl.style.height = '150px';
+            chartEl.style.width = '200px';
+            chartEl.style.marginTop = '10px';
+            chartEl.style.marginBottom = '5px';
+            chartEl.style.marginLeft = 'auto';
+            chartEl.style.marginRight = 'auto';
+            chartEl.style.display = 'block';
+            chartEl.style.position = 'relative';
+            chartEl.style.left = '-20px';
+            
+            const options = {
+                series: [20, 20, 20, 20, 20],
+                chart: {
+                    height: 150,
+                    width: 200,
+                    type: 'donut',
+                },
+                plotOptions: {
+                    pie: {
+                        startAngle: -90,
+                        endAngle: 90,
+                        offsetY: 0,
+                        donut: {
+                            size: '65%'
+                        }
+                    }
+                },
+                grid: {
+                    padding: {
+                        bottom: -50
+                    }
+                },
+                legend: {
+                    show: false
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                colors: ['#e74c3c', '#f39c12', '#f1c40f', '#95a5a6', '#34495e']
+            };
+            
+            try {
+                // Double-check element is in DOM
+                if (document.contains(chartEl)) {
+                    const chart = new ApexCharts(chartEl, options);
+                    chart.render().then(() => {
+                        console.log('Performance chart rendered successfully!');
+                    }).catch(err => {
+                        console.error('Chart render promise error:', err);
+                    });
+                } else {
+                    console.error('Element not in DOM');
+                }
+            } catch (error) {
+                console.error('Chart creation error:', error);
+            }
+        }
+    }, 1500); // Reduced delay
     // Activate the dashboard mini-nav item
     const dashboardMiniNav = document.getElementById('mini-1');
     if (dashboardMiniNav) {
