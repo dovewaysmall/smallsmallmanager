@@ -225,7 +225,7 @@
                             </div>
                             <div>
                               <h6 class="mb-0">444</h6>
-                              <span>New Subscribers</span>
+                              <span>Subscribers</span>
                             </div>
 
                           </div>
