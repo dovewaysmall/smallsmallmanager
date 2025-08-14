@@ -110,5 +110,8 @@ Route::post('/verifications/this-month/load', [VerificationsController::class, '
 Route::get('/verifications/this-year', [VerificationsController::class, 'thisYear'])->name('verifications.this-year');
 Route::post('/verifications/this-year/load', [VerificationsController::class, 'loadVerificationsThisYear'])->name('verifications.this-year.load');
 
+// Conversion rate API route
+Route::post('/api/conversion-rate/this-year', [DashboardController::class, 'getConversionRate'])->name('api.conversion-rate.this-year');
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout.get'); // Fallback for expired sessions

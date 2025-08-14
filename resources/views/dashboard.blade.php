@@ -154,44 +154,44 @@
               <div class="col-lg-4">
                 <div class="card">
                   <div class="card-body">
-                    <h5 class="card-title mb-4">Annual Profit</h5>
+                    <h5 class="card-title mb-4">Annual Stats</h5>
                     <div class="bg-primary bg-opacity-10 rounded-1 overflow-hidden mb-4">
                       <div class="p-4 mb-9">
                         <div class="d-flex align-items-center justify-content-between">
                           <span class="text-dark-light">Conversion Rate</span>
-                          <h3 class="mb-0">18.4%</h3>
+                          <h3 class="mb-0" id="conversionRate">Loading...</h3>
                         </div>
                       </div>
                       <div id="annual-profit"></div>
                     </div>
                     <div class="d-flex align-items-center justify-content-between pb-6 border-bottom">
                       <div>
-                        <span class="text-muted fw-medium">Added to Cart</span>
-                        <span class="fs-11 fw-medium d-block mt-1">5 clicks</span>
+                        <span class="text-muted fw-medium">Total Users</span>
+                        <span class="fs-11 fw-medium d-block mt-1">Percentage</span>
                       </div>
                       <div class="text-end">
-                        <h6 class="fw-bolder mb-1 lh-base">$21,120.70</h6>
-                        <span class="fs-11 fw-medium text-success">+13.2%</span>
+                        <h6 class="fw-bolder mb-1 lh-base" id="totalUsersThisYear">Loading...</h6>
+                        <span class="fs-11 fw-medium text-success">100%</span>
                       </div>
                     </div>
                     <div class="d-flex align-items-center justify-content-between py-6 border-bottom">
                       <div>
-                        <span class="text-muted fw-medium">Reached to Checkout</span>
-                        <span class="fs-11 fw-medium d-block mt-1">12 clicks</span>
+                        <span class="text-muted fw-medium">Converted Users</span>
+                        <span class="fs-11 fw-medium d-block mt-1">Percentage</span>
                       </div>
                       <div class="text-end">
-                        <h6 class="fw-bolder mb-1 lh-base">$16,100.00</h6>
-                        <span class="fs-11 fw-medium text-danger">-7.4%</span>
+                        <h6 class="fw-bolder mb-1 lh-base" id="convertedUsers">Loading...</h6>
+                        <span class="fs-11 fw-medium text-success" id="convertedUsersPercentage">Loading...</span>
                       </div>
                     </div>
                     <div class="d-flex align-items-center justify-content-between pt-6">
                       <div>
-                        <span class="text-muted fw-medium">Added to Cart</span>
-                        <span class="fs-11 fw-medium d-block mt-1">24 views</span>
+                        <span class="text-muted fw-medium">Unconverted Users</span>
+                        <span class="fs-11 fw-medium d-block mt-1">Percentage</span>
                       </div>
                       <div class="text-end">
-                        <h6 class="fw-bolder mb-1 lh-base">$6,400.50</h6>
-                        <span class="fs-11 fw-medium text-success">+9.3%</span>
+                        <h6 class="fw-bolder mb-1 lh-base" id="unconvertedUsers">Loading...</h6>
+                        <span class="fs-11 fw-medium text-danger" id="unconvertedUsersPercentage">Loading...</span>
                       </div>
                     </div>
                   </div>
@@ -890,8 +890,85 @@
 
 @push('scripts')
 <script>
+// Fetch conversion rate from API
+function loadConversionRate() {
+    console.log('Starting conversion rate fetch...');
+    fetch('{{ route("api.conversion-rate.this-year") }}', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            return response.json();
+        })
+        .then(data => {
+            console.log('API Response:', data);
+            const conversionRateElement = document.getElementById('conversionRate');
+            const convertedUsersElement = document.getElementById('convertedUsers');
+            const convertedUsersPercentageElement = document.getElementById('convertedUsersPercentage');
+            const totalUsersThisYearElement = document.getElementById('totalUsersThisYear');
+            const unconvertedUsersElement = document.getElementById('unconvertedUsers');
+            const unconvertedUsersPercentageElement = document.getElementById('unconvertedUsersPercentage');
+            
+            if (data && data.conversion_summary && data.conversion_summary.conversion_rate_percentage !== undefined) {
+                console.log('Setting conversion rate to:', data.conversion_summary.conversion_rate_percentage + '%');
+                conversionRateElement.textContent = data.conversion_summary.conversion_rate_percentage + '%';
+                
+                // Set converted users count
+                const convertedUsersCount = data.conversion_summary.users_converted_to_tenants || 0;
+                console.log('Setting converted users to:', convertedUsersCount);
+                convertedUsersElement.textContent = convertedUsersCount;
+                
+                // Set converted users percentage
+                const conversionPercentage = data.conversion_summary.conversion_rate_percentage || 0;
+                console.log('Setting converted users percentage to:', conversionPercentage + '%');
+                convertedUsersPercentageElement.textContent = conversionPercentage + '%';
+                
+                // Set total users this year
+                const totalUsersThisYear = data.conversion_summary.total_users_registered || 0;
+                console.log('Setting total users this year to:', totalUsersThisYear);
+                totalUsersThisYearElement.textContent = totalUsersThisYear;
+                
+                // Set unconverted users count
+                const unconvertedUsersCount = data.conversion_summary.unconverted_users || 0;
+                console.log('Setting unconverted users to:', unconvertedUsersCount);
+                unconvertedUsersElement.textContent = unconvertedUsersCount;
+                
+                // Calculate and set unconverted users percentage
+                const unconvertedPercentage = 100 - conversionPercentage;
+                console.log('Setting unconverted users percentage to:', unconvertedPercentage + '%');
+                unconvertedUsersPercentageElement.textContent = unconvertedPercentage + '%';
+            } else {
+                console.log('Condition failed - setting to 0%');
+                console.log('Full data:', data);
+                conversionRateElement.textContent = '0%';
+                convertedUsersElement.textContent = '0';
+                convertedUsersPercentageElement.textContent = '0%';
+                totalUsersThisYearElement.textContent = '0';
+                unconvertedUsersElement.textContent = '0';
+                unconvertedUsersPercentageElement.textContent = '0%';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching conversion rate:', error);
+            document.getElementById('conversionRate').textContent = 'Error';
+            document.getElementById('convertedUsers').textContent = 'Error';
+            document.getElementById('convertedUsersPercentage').textContent = 'Error';
+            document.getElementById('totalUsersThisYear').textContent = 'Error';
+            document.getElementById('unconvertedUsers').textContent = 'Error';
+            document.getElementById('unconvertedUsersPercentage').textContent = 'Error';
+        });
+}
+
 // Activate the dashboard sidebar section when page loads
 document.addEventListener('DOMContentLoaded', function() {
+    // Load conversion rate
+    loadConversionRate();
     // Activate the dashboard mini-nav item
     const dashboardMiniNav = document.getElementById('mini-1');
     if (dashboardMiniNav) {

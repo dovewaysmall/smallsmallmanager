@@ -96,7 +96,7 @@
                 </div>
                 
                 <!-- Pagination Controls -->
-                <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer" style="display: none !important;">
+                <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer" style="display: none;">
                     <div class="pagination-info">
                         <span class="text-muted" id="paginationInfo">Showing 1 to 10 of 0 entries</span>
                     </div>
@@ -194,6 +194,7 @@ function renderVerifications() {
                 </td>
             </tr>
         `;
+        updatePaginationInfo();
         document.getElementById('paginationContainer').style.display = 'none';
         return;
     }
@@ -219,9 +220,9 @@ function renderVerifications() {
         // Format gross annual income if it's a number
         let formattedIncome = grossAnnualIncome;
         if (grossAnnualIncome !== 'N/A' && !isNaN(grossAnnualIncome)) {
-            formattedIncome = new Intl.NumberFormat('en-US', {
+            formattedIncome = new Intl.NumberFormat('en-NG', {
                 style: 'currency',
-                currency: 'USD',
+                currency: 'NGN',
                 minimumFractionDigits: 0
             }).format(grossAnnualIncome);
         }
@@ -229,22 +230,24 @@ function renderVerifications() {
         // Status badge color
         let statusClass = 'bg-secondary';
         switch (status.toLowerCase()) {
-            case 'verified':
+            case 'yes':
                 statusClass = 'bg-success';
+                break;
+            case 'received':
+                statusClass = 'bg-warning text-dark';
+                break;
+            case 'reviewing':
+                statusClass = 'bg-info';
                 break;
             case 'rejected':
             case 'denied':
             case 'failed':
+            case 'no':
                 statusClass = 'bg-danger';
                 break;
             case 'pending':
             case 'submitted':
-                statusClass = 'bg-warning text-dark';
-                break;
-            case 'under_review':
-            case 'reviewing':
-            case 'in_progress':
-                statusClass = 'bg-info';
+                statusClass = 'bg-secondary';
                 break;
         }
         

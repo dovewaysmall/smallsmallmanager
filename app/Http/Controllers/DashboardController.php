@@ -114,4 +114,33 @@ class DashboardController extends Controller
         
         return view('dashboard', compact('userCount', 'inspectionCount', 'transactionCount', 'tenantCount', 'propertyCount', 'newUsersThisMonth', 'inspectionsThisMonth'));
     }
+
+    public function getConversionRate()
+    {
+        try {
+            $accessToken = session('access_token');
+            
+            if (!$accessToken) {
+                return response()->json(['success' => false, 'error' => 'Session expired'], 401);
+            }
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+            ];
+
+            $response = Http::timeout(30)->withHeaders($headers)->get('http://api2.smallsmall.com/api/users/conversion-rate/this-year');
+
+            if ($response->successful()) {
+                return response()->json($response->json());
+            } elseif ($response->status() === 401) {
+                return response()->json(['success' => false, 'error' => 'Session expired'], 401);
+            } else {
+                return response()->json(['success' => false, 'error' => 'Failed to fetch conversion rate'], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error('Conversion Rate API Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'error' => 'An error occurred while fetching conversion rate'], 500);
+        }
+    }
 }
