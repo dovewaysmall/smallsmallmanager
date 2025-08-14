@@ -100,6 +100,17 @@ class DashboardController extends Controller
                     session()->flush();
                     return redirect()->route('login')->with('error', 'Session expired. Please login again.');
                 }
+                
+                // Fetch pending inspections this month count
+                $pendingInspectionsResponse = Http::withHeaders($headers)->get('http://api2.smallsmall.com/api/inspections/pending/count/this-month');
+                $pendingInspectionsThisMonth = 0;
+                if ($pendingInspectionsResponse->successful()) {
+                    $pendingInspectionsData = $pendingInspectionsResponse->json();
+                    $pendingInspectionsThisMonth = $pendingInspectionsData['pending_count'] ?? $pendingInspectionsData['count'] ?? $pendingInspectionsData['total'] ?? 0;
+                } elseif ($pendingInspectionsResponse->status() === 401) {
+                    session()->flush();
+                    return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+                }
             }
         } catch (\Exception $e) {
             Log::error('Dashboard API Error: ' . $e->getMessage());
@@ -110,9 +121,10 @@ class DashboardController extends Controller
             $propertyCount = 0;
             $newUsersThisMonth = 0;
             $inspectionsThisMonth = 0;
+            $pendingInspectionsThisMonth = 0;
         }
         
-        return view('dashboard', compact('userCount', 'inspectionCount', 'transactionCount', 'tenantCount', 'propertyCount', 'newUsersThisMonth', 'inspectionsThisMonth'));
+        return view('dashboard', compact('userCount', 'inspectionCount', 'transactionCount', 'tenantCount', 'propertyCount', 'newUsersThisMonth', 'inspectionsThisMonth', 'pendingInspectionsThisMonth'));
     }
 
     public function getConversionRate()

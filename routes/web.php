@@ -109,6 +109,8 @@ Route::get('/verifications/this-month', [VerificationsController::class, 'thisMo
 Route::post('/verifications/this-month/load', [VerificationsController::class, 'loadVerificationsThisMonth'])->name('verifications.this-month.load');
 Route::get('/verifications/this-year', [VerificationsController::class, 'thisYear'])->name('verifications.this-year');
 Route::post('/verifications/this-year/load', [VerificationsController::class, 'loadVerificationsThisYear'])->name('verifications.this-year.load');
+Route::get('/verifications/{id}', [VerificationsController::class, 'show'])->name('verification.show');
+Route::put('/verifications/{id}', [VerificationsController::class, 'update'])->name('verification.update');
 
 // Conversion rate API route
 Route::post('/api/conversion-rate/this-year', [DashboardController::class, 'getConversionRate'])->name('api.conversion-rate.this-year');

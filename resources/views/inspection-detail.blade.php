@@ -59,6 +59,18 @@
                     </div>
                   @endif
 
+                  @if(session('info'))
+                    <div class="alert alert-info">
+                      {{ session('info') }}
+                    </div>
+                  @endif
+
+                  @if(session('warning'))
+                    <div class="alert alert-warning">
+                      {{ session('warning') }}
+                    </div>
+                  @endif
+
 
                   <form action="{{ route('inspection.update', $id) }}" method="POST" class="form-horizontal">
                     @csrf
@@ -117,11 +129,13 @@
                       <label class="form-label">Status</label>
                       <select class="form-select" name="inspection_status">
                         <option value="">Select Status</option>
-                        <option value="pending" {{ ($inspection['data']['inspection_status'] ?? '') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="pending" {{ ($inspection['data']['inspection_status'] ?? '') == 'pending-not-assigned' ? 'selected' : '' }}>Pending (Not Assigned)</option>
                         <option value="pending-assigned" {{ ($inspection['data']['inspection_status'] ?? '') == 'pending-assigned' ? 'selected' : '' }}>Pending Assigned</option>
                         <option value="completed" {{ ($inspection['data']['inspection_status'] ?? '') == 'completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="cancelled" {{ ($inspection['data']['inspection_status'] ?? '') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                        <option value="in_progress" {{ ($inspection['data']['inspection_status'] ?? '') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="cancelled" {{ ($inspection['data']['inspection_status'] ?? '') == 'canceled' ? 'selected' : '' }}>Cancelled</option>
+                        <option value="apartment-not-available" {{ ($inspection['data']['inspection_status'] ?? '') == 'apartment-not-available' ? 'selected' : '' }}>Apartment Not Available</option>
+                        <option value="multiple-bookings" {{ ($inspection['data']['inspection_status'] ?? '') == 'multiple-bookings' ? 'selected' : '' }}>Multiple Bookings</option>
+                        <option value="did-not-show-up" {{ ($inspection['data']['inspection_status'] ?? '') == 'did-not-show-up' ? 'selected' : '' }}>Did Not Show Up</option>
                       </select>
                     </div>
 
@@ -188,10 +202,7 @@
                       <div class="col-md-6">
                         <div class="mb-4">
                           <label class="form-label">Verified Status</label>
-                          <select class="form-select" name="verified">
-                            <option value="yes" {{ ($inspection['data']['verified'] ?? '') == 'yes' ? 'selected' : '' }}>Yes</option>
-                            <option value="no" {{ ($inspection['data']['verified'] ?? '') == 'no' ? 'selected' : '' }}>No</option>
-                          </select>
+                          <input type="text" class="form-control" name="verified" value="{{ $inspection['data']['verified'] ?? '' }}" readonly>
                         </div>
                       </div>
                     </div>

@@ -211,6 +211,7 @@ function renderVerifications() {
         
         // Handle different possible field names from API
         const verificationId = verification.verification_id || verification.id || verification.verificationId || globalIndex + 1;
+        const actualId = verification.id || verification.verification_id || verification.verificationId || globalIndex + 1;
         const fullName = verification.full_name || `${verification.firstName || ''} ${verification.lastName || ''}`.trim() || verification.username || verification.name || 'N/A';
         const grossAnnualIncome = verification.gross_annual_income || verification.grossAnnualIncome || verification.annual_income || 'N/A';
         const occupation = verification.occupation || verification.job_title || verification.profession || 'N/A';
@@ -283,7 +284,7 @@ function renderVerifications() {
                 </td>
                 <td>
                     <div class="action-btn d-flex align-items-center">
-                        <a href="javascript:void(0)" class="btn btn-sm btn-primary me-2">
+                        <a href="/verifications/${actualId}" class="btn btn-sm btn-primary me-2">
                             View Details
                         </a>
                         <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">

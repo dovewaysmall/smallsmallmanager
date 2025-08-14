@@ -234,7 +234,7 @@
                               <iconify-icon icon="solar:pills-3-linear" class="fs-7 text-secondary"></iconify-icon>
                             </div>
                             <div>
-                              <h6 class="mb-0">12</h6>
+                              <h6 class="mb-0">{{ number_format($pendingInspectionsThisMonth ?? 0) }}</h6>
                               <span>Pending Inspections</span>
                             </div>
 
@@ -246,7 +246,7 @@
                           <div id="your-preformance"></div>
                           <h2 class="fs-8">{{ $inspectionsThisMonth ?? 0 }}</h2>
                           <p class="mb-0">
-                            Number of inspections booked this month
+                            Inspections booked
                           </p>
                         </div>
                       </div>
