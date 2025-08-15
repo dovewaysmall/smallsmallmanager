@@ -270,7 +270,40 @@
                   </ul>
                 </li>
                 
-                
+                <li class="sidebar-item">
+                  <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                    <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Landlords</span>
+                  </a>
+                  <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('landlords') }}">
+                        <span class="icon-small"></span>
+                        Total Landlords
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('landlords.this-week') }}">
+                        <span class="icon-small"></span>
+                        Landlords(This Week)
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('landlords.this-month') }}">
+                        <span class="icon-small"></span>
+                        Landlords(This Month)
+                      </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('landlords.this-year') }}">
+                        <span class="icon-small"></span>
+                        Landlords(This Year)
+                      </a>
+                    </li>
+                    
+                  </ul>
+                </li>
               </ul>
             </nav>
 

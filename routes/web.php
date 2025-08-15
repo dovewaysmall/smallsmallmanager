@@ -10,6 +10,7 @@ use App\Http\Controllers\InspectionsController;
 use App\Http\Controllers\TransactionsController;
 use App\Http\Controllers\TenantsController;
 use App\Http\Controllers\PropertiesController;
+use App\Http\Controllers\LandlordsController;
 use App\Http\Controllers\VerificationsController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
@@ -61,6 +62,7 @@ Route::get('/unconverted-users/this-month', [UnconvertedUsersController::class, 
 Route::post('/unconverted-users/this-month/load', [UnconvertedUsersController::class, 'loadUnconvertedUsersThisMonth'])->name('unconverted-users.this-month.load');
 Route::get('/unconverted-users/this-year', [UnconvertedUsersController::class, 'thisYear'])->name('unconverted-users.this-year');
 Route::post('/unconverted-users/this-year/load', [UnconvertedUsersController::class, 'loadUnconvertedUsersThisYear'])->name('unconverted-users.this-year.load');
+Route::get('/unconverted-users/{id}', [UnconvertedUsersController::class, 'show'])->name('unconverted-users.show');
 
 Route::get('/inspections', [InspectionsController::class, 'index'])->name('inspections');
 Route::post('/inspections/load', [InspectionsController::class, 'loadInspections'])->name('inspections.load');
@@ -100,6 +102,18 @@ Route::get('/properties/this-month', [PropertiesController::class, 'thisMonth'])
 Route::post('/properties/this-month/load', [PropertiesController::class, 'loadPropertiesThisMonth'])->name('properties.this-month.load');
 Route::get('/properties/this-year', [PropertiesController::class, 'thisYear'])->name('properties.this-year');
 Route::post('/properties/this-year/load', [PropertiesController::class, 'loadPropertiesThisYear'])->name('properties.this-year.load');
+Route::get('/assign-property-owner/{propertyId}', [PropertiesController::class, 'assignPropertyOwner'])->name('assign-property-owner');
+Route::get('/api/property-details/{propertyId}', [PropertiesController::class, 'getPropertyDetails'])->name('api.property-details');
+Route::post('/api/assign-property-owner', [PropertiesController::class, 'assignPropertyOwnerAPI'])->name('api.assign-property-owner');
+
+Route::get('/landlords', [LandlordsController::class, 'index'])->name('landlords');
+Route::post('/landlords/load', [LandlordsController::class, 'loadLandlords'])->name('landlords.load');
+Route::get('/landlords/this-week', [LandlordsController::class, 'thisWeek'])->name('landlords.this-week');
+Route::post('/landlords/this-week/load', [LandlordsController::class, 'loadLandlordsThisWeek'])->name('landlords.this-week.load');
+Route::get('/landlords/this-month', [LandlordsController::class, 'thisMonth'])->name('landlords.this-month');
+Route::post('/landlords/this-month/load', [LandlordsController::class, 'loadLandlordsThisMonth'])->name('landlords.this-month.load');
+Route::get('/landlords/this-year', [LandlordsController::class, 'thisYear'])->name('landlords.this-year');
+Route::post('/landlords/this-year/load', [LandlordsController::class, 'loadLandlordsThisYear'])->name('landlords.this-year.load');
 
 Route::get('/verifications', [VerificationsController::class, 'index'])->name('verifications');
 Route::post('/verifications/load', [VerificationsController::class, 'loadVerifications'])->name('verifications.load');
@@ -112,7 +126,8 @@ Route::post('/verifications/this-year/load', [VerificationsController::class, 'l
 Route::get('/verifications/{id}', [VerificationsController::class, 'show'])->name('verification.show');
 Route::put('/verifications/{id}', [VerificationsController::class, 'update'])->name('verification.update');
 
-// Conversion rate API route
+// Dashboard API routes
+Route::get('/api/dashboard/data', [DashboardController::class, 'getDashboardData'])->name('api.dashboard.data');
 Route::post('/api/conversion-rate/this-year', [DashboardController::class, 'getConversionRate'])->name('api.conversion-rate.this-year');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

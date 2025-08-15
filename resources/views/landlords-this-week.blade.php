@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Unconverted Users')
+@section('title', 'Landlords This Week')
 
 @section('content')
     <div class="body-wrapper">
@@ -9,7 +9,7 @@
             <div class="row align-items-center">
               <div class="col-12">
                 <div class="d-sm-flex align-items-center justify-space-between">
-                  <h4 class="mb-4 mb-sm-0 card-title">Unconverted Users</h4>
+                  <h4 class="mb-4 mb-sm-0 card-title">Landlords This Week</h4>
                   <nav aria-label="breadcrumb" class="ms-auto">
                     <ol class="breadcrumb">
                       <li class="breadcrumb-item d-flex align-items-center">
@@ -19,7 +19,7 @@
                       </li>
                       <li class="breadcrumb-item" aria-current="page">
                         <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
-                          Unconverted Users
+                          Landlords This Week
                         </span>
                       </li>
                     </ol>
@@ -34,7 +34,7 @@
                 <div class="row">
                     <div class="col-md-4 col-xl-3">
                         <form class="position-relative">
-                            <input type="text" class="form-control product-search ps-5" id="searchInput" placeholder="Search Unconverted Users..." disabled />
+                            <input type="text" class="form-control product-search ps-5" id="searchInput" placeholder="Search Landlords..." disabled />
                             <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
                         </form>
                     </div>
@@ -44,15 +44,16 @@
                                 <i class="ti ti-trash me-1 fs-5"></i> Delete All Row
                             </a>
                         </div>
-                        
-                        
+                        <a href="javascript:void(0)" class="btn btn-primary d-flex align-items-center">
+                            Add Landlord
+                        </a>
                     </div>
                 </div>
             </div>
 
             <div class="card card-body">
                 <div class="table-responsive">
-                    <table id="unconvertedUsersTable" class="table search-table align-middle text-nowrap">
+                    <table id="landlordsTable" class="table search-table align-middle text-nowrap">
                         <thead class="header-item">
                             <tr>
                                 <th>
@@ -66,22 +67,24 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Phone</th>
+                                <th>Properties</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="unconvertedUsersTableBody">
+                        <tbody id="landlordsTableBody">
                             <tr>
-                                <td colspan="5" class="text-center py-5">
+                                <td colspan="7" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center" id="loadingState">
                                         <div class="spinner-border text-primary mb-3" role="status">
                                             <span class="visually-hidden">Loading...</span>
                                         </div>
-                                        <p class="mb-0 text-muted">Loading unconverted users...</p>
+                                        <p class="mb-0 text-muted">Loading landlords...</p>
                                     </div>
                                     <div class="d-flex flex-column align-items-center d-none" id="errorState">
                                         <iconify-icon icon="solar:info-circle-line-duotone" class="fs-8 text-danger mb-2"></iconify-icon>
                                         <p class="mb-2 text-danger" id="errorMessage"></p>
-                                        <button onclick="loadUnconvertedUsers()" class="btn btn-sm btn-outline-primary">
+                                        <button onclick="loadLandlords()" class="btn btn-sm btn-outline-primary">
                                             <i class="ti ti-refresh me-1"></i> Retry
                                         </button>
                                     </div>
@@ -94,7 +97,7 @@
                 <!-- Pagination Controls -->
                 <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer" style="display: none;">
                     <div class="pagination-info">
-                        <span class="text-muted" id="paginationInfo">Showing 0 to 0 of 0 entries</span>
+                        <span class="text-muted" id="paginationInfo">Loading...</span>
                     </div>
                     <nav aria-label="Page navigation">
                         <ul class="pagination mb-0" id="paginationControls">
@@ -110,8 +113,8 @@
 
 @push('scripts')
 <script>
-let allUnconvertedUsers = [];
-let filteredUnconvertedUsers = [];
+let allLandlords = [];
+let filteredLandlords = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 let totalPages = 1;
@@ -125,10 +128,10 @@ function showState(stateName) {
     }
 }
 
-function loadUnconvertedUsers() {
+function loadLandlords() {
     showState('loadingState');
     
-    fetch('{{ route("unconverted-users.load") }}', {
+    fetch('{{ route("landlords.this-week.load") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -137,7 +140,6 @@ function loadUnconvertedUsers() {
     })
     .then(response => {
         if (response.status === 419) {
-            // CSRF token expired
             alert('Your session has expired. You will be redirected to login.');
             window.location.href = '{{ route("login") }}';
             return;
@@ -145,12 +147,12 @@ function loadUnconvertedUsers() {
         return response.json();
     })
     .then(data => {
-        if (!data) return; // Handle early return from 419
+        if (!data) return;
         
         if (data.success) {
-            allUnconvertedUsers = data.users;
-            filteredUnconvertedUsers = allUnconvertedUsers;
-            renderUnconvertedUsers();
+            allLandlords = data.landlords;
+            filteredLandlords = allLandlords;
+            renderLandlords();
             document.getElementById('searchInput').disabled = false;
         } else {
             if (data.error && data.error.includes('Session expired')) {
@@ -158,7 +160,7 @@ function loadUnconvertedUsers() {
                 window.location.href = '{{ route("login") }}';
                 return;
             }
-            showError(data.error || 'Failed to load users');
+            showError(data.error || 'Failed to load landlords');
         }
     })
     .catch(error => {
@@ -168,7 +170,7 @@ function loadUnconvertedUsers() {
             window.location.href = '{{ route("login") }}';
             return;
         }
-        showError('An error occurred while loading unconverted users');
+        showError('An error occurred while loading landlords');
     });
 }
 
@@ -177,35 +179,63 @@ function showError(message) {
     showState('errorState');
 }
 
-function renderUnconvertedUsers() {
-    const tbody = document.getElementById('unconvertedUsersTableBody');
+function renderLandlords() {
+    const tbody = document.getElementById('landlordsTableBody');
     
-    if (filteredUnconvertedUsers.length === 0) {
+    if (filteredLandlords.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" class="text-center py-5">
+                <td colspan="7" class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
-                        <iconify-icon icon="solar:users-group-rounded-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
-                        <p class="mb-0 text-muted">No unconverted users found</p>
+                        <iconify-icon icon="solar:user-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
+                        <p class="mb-0 text-muted">No landlords found</p>
                     </div>
                 </td>
             </tr>
         `;
-        document.getElementById('paginationContainer').style.display = 'none';
+        updatePaginationInfo();
+        document.getElementById('paginationContainer').style.display = 'flex';
+        document.getElementById('paginationControls').innerHTML = '';
         return;
     }
     
     // Calculate pagination
-    totalPages = Math.ceil(filteredUnconvertedUsers.length / itemsPerPage);
+    totalPages = Math.ceil(filteredLandlords.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentPageUnconvertedUsers = filteredUnconvertedUsers.slice(startIndex, endIndex);
+    const currentPageLandlords = filteredLandlords.slice(startIndex, endIndex);
     
     let html = '';
-    currentPageUnconvertedUsers.forEach((user, index) => {
+    currentPageLandlords.forEach((landlord, index) => {
         const globalIndex = startIndex + index;
-        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
-        const avatarIndex = (globalIndex % 10) + 1;
+        
+        // Handle different possible field names from API
+        const landlordId = landlord.id || landlord.landlordId || globalIndex + 1;
+        const firstName = landlord.firstName || landlord.first_name || 'N/A';
+        const lastName = landlord.lastName || landlord.last_name || 'N/A';
+        const email = landlord.email || 'N/A';
+        const phone = landlord.phone || landlord.phoneNumber || 'N/A';
+        const propertiesCount = landlord.properties_count || landlord.propertiesCount || 0;
+        const status = landlord.status || 'Active';
+        
+        const fullName = `${firstName} ${lastName}`.trim();
+        
+        // Status badge color
+        let statusClass = 'bg-secondary';
+        switch (status.toLowerCase()) {
+            case 'active':
+            case 'verified':
+                statusClass = 'bg-success';
+                break;
+            case 'inactive':
+            case 'suspended':
+                statusClass = 'bg-danger';
+                break;
+            case 'pending':
+            case 'unverified':
+                statusClass = 'bg-warning text-dark';
+                break;
+        }
         
         html += `
             <tr class="search-items">
@@ -223,15 +253,24 @@ function renderUnconvertedUsers() {
                     </div>
                 </td>
                 <td>
-                    <span class="usr-email-addr">${user.email || 'N/A'}</span>
+                    <span class="usr-email-addr">${email}</span>
                 </td>
                 <td>
-                    <span class="usr-ph-no">${user.phone || 'N/A'}</span>
+                    <span class="usr-ph-no">${phone}</span>
+                </td>
+                <td>
+                    <span class="badge bg-info">${propertiesCount} Properties</span>
+                </td>
+                <td>
+                    <span class="badge ${statusClass}">${status}</span>
                 </td>
                 <td>
                     <div class="action-btn d-flex align-items-center">
-                        <a href="/unconverted-users/${user.userID || user.id || user.user_id}" class="btn btn-sm btn-primary me-2">
-                            View More
+                        <a href="javascript:void(0)" class="btn btn-sm btn-primary me-2">
+                            View Details
+                        </a>
+                        <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
+                            <iconify-icon icon="solar:trash-bin-trash-line-duotone" class="fs-5"></iconify-icon>
                         </a>
                     </div>
                 </td>
@@ -250,27 +289,29 @@ document.getElementById('searchInput').addEventListener('input', function() {
     const searchTerm = this.value.toLowerCase().trim();
     
     if (searchTerm === '') {
-        filteredUnconvertedUsers = allUnconvertedUsers;
+        filteredLandlords = allLandlords;
     } else {
-        filteredUnconvertedUsers = allUnconvertedUsers.filter(user => {
-            const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
-            const email = (user.email || '').toLowerCase();
-            const phone = (user.phone || '').toLowerCase();
+        filteredLandlords = allLandlords.filter(landlord => {
+            const fullName = `${landlord.firstName || landlord.first_name || ''} ${landlord.lastName || landlord.last_name || ''}`.toLowerCase();
+            const email = (landlord.email || '').toLowerCase();
+            const phone = (landlord.phone || landlord.phoneNumber || '').toLowerCase();
+            const status = (landlord.status || '').toLowerCase();
             
             return fullName.includes(searchTerm) || 
                    email.includes(searchTerm) || 
-                   phone.includes(searchTerm);
+                   phone.includes(searchTerm) ||
+                   status.includes(searchTerm);
         });
     }
     
     currentPage = 1; // Reset to first page when searching
-    renderUnconvertedUsers();
+    renderLandlords();
 });
 
 function updatePaginationInfo() {
-    const startItem = filteredUnconvertedUsers.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
-    const endItem = Math.min(currentPage * itemsPerPage, filteredUnconvertedUsers.length);
-    const totalItems = filteredUnconvertedUsers.length;
+    const startItem = filteredLandlords.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+    const endItem = Math.min(currentPage * itemsPerPage, filteredLandlords.length);
+    const totalItems = filteredLandlords.length;
     
     document.getElementById('paginationInfo').textContent = 
         `Showing ${startItem} to ${endItem} of ${totalItems} entries`;
@@ -351,16 +392,15 @@ function changePage(page) {
     }
     
     currentPage = page;
-    renderUnconvertedUsers();
+    renderLandlords();
     
     // Prevent default link behavior
     event.preventDefault();
 }
 
-// Auto-load users when page is ready
+// Auto-load landlords when page is ready
 document.addEventListener('DOMContentLoaded', function() {
-    loadUnconvertedUsers();
+    loadLandlords();
 });
 </script>
 @endpush
-

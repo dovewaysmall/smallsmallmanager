@@ -17,8 +17,7 @@
                               <iconify-icon icon="solar:dollar-minimalistic-linear" class="fs-7 text-white"></iconify-icon>
                             </div>
                             <h6 class="fw-normal fs-3 mb-1">Total Users</h6>
-                            <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1">
-                              {{ number_format($userCount ?? 0) }}</h4>
+                            <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1" id="userCount">0</h4>
                             <a href="{{ route('users') }}" class="btn btn-white fs-2 fw-semibold text-nowrap">View
                               Details</a>
                           </div>
@@ -31,8 +30,7 @@
                               <iconify-icon icon="solar:recive-twice-square-linear" class="fs-7 text-white"></iconify-icon>
                             </div>
                             <h6 class="fw-normal fs-3 mb-1">Total Inspections</h6>
-                            <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1">
-                              {{ number_format($inspectionCount ?? 0) }}</h4>
+                            <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1" id="inspectionCount">0</h4>
                             <a href="{{ route('inspections') }}" class="btn btn-white fs-2 fw-semibold text-nowrap">View
                               Details</a>
                           </div>
@@ -45,8 +43,7 @@
                               <iconify-icon icon="ic:outline-backpack" class="fs-7 text-white"></iconify-icon>
                             </div>
                             <h6 class="fw-normal fs-3 mb-1">Total Transactions</h6>
-                            <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1">
-                              {{ number_format($transactionCount ?? 0) }}</h4>
+                            <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1" id="transactionCount">0</h4>
                             <a href="{{ route('transactions') }}" class="btn btn-white fs-2 fw-semibold text-nowrap">View
                               Details</a>
                           </div>
@@ -59,8 +56,7 @@
                               <iconify-icon icon="ic:baseline-sync-problem" class="fs-7 text-white"></iconify-icon>
                             </div>
                             <h6 class="fw-normal fs-3 mb-1">Total Properties</h6>
-                            <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1">
-                              {{ number_format($propertyCount ?? 0) }}</h4>
+                            <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1" id="propertyCount">0</h4>
                             <a href="{{ route('properties') }}" class="btn btn-white fs-2 fw-semibold text-nowrap">View
                               Details</a>
                           </div>
@@ -73,8 +69,7 @@
                               <iconify-icon icon="ic:outline-forest" class="fs-7 text-white"></iconify-icon>
                             </div>
                             <h6 class="fw-normal fs-3 mb-1">Total Tenants</h6>
-                            <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1">
-                              {{ number_format($tenantCount ?? 0) }}</h4>
+                            <h4 class="mb-3 d-flex align-items-center justify-content-center gap-1" id="tenantCount">0</h4>
                             <a href="{{ route('tenants') }}" class="btn btn-white fs-2 fw-semibold text-nowrap">View
                               Details</a>
                           </div>
@@ -194,6 +189,9 @@
                         <span class="fs-11 fw-medium text-danger" id="unconvertedUsersPercentage">Loading...</span>
                       </div>
                     </div>
+                    <div class="mt-3">
+                      <a href="/unconverted-users" class="btn btn-outline-primary btn-sm">View More</a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -214,7 +212,7 @@
                               <iconify-icon icon="solar:shop-2-linear" class="fs-7 text-primary"></iconify-icon>
                             </div>
                             <div>
-                              <h6 class="mb-0 text-nowrap">{{ $newUsersThisMonth ?? 0 }} </h6>
+                              <h6 class="mb-0 text-nowrap" id="newUsersThisMonth">0</h6>
                               <span>New Users</span>
                             </div>
 
@@ -224,8 +222,8 @@
                               <iconify-icon icon="solar:filters-outline" class="fs-7 text-danger"></iconify-icon>
                             </div>
                             <div>
-                              <h6 class="mb-0">444</h6>
-                              <span>Subscribers</span>
+                              <h6 class="mb-0" id="tenantsThisMonth">0</h6>
+                              <span>Tenants This Month</span>
                             </div>
 
                           </div>
@@ -234,7 +232,7 @@
                               <iconify-icon icon="solar:pills-3-linear" class="fs-7 text-secondary"></iconify-icon>
                             </div>
                             <div>
-                              <h6 class="mb-0">{{ number_format($pendingInspectionsThisMonth ?? 0) }}</h6>
+                              <h6 class="mb-0" id="pendingInspectionsThisMonth">0</h6>
                               <span>Pending Inspections</span>
                             </div>
 
@@ -244,7 +242,7 @@
                       <div class="col-md-6">
                         <div class="text-center mt-sm-n7">
                           <div id="your-preformance"></div>
-                          <h2 class="fs-8">{{ $inspectionsThisMonth ?? 0 }}</h2>
+                          <h2 class="fs-8" id="inspectionsThisMonth">0</h2>
                           <p class="mb-0">
                             Inspections booked
                           </p>
@@ -781,5 +779,75 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Dashboard Performance Enhancement - Load data via AJAX
+document.addEventListener('DOMContentLoaded', function() {
+    // Fetch dashboard data in background
+    fetch('/api/dashboard/data')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Dashboard data error:', data.error);
+                return;
+            }
+            
+            // Update all counts with smooth transition
+            updateCount('userCount', data.userCount);
+            updateCount('inspectionCount', data.inspectionCount);
+            updateCount('transactionCount', data.transactionCount);
+            updateCount('propertyCount', data.propertyCount);
+            updateCount('tenantCount', data.tenantCount);
+            updateCount('newUsersThisMonth', data.newUsersThisMonth);
+            updateCount('inspectionsThisMonth', data.inspectionsThisMonth);
+            updateCount('pendingInspectionsThisMonth', data.pendingInspectionsThisMonth);
+            updateCount('tenantsThisMonth', data.tenantsThisMonth);
+            
+        })
+        .catch(error => {
+            console.error('Dashboard data fetch error:', error);
+            // Values will remain as initial '0' on error
+        });
+});
+
+function updateCount(elementId, value) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        // Update with formatted number and smooth animation
+        element.innerHTML = new Intl.NumberFormat().format(value || 0);
+        
+        // Add a subtle animation
+        element.style.opacity = '0.7';
+        setTimeout(() => {
+            element.style.opacity = '1';
+            element.style.transition = 'opacity 0.3s ease';
+        }, 100);
+    }
+}
 </script>
+
+<style>
+.loading-skeleton {
+    display: inline-block;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+    height: 1.2em;
+    width: 60px;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Ensure smooth transitions for count updates */
+[id$="Count"] {
+    transition: opacity 0.3s ease;
+}
+</style>
 @endpush

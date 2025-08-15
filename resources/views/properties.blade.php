@@ -64,18 +64,20 @@
                                         </div>
                                     </div>
                                 </th>
+                                <th>Property ID</th>
                                 <th>Property Title</th>
                                 <th>Location</th>
                                 <th>Type</th>
                                 <th>Price</th>
                                 <th>Status</th>
+                                <th>Owner</th>
                                 <th>Date Added</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="propertiesTableBody">
                             <tr>
-                                <td colspan="8" class="text-center py-5">
+                                <td colspan="10" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center" id="loadingState">
                                         <div class="spinner-border text-primary mb-3" role="status">
                                             <span class="visually-hidden">Loading...</span>
@@ -186,7 +188,7 @@ function renderProperties() {
     if (filteredProperties.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="8" class="text-center py-5">
+                <td colspan="10" class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
                         <iconify-icon icon="solar:home-angle-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
                         <p class="mb-0 text-muted">No properties found</p>
@@ -210,12 +212,14 @@ function renderProperties() {
         
         // Handle different possible field names from API
         const propertyId = property.id || property.propertyId || globalIndex + 1;
+        const propertyID = property.propertyID || property.property_id || property.reference || `PROP-${propertyId}`;
         const title = property.title || property.propertyTitle || property.name || 'N/A';
         const location = property.location || property.address || property.city || 'N/A';
         const type = property.type || property.propertyType || property.category || 'N/A';
         const price = property.price || property.rent || property.amount || 'N/A';
         const status = property.status || property.availability || 'Available';
         const dateAdded = property.created_at || property.dateAdded || property.date || 'N/A';
+        const propertyOwner = property.property_owner || property.owner || property.landlord || null;
         
         // Format date if it exists
         let formattedDate = dateAdded;
@@ -253,6 +257,14 @@ function renderProperties() {
                 break;
         }
         
+        // Owner button logic
+        let ownerButton = '';
+        if (!propertyOwner || propertyOwner === '' || propertyOwner === 'N/A' || propertyOwner === null) {
+            ownerButton = `<a href="/assign-property-owner/${propertyId}" class="btn btn-sm btn-primary">Assign Owner</a>`;
+        } else {
+            ownerButton = `<button class="btn btn-sm btn-success" disabled>Owner Assigned</button>`;
+        }
+        
         html += `
             <tr class="search-items">
                 <td>
@@ -262,6 +274,9 @@ function renderProperties() {
                             <label class="form-check-label" for="checkbox${globalIndex + 1}"></label>
                         </div>
                     </div>
+                </td>
+                <td>
+                    <span class="fw-medium">${propertyID}</span>
                 </td>
                 <td>
                     <div class="d-flex align-items-center">
@@ -279,6 +294,9 @@ function renderProperties() {
                 </td>
                 <td>
                     <span class="badge ${statusClass}">${status}</span>
+                </td>
+                <td>
+                    ${ownerButton}
                 </td>
                 <td>
                     <span class="usr-date">${formattedDate}</span>

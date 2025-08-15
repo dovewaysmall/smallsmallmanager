@@ -44,9 +44,7 @@
                                 <i class="ti ti-trash me-1 fs-5"></i> Delete All Row
                             </a>
                         </div>
-                        <a href="javascript:void(0)" class="btn btn-primary d-flex align-items-center">
-                            <i class="ti ti-user-plus text-white me-1 fs-5"></i> Convert User
-                        </a>
+                        
                     </div>
                 </div>
             </div>
@@ -93,9 +91,9 @@
                 </div>
                 
                 <!-- Pagination Controls -->
-                <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer" style="display: none !important;">
+                <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer" style="display: none;">
                     <div class="pagination-info">
-                        <span class="text-muted" id="paginationInfo">Showing 1 to 10 of 0 entries</span>
+                        <span class="text-muted" id="paginationInfo">Showing 0 to 0 of 0 entries</span>
                     </div>
                     <nav aria-label="Page navigation">
                         <ul class="pagination mb-0" id="paginationControls">
