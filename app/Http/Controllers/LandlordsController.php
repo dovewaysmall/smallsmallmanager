@@ -546,4 +546,120 @@ class LandlordsController extends Controller
             return 0;
         }
     }
+
+    public function edit($userID)
+    {
+        Log::info("Landlord edit page accessed for userID: {$userID}");
+        return view('edit-landlord', compact('userID'));
+    }
+
+    public function update(Request $request, $userID)
+    {
+        try {
+            Log::info('Updating landlord details', [
+                'userID' => $userID,
+                'data' => $request->all()
+            ]);
+            
+            $accessToken = session('access_token');
+            
+            if (!$accessToken) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Session expired. Please login again.'
+                ], 401);
+            }
+
+            // Validate the request based on actual API expectations
+            $request->validate([
+                'firstName' => 'sometimes|string|max:255',
+                'lastName' => 'sometimes|string|max:255', 
+                'email' => 'sometimes|email|max:255',
+                'phone' => 'sometimes|string|max:20',
+                'verified' => 'sometimes|boolean',
+            ]);
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ];
+
+            // Only send fields that are actually provided and supported by API
+            $updateData = [];
+            
+            if ($request->has('firstName') && $request->firstName !== null) {
+                $updateData['firstName'] = $request->firstName;
+            }
+            
+            if ($request->has('lastName') && $request->lastName !== null) {
+                $updateData['lastName'] = $request->lastName;
+            }
+            
+            if ($request->has('email') && $request->email !== null) {
+                $updateData['email'] = $request->email;
+            }
+            
+            if ($request->has('phone') && $request->phone !== null) {
+                $updateData['phone'] = $request->phone;
+            }
+            
+            if ($request->has('verified') && $request->verified !== null) {
+                $updateData['verified'] = (bool) $request->verified;
+            }
+
+            Log::info('Sending update to API', [
+                'url' => "http://api2.smallsmall.com/api/landlords/{$userID}",
+                'data' => $updateData
+            ]);
+            
+            $response = Http::timeout(30)->withHeaders($headers)->put("http://api2.smallsmall.com/api/landlords/{$userID}", $updateData);
+
+            if ($response->successful()) {
+                Log::info('Landlord updated successfully');
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Landlord updated successfully!'
+                ]);
+            } elseif ($response->status() === 401) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Session expired. Please login again.'
+                ], 401);
+            } else {
+                $errorData = $response->json();
+                Log::error('API Update Error: ' . $response->body());
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorData['message'] ?? 'Failed to update landlord. Please check your input and try again.',
+                    'api_errors' => $errorData['errors'] ?? null,
+                    'debug' => [
+                        'status_code' => $response->status(),
+                        'response_body' => $errorData,
+                        'sent_data' => $updateData,
+                        'api_url' => "http://api2.smallsmall.com/api/landlords/{$userID}"
+                    ]
+                ], 400);
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Update Landlord API Error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating the landlord.',
+                'debug' => [
+                    'error' => $e->getMessage(),
+                    'line' => $e->getLine(),
+                    'file' => $e->getFile()
+                ]
+            ], 500);
+        }
+    }
 }

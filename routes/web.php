@@ -111,7 +111,9 @@ Route::post('/landlords/load', [LandlordsController::class, 'loadLandlords'])->n
 Route::get('/landlords/add', [LandlordsController::class, 'add'])->name('landlords.add');
 Route::post('/landlords/store', [LandlordsController::class, 'store'])->name('landlords.store');
 Route::get('/landlord/{userID}', [LandlordsController::class, 'show'])->name('landlord.show');
+Route::get('/landlord/{userID}/edit', [LandlordsController::class, 'edit'])->name('landlord.edit');
 Route::get('/api/landlord-details/{userID}', [LandlordsController::class, 'getLandlordDetails'])->name('api.landlord-details');
+Route::put('/api/landlord-update/{userID}', [LandlordsController::class, 'update'])->name('api.landlord-update');
 Route::get('/landlords/this-week', [LandlordsController::class, 'thisWeek'])->name('landlords.this-week');
 Route::post('/landlords/this-week/load', [LandlordsController::class, 'loadLandlordsThisWeek'])->name('landlords.this-week.load');
 Route::get('/landlords/this-month', [LandlordsController::class, 'thisMonth'])->name('landlords.this-month');

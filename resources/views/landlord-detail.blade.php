@@ -174,9 +174,9 @@
                     <a href="{{ route('landlords') }}" class="btn btn-outline-secondary">
                       <i class="ti ti-arrow-left me-1"></i> Back to Landlords
                     </a>
-                    <button type="button" class="btn btn-primary" onclick="editLandlord()">
+                    <a href="{{ route('landlord.edit', $userID ?? '') }}" class="btn btn-primary">
                       <i class="ti ti-edit me-1"></i> Edit Landlord
-                    </button>
+                    </a>
                     <button type="button" class="btn btn-success" onclick="viewProperties()">
                       <i class="ti ti-home me-1"></i> View Properties
                     </button>
@@ -189,6 +189,77 @@
             </div>
           </div>
         </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-info" id="contactModalLabel">
+              <i class="ti ti-phone me-2"></i>Contact Landlord
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="d-flex align-items-center mb-3">
+              <div class="me-3">
+                <iconify-icon icon="solar:user-circle-line-duotone" class="fs-1 text-primary"></iconify-icon>
+              </div>
+              <div>
+                <h6 class="mb-1" id="contactLandlordName">Landlord Name</h6>
+                <small class="text-muted" id="contactLandlordId">ID: -</small>
+              </div>
+            </div>
+            
+            <div class="contact-info">
+              <div class="d-flex align-items-center mb-3" id="emailContact">
+                <div class="contact-icon me-3">
+                  <iconify-icon icon="solar:letter-line-duotone" class="fs-4 text-success"></iconify-icon>
+                </div>
+                <div>
+                  <small class="text-muted d-block">Email Address</small>
+                  <strong id="contactEmail">-</strong>
+                  <div class="mt-1">
+                    <a href="#" class="btn btn-sm btn-outline-success" id="emailBtn">
+                      <i class="ti ti-mail me-1"></i>Send Email
+                    </a>
+                    <button class="btn btn-sm btn-outline-secondary ms-1" onclick="copyToClipboard('contactEmail')">
+                      <i class="ti ti-copy me-1"></i>Copy
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center mb-3" id="phoneContact">
+                <div class="contact-icon me-3">
+                  <iconify-icon icon="solar:phone-line-duotone" class="fs-4 text-info"></iconify-icon>
+                </div>
+                <div>
+                  <small class="text-muted d-block">Phone Number</small>
+                  <strong id="contactPhone">-</strong>
+                  <div class="mt-1">
+                    <a href="#" class="btn btn-sm btn-outline-info" id="phoneBtn">
+                      <i class="ti ti-phone me-1"></i>Call Now
+                    </a>
+                    <button class="btn btn-sm btn-outline-secondary ms-1" onclick="copyToClipboard('contactPhone')">
+                      <i class="ti ti-copy me-1"></i>Copy
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="noContactInfo" class="text-center py-3 d-none">
+                <iconify-icon icon="solar:info-circle-line-duotone" class="fs-1 text-warning mb-2"></iconify-icon>
+                <p class="text-muted mb-0">No contact information available for this landlord.</p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
 @endsection
 
@@ -328,23 +399,109 @@ function formatDate(dateString) {
     }
 }
 
-function editLandlord() {
-    alert('Edit functionality would be implemented here.');
-}
 
 function viewProperties() {
     alert('Property viewing functionality would be implemented here.');
 }
 
 function contactLandlord() {
+    const name = document.getElementById('landlordName').textContent;
+    const userID = document.getElementById('userID').textContent;
     const email = document.getElementById('email').textContent;
     const phone = document.getElementById('phone').textContent;
     
-    let message = 'Contact Landlord:\n\n';
-    if (email && email !== 'N/A') message += `Email: ${email}\n`;
-    if (phone && phone !== 'N/A') message += `Phone: ${phone}`;
+    // Populate modal with landlord info
+    document.getElementById('contactLandlordName').textContent = name || 'N/A';
+    document.getElementById('contactLandlordId').textContent = `ID: ${userID || 'N/A'}`;
     
-    alert(message);
+    // Handle email contact
+    const emailContact = document.getElementById('emailContact');
+    const contactEmail = document.getElementById('contactEmail');
+    const emailBtn = document.getElementById('emailBtn');
+    
+    if (email && email !== 'N/A') {
+        contactEmail.textContent = email;
+        emailBtn.href = `mailto:${email}`;
+        emailContact.classList.remove('d-none');
+    } else {
+        emailContact.classList.add('d-none');
+    }
+    
+    // Handle phone contact
+    const phoneContact = document.getElementById('phoneContact');
+    const contactPhone = document.getElementById('contactPhone');
+    const phoneBtn = document.getElementById('phoneBtn');
+    
+    if (phone && phone !== 'N/A') {
+        contactPhone.textContent = phone;
+        phoneBtn.href = `tel:${phone}`;
+        phoneContact.classList.remove('d-none');
+    } else {
+        phoneContact.classList.add('d-none');
+    }
+    
+    // Show "no contact info" message if both email and phone are missing
+    const noContactInfo = document.getElementById('noContactInfo');
+    if ((!email || email === 'N/A') && (!phone || phone === 'N/A')) {
+        noContactInfo.classList.remove('d-none');
+        emailContact.classList.add('d-none');
+        phoneContact.classList.add('d-none');
+    } else {
+        noContactInfo.classList.add('d-none');
+    }
+    
+    // Show the modal
+    const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
+    contactModal.show();
+}
+
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent;
+    
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            showCopyFeedback();
+        }).catch(() => {
+            fallbackCopyToClipboard(text);
+        });
+    } else {
+        fallbackCopyToClipboard(text);
+    }
+}
+
+function fallbackCopyToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showCopyFeedback();
+    } catch (err) {
+        console.error('Unable to copy to clipboard', err);
+    }
+    
+    textArea.remove();
+}
+
+function showCopyFeedback() {
+    // Create a temporary toast-like notification
+    const feedback = document.createElement('div');
+    feedback.className = 'position-fixed top-50 start-50 translate-middle bg-success text-white px-3 py-2 rounded shadow';
+    feedback.style.zIndex = '9999';
+    feedback.innerHTML = '<i class="ti ti-check me-1"></i>Copied to clipboard!';
+    
+    document.body.appendChild(feedback);
+    
+    setTimeout(() => {
+        feedback.remove();
+    }, 2000);
 }
 </script>
 @endpush
