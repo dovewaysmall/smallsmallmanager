@@ -316,4 +316,234 @@ class LandlordsController extends Controller
             ], 500);
         }
     }
+
+    public function show($userID)
+    {
+        Log::info("Landlord detail page accessed for userID: {$userID}");
+        return view('landlord-detail', compact('userID'));
+    }
+
+    public function getLandlordDetails($userID)
+    {
+        try {
+            Log::info('Getting landlord details', [
+                'userID' => $userID,
+                'userID_type' => gettype($userID),
+                'userID_length' => strlen($userID)
+            ]);
+            
+            $accessToken = session('access_token');
+            
+            if (!$accessToken) {
+                return response()->json([
+                    'error' => 'Session expired. Please login again.'
+                ], 401);
+            }
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+            ];
+
+            // Try to get specific landlord details from API
+            $response = Http::timeout(30)->withHeaders($headers)->get("http://api2.smallsmall.com/api/landlords/{$userID}");
+
+            if ($response->successful()) {
+                $apiData = $response->json();
+                
+                Log::info('API Response received:', $apiData);
+                
+                // Handle the actual API response structure
+                if (isset($apiData['success']) && $apiData['success'] && isset($apiData['data'])) {
+                    $landlordInfo = $apiData['data']['landlord_info'] ?? null;
+                    $propertiesCount = $apiData['data']['property_count'] ?? 0;
+                    $tenantsCount = $apiData['data']['tenant_count'] ?? 0;
+                    $properties = $apiData['data']['properties'] ?? [];
+                    
+                    if ($landlordInfo) {
+                        // Add the property and tenant counts to the landlord info
+                        $landlordInfo['properties_count'] = $propertiesCount;
+                        $landlordInfo['tenants_count'] = $tenantsCount;
+                        $landlordInfo['properties'] = $properties;
+                        
+                        Log::info('Processed landlord data:', [
+                            'properties_count' => $propertiesCount,
+                            'tenants_count' => $tenantsCount,
+                            'api_tenant_count' => $apiData['data']['tenant_count'] ?? 'not provided'
+                        ]);
+                        
+                        return response()->json([
+                            'success' => true,
+                            'landlord' => $landlordInfo
+                        ]);
+                    }
+                }
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Landlord not found or invalid API response structure.'
+                ], 404);
+            } elseif ($response->status() === 401) {
+                return response()->json([
+                    'error' => 'Session expired. Please login again.'
+                ], 401);
+            } else {
+                // If specific landlord endpoint doesn't exist, try to find in the list
+                $listResponse = Http::timeout(30)->withHeaders($headers)->get('http://api2.smallsmall.com/api/landlords');
+                
+                if ($listResponse->successful()) {
+                    $listData = $listResponse->json();
+                    $landlords = $listData['data'] ?? $listData['landlords'] ?? $listData ?? [];
+                    
+                    // Find the landlord with matching userID
+                    $landlord = collect($landlords)->first(function ($landlord) use ($userID) {
+                        return $landlord['userID'] === $userID || $landlord['id'] === $userID;
+                    });
+                    
+                    if ($landlord) {
+                        // For fallback method, we'll try to get property count manually
+                        $propertiesCount = $this->getLandlordPropertiesCount($userID, $headers);
+                        $tenantsCount = $this->getLandlordTenantsCount($userID, $headers);
+                        
+                        $landlord['properties_count'] = $propertiesCount;
+                        $landlord['tenants_count'] = $tenantsCount;
+                        
+                        return response()->json([
+                            'success' => true,
+                            'landlord' => $landlord
+                        ]);
+                    } else {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Landlord not found.'
+                        ], 404);
+                    }
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to load landlord details from API.'
+                    ], 500);
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Landlord Details API Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while loading landlord details.'
+            ], 500);
+        }
+    }
+
+    private function getLandlordPropertiesCount($userID, $headers)
+    {
+        try {
+            Log::info("Counting properties for landlord: {$userID}");
+            
+            // Try to get properties and count those owned by this landlord
+            $response = Http::timeout(30)->withHeaders($headers)->get('http://api2.smallsmall.com/api/properties');
+            
+            if ($response->successful()) {
+                $apiData = $response->json();
+                $properties = $apiData['data'] ?? $apiData['properties'] ?? $apiData ?? [];
+                
+                Log::info('Properties API Response Structure:', [
+                    'total_properties' => count($properties),
+                    'sample_property' => $properties[0] ?? 'No properties found',
+                    'api_data_keys' => array_keys($apiData)
+                ]);
+                
+                // Count properties that belong to this landlord
+                $count = 0;
+                $matchedProperties = [];
+                
+                foreach ($properties as $property) {
+                    // Log each property's landlord-related fields
+                    $landlordId = $property['landlordID'] ?? $property['landlord_id'] ?? $property['owner_id'] ?? $property['ownerID'] ?? null;
+                    
+                    // Try different comparison methods (string/int conversion)
+                    $strictMatch = $landlordId === $userID;
+                    $looseMatch = $landlordId == $userID; // Loose comparison
+                    $stringMatch = (string)$landlordId === (string)$userID;
+                    $intMatch = (int)$landlordId === (int)$userID;
+                    
+                    Log::info('Property check:', [
+                        'property_id' => $property['id'] ?? 'No ID',
+                        'landlordID' => $property['landlordID'] ?? 'Not set',
+                        'landlord_id' => $property['landlord_id'] ?? 'Not set',
+                        'owner_id' => $property['owner_id'] ?? 'Not set',
+                        'ownerID' => $property['ownerID'] ?? 'Not set',
+                        'landlord_object' => isset($property['landlord']) ? $property['landlord'] : 'Not set',
+                        'extracted_landlordId' => $landlordId,
+                        'landlordId_type' => gettype($landlordId),
+                        'target_userID' => $userID,
+                        'target_userID_type' => gettype($userID),
+                        'strict_match' => $strictMatch,
+                        'loose_match' => $looseMatch,
+                        'string_match' => $stringMatch,
+                        'int_match' => $intMatch
+                    ]);
+                    
+                    // Use more flexible matching
+                    if ($looseMatch || $stringMatch || 
+                        (isset($property['landlord']) && 
+                         (($property['landlord']['userID'] ?? null) == $userID || 
+                          ($property['landlord']['id'] ?? null) == $userID))) {
+                        $count++;
+                        $matchedProperties[] = $property['id'] ?? 'Unknown ID';
+                        Log::info("MATCH FOUND! Property matched for landlord {$userID}");
+                    }
+                }
+                
+                Log::info("Properties count result: {$count} properties found for landlord {$userID}", [
+                    'matched_properties' => $matchedProperties
+                ]);
+                
+                return $count;
+            } else {
+                Log::error('Properties API failed:', [
+                    'status' => $response->status(),
+                    'response' => $response->body()
+                ]);
+            }
+            
+            return 0;
+        } catch (\Exception $e) {
+            Log::error('Error counting landlord properties: ' . $e->getMessage());
+            return 0;
+        }
+    }
+
+    private function getLandlordTenantsCount($userID, $headers)
+    {
+        try {
+            // Try to get tenants and count those associated with this landlord
+            $response = Http::timeout(30)->withHeaders($headers)->get('http://api2.smallsmall.com/api/tenants');
+            
+            if ($response->successful()) {
+                $apiData = $response->json();
+                $tenants = $apiData['data'] ?? $apiData['tenants'] ?? $apiData ?? [];
+                
+                // Count tenants that belong to this landlord
+                $count = 0;
+                foreach ($tenants as $tenant) {
+                    // Check various possible field names for landlord ID
+                    $landlordId = $tenant['landlordID'] ?? $tenant['landlord_id'] ?? null;
+                    
+                    if ($landlordId === $userID || 
+                        (isset($tenant['landlord']) && ($tenant['landlord']['userID'] === $userID || $tenant['landlord']['id'] === $userID)) ||
+                        (isset($tenant['property']) && isset($tenant['property']['landlord']) && 
+                         ($tenant['property']['landlord']['userID'] === $userID || $tenant['property']['landlord']['id'] === $userID))) {
+                        $count++;
+                    }
+                }
+                
+                return $count;
+            }
+            
+            return 0;
+        } catch (\Exception $e) {
+            Log::error('Error counting landlord tenants: ' . $e->getMessage());
+            return 0;
+        }
+    }
 }

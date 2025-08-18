@@ -266,7 +266,7 @@ function renderLandlords() {
                 </td>
                 <td>
                     <div class="action-btn d-flex align-items-center">
-                        <a href="javascript:void(0)" class="btn btn-sm btn-primary me-2">
+                        <a href="/landlord/${landlord.userID || landlord.id}" class="btn btn-sm btn-primary me-2">
                             View Details
                         </a>
                         <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
