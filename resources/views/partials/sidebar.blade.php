@@ -304,6 +304,43 @@
                     
                   </ul>
                 </li>
+
+                <li class="sidebar-item">
+                  <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                    <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Repairs</span>
+                  </a>
+                  <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('repairs') }}">
+                        <span class="icon-small"></span>
+                        Total Repairs
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('repairs.this-week') }}">
+                        <span class="icon-small"></span>
+                        Repairs(This Week)
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('repairs.this-month') }}">
+                        <span class="icon-small"></span>
+                        Repairs(This Month)
+                      </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('repairs.this-year') }}">
+                        <span class="icon-small"></span>
+                        Repairs(This Year)
+                      </a>
+                    </li>
+                    
+                  </ul>
+                </li>
+
+                
               </ul>
             </nav>
 

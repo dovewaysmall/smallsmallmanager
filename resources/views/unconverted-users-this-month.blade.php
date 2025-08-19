@@ -40,10 +40,14 @@
                     </div>
                     <div class="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0">
                         <div class="action-btn show-btn">
+                            <a href="{{ route('unconverted-users') }}" class="btn btn-primary me-2 d-flex align-items-center">
+                                <i class="ti ti-eye me-1 fs-5"></i> View More
+                            </a>
                             <a href="javascript:void(0)" class="delete-multiple bg-danger-subtle btn me-2 text-danger d-flex align-items-center">
                                 <i class="ti ti-trash me-1 fs-5"></i> Delete All Row
                             </a>
                         </div>
+                        
                         
                     </div>
                 </div>
@@ -91,9 +95,9 @@
                 </div>
                 
                 <!-- Pagination Controls -->
-                <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer" style="display: none !important;">
+                <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer" style="display: none;">
                     <div class="pagination-info">
-                        <span class="text-muted" id="paginationInfo">Showing 1 to 10 of 0 entries</span>
+                        <span class="text-muted" id="paginationInfo">Showing 0 to 0 of 0 entries</span>
                     </div>
                     <nav aria-label="Page navigation">
                         <ul class="pagination mb-0" id="paginationControls">
@@ -147,7 +151,7 @@ function loadUnconvertedUsers() {
         if (!data) return; // Handle early return from 419
         
         if (data.success) {
-            allUnconvertedUsers = data.users;
+            allUnconvertedUsers = data.users || [];
             filteredUnconvertedUsers = allUnconvertedUsers;
             renderUnconvertedUsers();
             document.getElementById('searchInput').disabled = false;
@@ -162,11 +166,6 @@ function loadUnconvertedUsers() {
     })
     .catch(error => {
         console.error('Error:', error);
-        if (error.status === 419) {
-            alert('Your session has expired. You will be redirected to login.');
-            window.location.href = '{{ route("login") }}';
-            return;
-        }
         showError('An error occurred while loading unconverted users');
     });
 }
@@ -179,13 +178,13 @@ function showError(message) {
 function renderUnconvertedUsers() {
     const tbody = document.getElementById('unconvertedUsersTableBody');
     
-    if (filteredUnconvertedUsers.length === 0) {
+    if (!allUnconvertedUsers || allUnconvertedUsers.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
                         <iconify-icon icon="solar:users-group-rounded-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
-                        <p class="mb-0 text-muted">No unconverted users found</p>
+                        <p class="mb-0 text-muted">No unconverted users found this month</p>
                     </div>
                 </td>
             </tr>
@@ -204,7 +203,6 @@ function renderUnconvertedUsers() {
     currentPageUnconvertedUsers.forEach((user, index) => {
         const globalIndex = startIndex + index;
         const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
-        const avatarIndex = (globalIndex % 10) + 1;
         
         html += `
             <tr class="search-items">
@@ -228,12 +226,9 @@ function renderUnconvertedUsers() {
                     <span class="usr-ph-no">${user.phone || 'N/A'}</span>
                 </td>
                 <td>
-                    <div class="action-btn">
-                        <a href="javascript:void(0)" class="text-primary edit">
-                            <i class="ti ti-eye fs-5"></i>
-                        </a>
-                        <a href="javascript:void(0)" class="text-dark delete ms-2">
-                            <i class="ti ti-trash fs-5"></i>
+                    <div class="action-btn d-flex align-items-center">
+                        <a href="/unconverted-users/${user.userID || user.id || user.user_id}" class="btn btn-sm btn-primary me-2">
+                            View More
                         </a>
                     </div>
                 </td>
@@ -365,4 +360,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
-

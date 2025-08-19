@@ -40,10 +40,14 @@
                     </div>
                     <div class="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0">
                         <div class="action-btn show-btn">
+                            <a href="{{ route('unconverted-users') }}" class="btn btn-primary me-2 d-flex align-items-center">
+                                <i class="ti ti-eye me-1 fs-5"></i> View More
+                            </a>
                             <a href="javascript:void(0)" class="delete-multiple bg-danger-subtle btn me-2 text-danger d-flex align-items-center">
                                 <i class="ti ti-trash me-1 fs-5"></i> Delete All Row
                             </a>
                         </div>
+                        
                         
                     </div>
                 </div>
@@ -228,12 +232,9 @@ function renderUnconvertedUsers() {
                     <span class="usr-ph-no">${user.phone || 'N/A'}</span>
                 </td>
                 <td>
-                    <div class="action-btn">
-                        <a href="javascript:void(0)" class="text-primary edit">
-                            <i class="ti ti-eye fs-5"></i>
-                        </a>
-                        <a href="javascript:void(0)" class="text-dark delete ms-2">
-                            <i class="ti ti-trash fs-5"></i>
+                    <div class="action-btn d-flex align-items-center">
+                        <a href="/unconverted-users/${user.userID || user.id || user.user_id}" class="btn btn-sm btn-primary me-2">
+                            View More
                         </a>
                     </div>
                 </td>
@@ -365,4 +366,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
-

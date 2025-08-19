@@ -12,6 +12,7 @@ use App\Http\Controllers\TenantsController;
 use App\Http\Controllers\PropertiesController;
 use App\Http\Controllers\LandlordsController;
 use App\Http\Controllers\VerificationsController;
+use App\Http\Controllers\RepairsController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
@@ -131,6 +132,17 @@ Route::get('/verifications/this-year', [VerificationsController::class, 'thisYea
 Route::post('/verifications/this-year/load', [VerificationsController::class, 'loadVerificationsThisYear'])->name('verifications.this-year.load');
 Route::get('/verifications/{id}', [VerificationsController::class, 'show'])->name('verification.show');
 Route::put('/verifications/{id}', [VerificationsController::class, 'update'])->name('verification.update');
+
+Route::get('/repairs', [RepairsController::class, 'index'])->name('repairs');
+Route::post('/repairs/load', [RepairsController::class, 'loadRepairs'])->name('repairs.load');
+Route::get('/repairs/add', [RepairsController::class, 'add'])->name('repairs.add');
+Route::post('/repairs/store', [RepairsController::class, 'store'])->name('repairs.store');
+Route::get('/repairs/this-week', [RepairsController::class, 'thisWeek'])->name('repairs.this-week');
+Route::post('/repairs/this-week/load', [RepairsController::class, 'loadRepairsThisWeek'])->name('repairs.this-week.load');
+Route::get('/repairs/this-month', [RepairsController::class, 'thisMonth'])->name('repairs.this-month');
+Route::post('/repairs/this-month/load', [RepairsController::class, 'loadRepairsThisMonth'])->name('repairs.this-month.load');
+Route::get('/repairs/this-year', [RepairsController::class, 'thisYear'])->name('repairs.this-year');
+Route::post('/repairs/this-year/load', [RepairsController::class, 'loadRepairsThisYear'])->name('repairs.this-year.load');
 
 // Dashboard API routes
 Route::get('/api/dashboard/data', [DashboardController::class, 'getDashboardData'])->name('api.dashboard.data');

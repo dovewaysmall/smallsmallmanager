@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Unconverted Users This Year')
+@section('title', 'Repairs This Week')
 
 @section('content')
     <div class="body-wrapper">
@@ -9,7 +9,7 @@
             <div class="row align-items-center">
               <div class="col-12">
                 <div class="d-sm-flex align-items-center justify-space-between">
-                  <h4 class="mb-4 mb-sm-0 card-title">Unconverted Users This Year</h4>
+                  <h4 class="mb-4 mb-sm-0 card-title">Repairs This Week</h4>
                   <nav aria-label="breadcrumb" class="ms-auto">
                     <ol class="breadcrumb">
                       <li class="breadcrumb-item d-flex align-items-center">
@@ -19,7 +19,7 @@
                       </li>
                       <li class="breadcrumb-item" aria-current="page">
                         <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
-                          Unconverted Users This Year
+                          Repairs This Week
                         </span>
                       </li>
                     </ol>
@@ -34,28 +34,29 @@
                 <div class="row">
                     <div class="col-md-4 col-xl-3">
                         <form class="position-relative">
-                            <input type="text" class="form-control product-search ps-5" id="searchInput" placeholder="Search Unconverted Users..." disabled />
+                            <input type="text" class="form-control product-search ps-5" id="searchInput" placeholder="Search Repairs..." disabled />
                             <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
                         </form>
                     </div>
                     <div class="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0">
                         <div class="action-btn show-btn">
-                            <a href="{{ route('unconverted-users') }}" class="btn btn-primary me-2 d-flex align-items-center">
+                            <a href="{{ route('repairs') }}" class="btn btn-primary me-2 d-flex align-items-center">
                                 <i class="ti ti-eye me-1 fs-5"></i> View More
                             </a>
                             <a href="javascript:void(0)" class="delete-multiple bg-danger-subtle btn me-2 text-danger d-flex align-items-center">
                                 <i class="ti ti-trash me-1 fs-5"></i> Delete All Row
                             </a>
                         </div>
-                        
-                        
+                        <a href="{{ route('repairs.add') }}" class="btn btn-primary d-flex align-items-center">
+                            <i class="ti ti-tools text-white me-1 fs-5"></i> Add New Repair
+                        </a>
                     </div>
                 </div>
             </div>
 
             <div class="card card-body">
                 <div class="table-responsive">
-                    <table id="unconvertedUsersTable" class="table search-table align-middle text-nowrap">
+                    <table id="repairsTable" class="table search-table align-middle text-nowrap">
                         <thead class="header-item">
                             <tr>
                                 <th>
@@ -66,25 +67,28 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
+                                <th>Property</th>
+                                <th>Description</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Requested Date</th>
+                                <th>Assignee</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="unconvertedUsersTableBody">
+                        <tbody id="repairsTableBody">
                             <tr>
-                                <td colspan="5" class="text-center py-5">
+                                <td colspan="8" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center" id="loadingState">
                                         <div class="spinner-border text-primary mb-3" role="status">
                                             <span class="visually-hidden">Loading...</span>
                                         </div>
-                                        <p class="mb-0 text-muted">Loading unconverted users...</p>
+                                        <p class="mb-0 text-muted">Loading repairs...</p>
                                     </div>
                                     <div class="d-flex flex-column align-items-center d-none" id="errorState">
                                         <iconify-icon icon="solar:info-circle-line-duotone" class="fs-8 text-danger mb-2"></iconify-icon>
                                         <p class="mb-2 text-danger" id="errorMessage"></p>
-                                        <button onclick="loadUnconvertedUsers()" class="btn btn-sm btn-outline-primary">
+                                        <button onclick="loadRepairs()" class="btn btn-sm btn-outline-primary">
                                             <i class="ti ti-refresh me-1"></i> Retry
                                         </button>
                                     </div>
@@ -113,8 +117,8 @@
 
 @push('scripts')
 <script>
-let allUnconvertedUsers = [];
-let filteredUnconvertedUsers = [];
+let allRepairs = [];
+let filteredRepairs = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 let totalPages = 1;
@@ -128,10 +132,10 @@ function showState(stateName) {
     }
 }
 
-function loadUnconvertedUsers() {
+function loadRepairs() {
     showState('loadingState');
     
-    fetch('{{ route("unconverted-users.this-year.load") }}', {
+    fetch('{{ route("repairs.this-week.load") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -151,9 +155,9 @@ function loadUnconvertedUsers() {
         if (!data) return; // Handle early return from 419
         
         if (data.success) {
-            allUnconvertedUsers = data.users || [];
-            filteredUnconvertedUsers = allUnconvertedUsers;
-            renderUnconvertedUsers();
+            allRepairs = data.repairs || [];
+            filteredRepairs = allRepairs;
+            renderRepairs();
             document.getElementById('searchInput').disabled = false;
         } else {
             if (data.error && data.error.includes('Session expired')) {
@@ -161,12 +165,12 @@ function loadUnconvertedUsers() {
                 window.location.href = '{{ route("login") }}';
                 return;
             }
-            showError(data.error || 'Failed to load users');
+            showError(data.error || 'Failed to load repairs');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showError('An error occurred while loading unconverted users');
+        showError('An error occurred while loading repairs');
     });
 }
 
@@ -175,16 +179,16 @@ function showError(message) {
     showState('errorState');
 }
 
-function renderUnconvertedUsers() {
-    const tbody = document.getElementById('unconvertedUsersTableBody');
+function renderRepairs() {
+    const tbody = document.getElementById('repairsTableBody');
     
-    if (!allUnconvertedUsers || allUnconvertedUsers.length === 0) {
+    if (!allRepairs || allRepairs.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" class="text-center py-5">
+                <td colspan="8" class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
-                        <iconify-icon icon="solar:users-group-rounded-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
-                        <p class="mb-0 text-muted">No unconverted users found this year</p>
+                        <iconify-icon icon="solar:tools-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
+                        <p class="mb-0 text-muted">No repairs found this week</p>
                     </div>
                 </td>
             </tr>
@@ -194,15 +198,71 @@ function renderUnconvertedUsers() {
     }
     
     // Calculate pagination
-    totalPages = Math.ceil(filteredUnconvertedUsers.length / itemsPerPage);
+    totalPages = Math.ceil(filteredRepairs.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentPageUnconvertedUsers = filteredUnconvertedUsers.slice(startIndex, endIndex);
+    const currentPageRepairs = filteredRepairs.slice(startIndex, endIndex);
     
     let html = '';
-    currentPageUnconvertedUsers.forEach((user, index) => {
+    currentPageRepairs.forEach((repair, index) => {
         const globalIndex = startIndex + index;
-        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        
+        // Handle different possible field names from API
+        const repairId = repair.id || repair.repairId || globalIndex + 1;
+        const propertyTitle = repair.property_address || repair.property_name || repair.property || 'N/A';
+        const description = repair.description || repair.issue || repair.details || 'N/A';
+        const priority = repair.priority || 'Medium';
+        const status = repair.status || repair.repair_status || 'Pending';
+        const requestedDate = repair.created_at || repair.requested_date || repair.date || 'N/A';
+        const assignee = repair.assignee || repair.technician || repair.assigned_to || 'Unassigned';
+        
+        // Format date if it exists
+        let formattedDate = requestedDate;
+        if (requestedDate !== 'N/A' && requestedDate) {
+            try {
+                formattedDate = new Date(requestedDate).toLocaleDateString();
+            } catch (e) {
+                formattedDate = requestedDate;
+            }
+        }
+        
+        // Status badge color
+        let statusClass = 'bg-secondary';
+        switch (status.toLowerCase()) {
+            case 'completed':
+            case 'resolved':
+            case 'fixed':
+                statusClass = 'bg-success';
+                break;
+            case 'cancelled':
+            case 'rejected':
+                statusClass = 'bg-danger';
+                break;
+            case 'pending':
+            case 'requested':
+                statusClass = 'bg-warning text-dark';
+                break;
+            case 'in_progress':
+            case 'ongoing':
+            case 'in-progress':
+                statusClass = 'bg-info';
+                break;
+        }
+        
+        // Priority badge color
+        let priorityClass = 'bg-secondary';
+        switch (priority.toLowerCase()) {
+            case 'high':
+            case 'urgent':
+                priorityClass = 'bg-danger';
+                break;
+            case 'medium':
+                priorityClass = 'bg-warning text-dark';
+                break;
+            case 'low':
+                priorityClass = 'bg-success';
+                break;
+        }
         
         html += `
             <tr class="search-items">
@@ -216,19 +276,31 @@ function renderUnconvertedUsers() {
                 </td>
                 <td>
                     <div class="d-flex align-items-center">
-                        <h6 class="user-name mb-0">${fullName || 'N/A'}</h6>
+                        <h6 class="user-name mb-0">${propertyTitle}</h6>
                     </div>
                 </td>
                 <td>
-                    <span class="usr-email-addr">${user.email || 'N/A'}</span>
+                    <span class="usr-email-addr">${description.length > 50 ? description.substring(0, 50) + '...' : description}</span>
                 </td>
                 <td>
-                    <span class="usr-ph-no">${user.phone || 'N/A'}</span>
+                    <span class="badge ${priorityClass}">${priority}</span>
+                </td>
+                <td>
+                    <span class="badge ${statusClass}">${status}</span>
+                </td>
+                <td>
+                    <span class="usr-date">${formattedDate}</span>
+                </td>
+                <td>
+                    <span class="usr-location">${assignee}</span>
                 </td>
                 <td>
                     <div class="action-btn d-flex align-items-center">
-                        <a href="/unconverted-users/${user.userID || user.id || user.user_id}" class="btn btn-sm btn-primary me-2">
+                        <a href="javascript:void(0)" onclick="viewRepair('${repairId}')" class="btn btn-sm btn-primary me-2">
                             View More
+                        </a>
+                        <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
+                            <iconify-icon icon="solar:trash-bin-trash-line-duotone" class="fs-5"></iconify-icon>
                         </a>
                     </div>
                 </td>
@@ -247,27 +319,31 @@ document.getElementById('searchInput').addEventListener('input', function() {
     const searchTerm = this.value.toLowerCase().trim();
     
     if (searchTerm === '') {
-        filteredUnconvertedUsers = allUnconvertedUsers;
+        filteredRepairs = allRepairs;
     } else {
-        filteredUnconvertedUsers = allUnconvertedUsers.filter(user => {
-            const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
-            const email = (user.email || '').toLowerCase();
-            const phone = (user.phone || '').toLowerCase();
+        filteredRepairs = allRepairs.filter(repair => {
+            const propertyTitle = (repair.property_address || repair.property_name || repair.property || '').toLowerCase();
+            const description = (repair.description || repair.issue || repair.details || '').toLowerCase();
+            const priority = (repair.priority || '').toLowerCase();
+            const status = (repair.status || repair.repair_status || '').toLowerCase();
+            const assignee = (repair.assignee || repair.technician || repair.assigned_to || '').toLowerCase();
             
-            return fullName.includes(searchTerm) || 
-                   email.includes(searchTerm) || 
-                   phone.includes(searchTerm);
+            return propertyTitle.includes(searchTerm) || 
+                   description.includes(searchTerm) || 
+                   priority.includes(searchTerm) ||
+                   status.includes(searchTerm) ||
+                   assignee.includes(searchTerm);
         });
     }
     
     currentPage = 1; // Reset to first page when searching
-    renderUnconvertedUsers();
+    renderRepairs();
 });
 
 function updatePaginationInfo() {
-    const startItem = filteredUnconvertedUsers.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
-    const endItem = Math.min(currentPage * itemsPerPage, filteredUnconvertedUsers.length);
-    const totalItems = filteredUnconvertedUsers.length;
+    const startItem = filteredRepairs.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+    const endItem = Math.min(currentPage * itemsPerPage, filteredRepairs.length);
+    const totalItems = filteredRepairs.length;
     
     document.getElementById('paginationInfo').textContent = 
         `Showing ${startItem} to ${endItem} of ${totalItems} entries`;
@@ -348,15 +424,20 @@ function changePage(page) {
     }
     
     currentPage = page;
-    renderUnconvertedUsers();
+    renderRepairs();
     
     // Prevent default link behavior
     event.preventDefault();
 }
 
-// Auto-load users when page is ready
+function viewRepair(repairId) {
+    console.log('View repair:', repairId);
+    alert('Repair detail view coming soon');
+}
+
+// Auto-load repairs when page is ready
 document.addEventListener('DOMContentLoaded', function() {
-    loadUnconvertedUsers();
+    loadRepairs();
 });
 </script>
 @endpush
