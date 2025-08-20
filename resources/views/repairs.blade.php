@@ -241,7 +241,7 @@ function renderRepairs() {
         const propertyTitle = propertyMap[repair.property_id] || `Property ${repair.property_id}`;
         const title = repair.title_of_repair || 'N/A';
         const type = repair.type_of_repair || 'N/A';
-        const cost = repair.cost_of_repair ? `₦${parseFloat(repair.cost_of_repair).toFixed(2)}` : 'N/A';
+        const cost = repair.cost_of_repair ? `₦${parseFloat(repair.cost_of_repair).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 'N/A';
         const status = repair.repair_status || 'pending';
         const repairDate = repair.repair_date || 'N/A';
         const handler = repair.handler_firstName && repair.handler_lastName 
@@ -337,7 +337,7 @@ function renderRepairs() {
                 </td>
                 <td>
                     <div class="action-btn d-flex align-items-center">
-                        <a href="javascript:void(0)" onclick="viewRepair('${repairId}')" class="btn btn-sm btn-primary me-2">
+                        <a href="{{ url('/repair') }}/${repairId}" class="btn btn-sm btn-primary me-2">
                             View More
                         </a>
                         <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
@@ -476,8 +476,7 @@ function changePage(page) {
 }
 
 function viewRepair(repairId) {
-    console.log('View repair:', repairId);
-    alert('Repair detail view coming soon');
+    window.location.href = `{{ url('/repair') }}/${repairId}`;
 }
 
 // Auto-load repairs when page is ready

@@ -328,7 +328,7 @@ function renderRepairs() {
                     <span class="usr-location">${whoIsHandlingRepair}</span>
                 </td>
                 <td>
-                    <span class="text-success fw-bold">₦${parseFloat(costOfRepair).toFixed(2)}</span>
+                    <span class="text-success fw-bold">₦${parseFloat(costOfRepair).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                 </td>
                 <td>
                     <span class="badge ${statusClass}">${repairStatus}</span>
@@ -338,7 +338,7 @@ function renderRepairs() {
                 </td>
                 <td>
                     <div class="action-btn d-flex align-items-center">
-                        <a href="javascript:void(0)" onclick="viewRepair('${repairId}')" class="btn btn-sm btn-primary me-2">
+                        <a href="{{ url('/repair') }}/${repairId}" class="btn btn-sm btn-primary me-2">
                             View More
                         </a>
                         ${imagesPaths ? `<a href="javascript:void(0)" onclick="viewImages('${repairId}', '${imageFolder}')" class="btn btn-sm btn-info me-2" title="View Images">
@@ -480,8 +480,7 @@ function changePage(page) {
 }
 
 function viewRepair(repairId) {
-    console.log('View repair:', repairId);
-    alert('Repair detail view coming soon');
+    window.location.href = `{{ url('/repair') }}/${repairId}`;
 }
 
 function viewImages(repairId, imageFolder) {

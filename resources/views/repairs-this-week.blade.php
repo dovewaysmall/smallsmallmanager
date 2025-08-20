@@ -67,18 +67,20 @@
                                         </div>
                                     </div>
                                 </th>
+                                <th>Title</th>
                                 <th>Property</th>
-                                <th>Description</th>
-                                <th>Priority</th>
+                                <th>Type</th>
+                                <th>Items Repaired</th>
+                                <th>Handler</th>
+                                <th>Cost</th>
                                 <th>Status</th>
-                                <th>Requested Date</th>
-                                <th>Assignee</th>
+                                <th>Repair Date</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="repairsTableBody">
                             <tr>
-                                <td colspan="8" class="text-center py-5">
+                                <td colspan="10" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center" id="loadingState">
                                         <div class="spinner-border text-primary mb-3" role="status">
                                             <span class="visually-hidden">Loading...</span>
@@ -122,6 +124,7 @@ let filteredRepairs = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 let totalPages = 1;
+let propertyMap = {};
 
 function showState(stateName) {
     document.getElementById('loadingState').classList.add('d-none');
@@ -132,17 +135,55 @@ function showState(stateName) {
     }
 }
 
+async function loadProperties() {
+    try {
+        const response = await fetch('{{ route("properties.load") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        });
+        
+        const data = await response.json();
+        if (data.success && data.properties) {
+            // Create property lookup map
+            propertyMap = {};
+            data.properties.forEach(property => {
+                const propertyName = property.property_title || property.property_name || property.address || `Property ${property.id}`;
+                propertyMap[property.id] = propertyName;
+            });
+        }
+    } catch (error) {
+        console.error('Error loading properties:', error);
+    }
+}
+
 function loadRepairs() {
     showState('loadingState');
+    
+    // Check for CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        console.error('CSRF token not found');
+        showError('CSRF token not found. Please refresh the page.');
+        return;
+    }
+    
+    console.log('Loading repairs from:', '{{ route("repairs.this-week.load") }}');
+    console.log('CSRF token:', csrfToken.getAttribute('content'));
     
     fetch('{{ route("repairs.this-week.load") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-TOKEN': csrfToken.getAttribute('content')
         }
     })
     .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
         if (response.status === 419) {
             // CSRF token expired
             alert('Your session has expired. You will be redirected to login.');
@@ -152,14 +193,18 @@ function loadRepairs() {
         return response.json();
     })
     .then(data => {
+        console.log('API Response data:', data);
+        
         if (!data) return; // Handle early return from 419
         
         if (data.success) {
+            console.log('Repairs received:', data.repairs);
             allRepairs = data.repairs || [];
             filteredRepairs = allRepairs;
             renderRepairs();
             document.getElementById('searchInput').disabled = false;
         } else {
+            console.error('API Error:', data.error);
             if (data.error && data.error.includes('Session expired')) {
                 alert('Your session has expired. You will be redirected to login.');
                 window.location.href = '{{ route("login") }}';
@@ -169,8 +214,13 @@ function loadRepairs() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        showError('An error occurred while loading repairs');
+        console.error('Fetch error:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
+        showError('Network error occurred while loading repairs. Check console for details.');
     });
 }
 
@@ -182,10 +232,10 @@ function showError(message) {
 function renderRepairs() {
     const tbody = document.getElementById('repairsTableBody');
     
-    if (!allRepairs || allRepairs.length === 0) {
+    if (!allRepairs || allRepairs.length === 0 || !filteredRepairs || filteredRepairs.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="8" class="text-center py-5">
+                <td colspan="10" class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
                         <iconify-icon icon="solar:tools-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
                         <p class="mb-0 text-muted">No repairs found this week</p>
@@ -207,62 +257,48 @@ function renderRepairs() {
     currentPageRepairs.forEach((repair, index) => {
         const globalIndex = startIndex + index;
         
-        // Handle different possible field names from API
-        const repairId = repair.id || repair.repairId || globalIndex + 1;
-        const propertyTitle = repair.property_address || repair.property_name || repair.property || 'N/A';
-        const description = repair.description || repair.issue || repair.details || 'N/A';
-        const priority = repair.priority || 'Medium';
-        const status = repair.status || repair.repair_status || 'Pending';
-        const requestedDate = repair.created_at || repair.requested_date || repair.date || 'N/A';
-        const assignee = repair.assignee || repair.technician || repair.assigned_to || 'Unassigned';
+        // Handle database field names from API
+        const repairId = repair.id;
+        const titleOfRepair = repair.title_of_repair || 'N/A';
+        const propertyId = repair.property_id || 'N/A';
+        const propertyTitle = propertyMap[propertyId] || `Property ${propertyId}`;
+        const typeOfRepair = repair.type_of_repair || 'N/A';
+        const itemsRepaired = repair.items_repaired || 'N/A';
+        const whoIsHandlingRepair = repair.who_is_handling_repair || 'Unassigned';
+        const description = repair['description_of_the repair'] || 'N/A';
+        const costOfRepair = repair.cost_of_repair || '0.00';
+        const repairStatus = repair.repair_status || 'pending';
+        const repairDate = repair.repair_date || 'N/A';
+        const feedback = repair.feedback || '';
+        const imageFolder = repair.image_folder || '';
+        const imagesPaths = repair.images_paths || null;
         
         // Format date if it exists
-        let formattedDate = requestedDate;
-        if (requestedDate !== 'N/A' && requestedDate) {
+        let formattedDate = repairDate;
+        if (repairDate !== 'N/A' && repairDate) {
             try {
-                formattedDate = new Date(requestedDate).toLocaleDateString();
+                formattedDate = new Date(repairDate).toLocaleDateString();
             } catch (e) {
-                formattedDate = requestedDate;
+                formattedDate = repairDate;
             }
         }
         
         // Status badge color
         let statusClass = 'bg-secondary';
-        switch (status.toLowerCase()) {
+        switch (repairStatus.toLowerCase()) {
             case 'completed':
-            case 'resolved':
-            case 'fixed':
                 statusClass = 'bg-success';
                 break;
-            case 'cancelled':
-            case 'rejected':
-                statusClass = 'bg-danger';
-                break;
             case 'pending':
-            case 'requested':
                 statusClass = 'bg-warning text-dark';
                 break;
-            case 'in_progress':
-            case 'ongoing':
-            case 'in-progress':
+            case 'on going':
                 statusClass = 'bg-info';
                 break;
         }
         
-        // Priority badge color
-        let priorityClass = 'bg-secondary';
-        switch (priority.toLowerCase()) {
-            case 'high':
-            case 'urgent':
-                priorityClass = 'bg-danger';
-                break;
-            case 'medium':
-                priorityClass = 'bg-warning text-dark';
-                break;
-            case 'low':
-                priorityClass = 'bg-success';
-                break;
-        }
+        // Type badge color for repair type
+        let typeClass = 'bg-info';
         
         html += `
             <tr class="search-items">
@@ -276,29 +312,38 @@ function renderRepairs() {
                 </td>
                 <td>
                     <div class="d-flex align-items-center">
-                        <h6 class="user-name mb-0">${propertyTitle}</h6>
+                        <h6 class="user-name mb-0">${titleOfRepair}</h6>
                     </div>
                 </td>
                 <td>
-                    <span class="usr-email-addr">${description.length > 50 ? description.substring(0, 50) + '...' : description}</span>
+                    <span class="usr-email-addr">${propertyTitle}</span>
                 </td>
                 <td>
-                    <span class="badge ${priorityClass}">${priority}</span>
+                    <span class="badge ${typeClass}">${typeOfRepair}</span>
                 </td>
                 <td>
-                    <span class="badge ${statusClass}">${status}</span>
+                    <span class="usr-email-addr">${itemsRepaired.length > 50 ? itemsRepaired.substring(0, 50) + '...' : itemsRepaired}</span>
+                </td>
+                <td>
+                    <span class="usr-location">${whoIsHandlingRepair}</span>
+                </td>
+                <td>
+                    <span class="text-success fw-bold">₦${parseFloat(costOfRepair).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                </td>
+                <td>
+                    <span class="badge ${statusClass}">${repairStatus}</span>
                 </td>
                 <td>
                     <span class="usr-date">${formattedDate}</span>
                 </td>
                 <td>
-                    <span class="usr-location">${assignee}</span>
-                </td>
-                <td>
                     <div class="action-btn d-flex align-items-center">
-                        <a href="javascript:void(0)" onclick="viewRepair('${repairId}')" class="btn btn-sm btn-primary me-2">
+                        <a href="{{ url('/repair') }}/${repairId}" class="btn btn-sm btn-primary me-2">
                             View More
                         </a>
+                        ${imagesPaths ? `<a href="javascript:void(0)" onclick="viewImages('${repairId}', '${imageFolder}')" class="btn btn-sm btn-info me-2" title="View Images">
+                            <iconify-icon icon="solar:gallery-line-duotone" class="fs-5"></iconify-icon>
+                        </a>` : ''}
                         <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
                             <iconify-icon icon="solar:trash-bin-trash-line-duotone" class="fs-5"></iconify-icon>
                         </a>
@@ -322,17 +367,21 @@ document.getElementById('searchInput').addEventListener('input', function() {
         filteredRepairs = allRepairs;
     } else {
         filteredRepairs = allRepairs.filter(repair => {
-            const propertyTitle = (repair.property_address || repair.property_name || repair.property || '').toLowerCase();
-            const description = (repair.description || repair.issue || repair.details || '').toLowerCase();
-            const priority = (repair.priority || '').toLowerCase();
-            const status = (repair.status || repair.repair_status || '').toLowerCase();
-            const assignee = (repair.assignee || repair.technician || repair.assigned_to || '').toLowerCase();
+            const titleOfRepair = (repair.title_of_repair || '').toLowerCase();
+            const propertyId = (repair.property_id || '').toLowerCase();
+            const typeOfRepair = (repair.type_of_repair || '').toLowerCase();
+            const itemsRepaired = (repair.items_repaired || '').toLowerCase();
+            const whoIsHandlingRepair = (repair.who_is_handling_repair || '').toLowerCase();
+            const description = (repair['description_of_the repair'] || '').toLowerCase();
+            const repairStatus = (repair.repair_status || '').toLowerCase();
             
-            return propertyTitle.includes(searchTerm) || 
-                   description.includes(searchTerm) || 
-                   priority.includes(searchTerm) ||
-                   status.includes(searchTerm) ||
-                   assignee.includes(searchTerm);
+            return titleOfRepair.includes(searchTerm) || 
+                   propertyId.includes(searchTerm) || 
+                   typeOfRepair.includes(searchTerm) ||
+                   itemsRepaired.includes(searchTerm) ||
+                   whoIsHandlingRepair.includes(searchTerm) ||
+                   description.includes(searchTerm) ||
+                   repairStatus.includes(searchTerm);
         });
     }
     
@@ -431,12 +480,67 @@ function changePage(page) {
 }
 
 function viewRepair(repairId) {
-    console.log('View repair:', repairId);
-    alert('Repair detail view coming soon');
+    window.location.href = `{{ url('/repair') }}/${repairId}`;
+}
+
+function viewImages(repairId, imageFolder) {
+    const repair = allRepairs.find(r => r.id == repairId);
+    if (!repair || !repair.images_paths) {
+        alert('No images available for this repair');
+        return;
+    }
+    
+    try {
+        const imagePaths = JSON.parse(repair.images_paths);
+        if (imagePaths && imagePaths.length > 0) {
+            // Create a modal or lightbox to display images
+            let imageHtml = '';
+            imagePaths.forEach(imagePath => {
+                imageHtml += `<img src="${imagePath}" class="img-fluid mb-2" style="max-width: 300px; margin: 5px;" />`;
+            });
+            
+            // Simple modal implementation
+            const modal = `
+                <div class="modal fade" id="imageModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Repair Images</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                ${imageHtml}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing modal if any
+            const existingModal = document.getElementById('imageModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Add modal to body and show it
+            document.body.insertAdjacentHTML('beforeend', modal);
+            const bootstrapModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            bootstrapModal.show();
+        } else {
+            alert('No images found for this repair');
+        }
+    } catch (e) {
+        console.error('Error parsing image paths:', e);
+        alert('Error loading images');
+    }
 }
 
 // Auto-load repairs when page is ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadProperties();
     loadRepairs();
 });
 </script>
