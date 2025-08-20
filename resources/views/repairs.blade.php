@@ -64,8 +64,8 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th>Property</th>
                                 <th>Title</th>
+                                <th>Property</th>
                                 <th>Type</th>
                                 <th>Cost</th>
                                 <th>Status</th>
@@ -313,12 +313,12 @@ function renderRepairs() {
                     </div>
                 </td>
                 <td>
+                    <span class="usr-email-addr" title="${repair.description_of_the_repair || title}">${title.length > 30 ? title.substring(0, 30) + '...' : title}</span>
+                </td>
+                <td>
                     <div class="d-flex align-items-center">
                         <h6 class="user-name mb-0">${propertyTitle}</h6>
                     </div>
-                </td>
-                <td>
-                    <span class="usr-email-addr" title="${repair.description_of_the_repair || title}">${title.length > 30 ? title.substring(0, 30) + '...' : title}</span>
                 </td>
                 <td>
                     <span class="badge ${typeClass}">${type}</span>
