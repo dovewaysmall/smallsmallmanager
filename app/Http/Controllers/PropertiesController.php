@@ -18,7 +18,10 @@ class PropertiesController extends Controller
         try {
             $accessToken = session('access_token');
             
+            Log::info('Properties API - Token exists: ' . ($accessToken ? 'YES' : 'NO'));
+            
             if (!$accessToken) {
+                Log::warning('No access token found in session');
                 return response()->json([
                     'error' => 'Session expired. Please login again.'
                 ], 401);
@@ -29,21 +32,36 @@ class PropertiesController extends Controller
                 'Accept' => 'application/json',
             ];
 
+            Log::info('Properties API - Making request to: http://api2.smallsmall.com/api/properties');
             $response = Http::timeout(30)->withHeaders($headers)->get('http://api2.smallsmall.com/api/properties');
+
+            Log::info('Properties API - Response Status: ' . $response->status());
+            Log::info('Properties API - Response Body: ' . $response->body());
 
             if ($response->successful()) {
                 $apiData = $response->json();
+                
+                // Handle different possible response structures
                 $properties = $apiData['data'] ?? $apiData['properties'] ?? $apiData ?? [];
+                
+                // Ensure properties is an array
+                if (!is_array($properties)) {
+                    $properties = [];
+                }
+                
+                Log::info('Properties API - Properties count: ' . count($properties));
                 
                 return response()->json([
                     'success' => true,
                     'properties' => $properties
                 ]);
             } elseif ($response->status() === 401) {
+                Log::warning('Properties API returned 401 Unauthorized');
                 return response()->json([
                     'error' => 'Session expired. Please login again.'
                 ], 401);
             } else {
+                Log::error('Properties API returned error: ' . $response->status() . ' - ' . $response->body());
                 return response()->json([
                     'error' => 'Failed to fetch properties from API.'
                 ], 500);

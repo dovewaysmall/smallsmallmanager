@@ -65,17 +65,18 @@
                                     </div>
                                 </th>
                                 <th>Property</th>
-                                <th>Description</th>
-                                <th>Priority</th>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Cost</th>
                                 <th>Status</th>
-                                <th>Requested Date</th>
-                                <th>Assignee</th>
+                                <th>Date</th>
+                                <th>Handler</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="repairsTableBody">
                             <tr>
-                                <td colspan="8" class="text-center py-5">
+                                <td colspan="9" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center" id="loadingState">
                                         <div class="spinner-border text-primary mb-3" role="status">
                                             <span class="visually-hidden">Loading...</span>
@@ -119,6 +120,7 @@ let filteredRepairs = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 let totalPages = 1;
+let propertyMap = {};
 
 function showState(stateName) {
     document.getElementById('loadingState').classList.add('d-none');
@@ -126,6 +128,30 @@ function showState(stateName) {
     
     if (stateName) {
         document.getElementById(stateName).classList.remove('d-none');
+    }
+}
+
+async function loadProperties() {
+    try {
+        const response = await fetch('{{ route("properties.load") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        });
+        
+        const data = await response.json();
+        if (data.success && data.properties) {
+            // Create property lookup map
+            propertyMap = {};
+            data.properties.forEach(property => {
+                const propertyName = property.property_title || property.property_name || property.address || `Property ${property.id}`;
+                propertyMap[property.id] = propertyName;
+            });
+        }
+    } catch (error) {
+        console.error('Error loading properties:', error);
     }
 }
 
@@ -187,7 +213,7 @@ function renderRepairs() {
     if (filteredRepairs.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="8" class="text-center py-5">
+                <td colspan="9" class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
                         <iconify-icon icon="solar:tools-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
                         <p class="mb-0 text-muted">No repairs found</p>
@@ -195,6 +221,7 @@ function renderRepairs() {
                 </td>
             </tr>
         `;
+        updatePaginationInfo();
         document.getElementById('paginationContainer').style.display = 'none';
         return;
     }
@@ -209,22 +236,25 @@ function renderRepairs() {
     currentPageRepairs.forEach((repair, index) => {
         const globalIndex = startIndex + index;
         
-        // Handle different possible field names from API
-        const repairId = repair.id || repair.repairId || globalIndex + 1;
-        const propertyTitle = repair.property_address || repair.property_name || repair.property || 'N/A';
-        const description = repair.description || repair.issue || repair.details || 'N/A';
-        const priority = repair.priority || 'Medium';
-        const status = repair.status || repair.repair_status || 'Pending';
-        const requestedDate = repair.created_at || repair.requested_date || repair.date || 'N/A';
-        const assignee = repair.assignee || repair.technician || repair.assigned_to || 'Unassigned';
+        // Handle API data structure
+        const repairId = repair.id || globalIndex + 1;
+        const propertyTitle = propertyMap[repair.property_id] || `Property ${repair.property_id}`;
+        const title = repair.title_of_repair || 'N/A';
+        const type = repair.type_of_repair || 'N/A';
+        const cost = repair.cost_of_repair ? `₦${parseFloat(repair.cost_of_repair).toFixed(2)}` : 'N/A';
+        const status = repair.repair_status || 'pending';
+        const repairDate = repair.repair_date || 'N/A';
+        const handler = repair.handler_firstName && repair.handler_lastName 
+            ? `${repair.handler_firstName} ${repair.handler_lastName}` 
+            : (repair.who_is_handling_repair || 'Unassigned');
         
         // Format date if it exists
-        let formattedDate = requestedDate;
-        if (requestedDate !== 'N/A' && requestedDate) {
+        let formattedDate = repairDate;
+        if (repairDate !== 'N/A' && repairDate) {
             try {
-                formattedDate = new Date(requestedDate).toLocaleDateString();
+                formattedDate = new Date(repairDate).toLocaleDateString();
             } catch (e) {
-                formattedDate = requestedDate;
+                formattedDate = repairDate;
             }
         }
         
@@ -244,6 +274,7 @@ function renderRepairs() {
             case 'requested':
                 statusClass = 'bg-warning text-dark';
                 break;
+            case 'on going':
             case 'in_progress':
             case 'ongoing':
             case 'in-progress':
@@ -251,18 +282,23 @@ function renderRepairs() {
                 break;
         }
         
-        // Priority badge color
-        let priorityClass = 'bg-secondary';
-        switch (priority.toLowerCase()) {
-            case 'high':
-            case 'urgent':
-                priorityClass = 'bg-danger';
+        // Type badge color
+        let typeClass = 'bg-secondary';
+        switch (type.toLowerCase()) {
+            case 'plumbing':
+                typeClass = 'bg-primary';
                 break;
-            case 'medium':
-                priorityClass = 'bg-warning text-dark';
+            case 'electrical':
+                typeClass = 'bg-warning text-dark';
                 break;
-            case 'low':
-                priorityClass = 'bg-success';
+            case 'hvac':
+                typeClass = 'bg-info';
+                break;
+            case 'appliances':
+                typeClass = 'bg-success';
+                break;
+            case 'structural':
+                typeClass = 'bg-danger';
                 break;
         }
         
@@ -282,10 +318,13 @@ function renderRepairs() {
                     </div>
                 </td>
                 <td>
-                    <span class="usr-email-addr">${description.length > 50 ? description.substring(0, 50) + '...' : description}</span>
+                    <span class="usr-email-addr" title="${repair.description_of_the_repair || title}">${title.length > 30 ? title.substring(0, 30) + '...' : title}</span>
                 </td>
                 <td>
-                    <span class="badge ${priorityClass}">${priority}</span>
+                    <span class="badge ${typeClass}">${type}</span>
+                </td>
+                <td>
+                    <span class="usr-phone">${cost}</span>
                 </td>
                 <td>
                     <span class="badge ${statusClass}">${status}</span>
@@ -294,7 +333,7 @@ function renderRepairs() {
                     <span class="usr-date">${formattedDate}</span>
                 </td>
                 <td>
-                    <span class="usr-location">${assignee}</span>
+                    <span class="usr-location">${handler}</span>
                 </td>
                 <td>
                     <div class="action-btn d-flex align-items-center">
@@ -324,17 +363,21 @@ document.getElementById('searchInput').addEventListener('input', function() {
         filteredRepairs = allRepairs;
     } else {
         filteredRepairs = allRepairs.filter(repair => {
-            const propertyTitle = (repair.property_address || repair.property_name || repair.property || '').toLowerCase();
-            const description = (repair.description || repair.issue || repair.details || '').toLowerCase();
-            const priority = (repair.priority || '').toLowerCase();
-            const status = (repair.status || repair.repair_status || '').toLowerCase();
-            const assignee = (repair.assignee || repair.technician || repair.assigned_to || '').toLowerCase();
+            const propertyTitle = (repair.property_title || repair.property_address || '').toLowerCase();
+            const title = (repair.title_of_repair || '').toLowerCase();
+            const type = (repair.type_of_repair || '').toLowerCase();
+            const status = (repair.repair_status || '').toLowerCase();
+            const handlerName = repair.handler_firstName && repair.handler_lastName 
+                ? `${repair.handler_firstName} ${repair.handler_lastName}`.toLowerCase()
+                : (repair.who_is_handling_repair || '').toLowerCase();
+            const cost = (repair.cost_of_repair || '').toString().toLowerCase();
             
             return propertyTitle.includes(searchTerm) || 
-                   description.includes(searchTerm) || 
-                   priority.includes(searchTerm) ||
+                   title.includes(searchTerm) || 
+                   type.includes(searchTerm) ||
                    status.includes(searchTerm) ||
-                   assignee.includes(searchTerm);
+                   handlerName.includes(searchTerm) ||
+                   cost.includes(searchTerm);
         });
     }
     
@@ -438,7 +481,8 @@ function viewRepair(repairId) {
 }
 
 // Auto-load repairs when page is ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadProperties();
     loadRepairs();
 });
 </script>

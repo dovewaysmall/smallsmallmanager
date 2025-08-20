@@ -227,12 +227,15 @@ class RepairsController extends Controller
             // Validate the request
             Log::info('Starting validation...');
             $request->validate([
-                'property_id' => 'required|string',
-                'description' => 'required|string|max:1000',
-                'priority' => 'required|in:low,medium,high,urgent',
-                'category' => 'sometimes|string|max:255',
-                'tenant_id' => 'sometimes|string',
-                'assignee' => 'sometimes|string|max:255',
+                'property_id' => 'required|string|max:50',
+                'title_of_repair' => 'required|string|max:100',
+                'type_of_repair' => 'required|string|max:100',
+                'cost_of_repair' => 'required|numeric|min:0',
+                'repair_status' => 'required|in:pending,on going,completed',
+                'description_of_the_repair' => 'sometimes|string|max:1000',
+                'feedback' => 'sometimes|string|max:1000',
+                'items_repaired' => 'required|string|max:1000',
+                'who_is_handling_repair' => 'sometimes|string|max:100',
             ]);
             Log::info('Validation passed');
 
@@ -242,54 +245,19 @@ class RepairsController extends Controller
                 'Content-Type' => 'application/json',
             ];
 
-            // Get the landlord/owner ID from the property
-            $apartmentOwnerId = $this->getPropertyOwnerId($request->property_id, $headers);
-            
-            // Build the repair description with property info since we can't store property_id separately
-            $description = $request->description;
-            if ($request->filled('property_id')) {
-                $description = "[Property ID: {$request->property_id}] " . $description;
-            }
-            
-            // Include all potentially required fields based on common repair database schemas
+            // Prepare repair data matching the updated API schema
             $repairData = [
-                'items_repaired' => $description, // Required: repair description with property info
-                'apartment_owner_id' => $apartmentOwnerId, // Required: landlord/owner ID
-                'repair_amount' => 0, // Required: default to 0 since amount isn't known at creation
-                'repair_status' => 'pending', // Common field: status of repair
-                'repair_done_by' => $request->assignee ?? '', // Optional: who will do the repair
-                'property_id' => $request->property_id, // Property ID (if API accepts it)
+                'title_of_repair' => $request->title_of_repair,
+                'property_id' => $request->property_id,
+                'type_of_repair' => $request->type_of_repair,
+                'items_repaired' => $request->items_repaired ?? '',
+                'who_is_handling_repair' => $request->who_is_handling_repair ?? null,
+                'description_of_repair' => $request->input('description_of_the_repair', ''),
+                'cost_of_repair' => (float) $request->cost_of_repair,
+                'repair_status' => $request->repair_status,
+                'feedback' => $request->feedback ?? null,
+                'images' => []
             ];
-
-            // Build the full description with all our metadata since we can only use these fields
-            $fullDescription = $description;
-            
-            // Add priority to description
-            if ($request->filled('priority')) {
-                $priorityText = match($request->priority) {
-                    'urgent' => '[URGENT] ',
-                    'high' => '[HIGH PRIORITY] ',
-                    'medium' => '[MEDIUM PRIORITY] ',
-                    'low' => '[LOW PRIORITY] ',
-                    default => ''
-                };
-                $fullDescription = $priorityText . $fullDescription;
-            }
-
-            // Add category to description if provided
-            if ($request->filled('category')) {
-                $fullDescription = '[' . strtoupper($request->category) . '] ' . $fullDescription;
-            }
-
-            // Add assignee info to description since we can't use repair_done_by
-            if ($request->filled('assignee')) {
-                $fullDescription = $fullDescription . ' [Assigned to: ' . $request->assignee . ']';
-            }
-
-            // Update the description with all metadata
-            $repairData['items_repaired'] = $fullDescription;
-            
-            // Don't include any other fields that might cause database errors
             
             Log::info('Sending repair data to API:', $repairData);
             Log::info('API URL: http://api2.smallsmall.com/api/repairs');
@@ -332,18 +300,52 @@ class RepairsController extends Controller
                     ]
                 ], 422);
             } else {
-                Log::error('Repairs API error - Status: ' . $response->status() . ', Body: ' . $response->body());
+                $responseBody = $response->json();
+                $statusCode = $response->status();
+                
+                Log::error('Repairs API error - Status: ' . $statusCode . ', Body: ' . $response->body());
+                
+                // Extract meaningful error message from API response
+                $errorMessage = 'Failed to create repair request. API returned an error.';
+                $detailedErrors = [];
+                
+                if ($responseBody) {
+                    if (isset($responseBody['message'])) {
+                        $errorMessage = $responseBody['message'];
+                    } elseif (isset($responseBody['error'])) {
+                        $errorMessage = $responseBody['error'];
+                    }
+                    
+                    // Extract validation errors if present
+                    if (isset($responseBody['errors'])) {
+                        $detailedErrors = $responseBody['errors'];
+                    } elseif (isset($responseBody['data']['errors'])) {
+                        $detailedErrors = $responseBody['data']['errors'];
+                    }
+                }
+                
+                // Build user-friendly error message
+                $displayMessage = $errorMessage;
+                if (!empty($detailedErrors)) {
+                    $displayMessage .= "\n\nDetailed errors:";
+                    foreach ($detailedErrors as $field => $errors) {
+                        $errorList = is_array($errors) ? implode(', ', $errors) : $errors;
+                        $displayMessage .= "\n• {$field}: {$errorList}";
+                    }
+                }
                 
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to create repair request. API returned an error.',
+                    'message' => $displayMessage,
+                    'api_errors' => $detailedErrors,
                     'debug' => [
-                        'status_code' => $response->status(),
-                        'response_body' => $response->json(),
+                        'status_code' => $statusCode,
+                        'response_body' => $responseBody,
                         'sent_data' => $repairData,
-                        'api_url' => 'http://api2.smallsmall.com/api/repairs'
+                        'api_url' => 'http://api2.smallsmall.com/api/repairs',
+                        'headers_sent' => $headers
                     ]
-                ], 500);
+                ], $statusCode >= 400 && $statusCode < 500 ? $statusCode : 500);
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -366,46 +368,4 @@ class RepairsController extends Controller
         }
     }
 
-    private function getPropertyOwnerId($propertyId, $headers)
-    {
-        try {
-            Log::info("Getting property owner ID for property: {$propertyId}");
-            
-            // Try to get property details from API
-            $response = Http::timeout(30)->withHeaders($headers)->get("http://api2.smallsmall.com/api/properties/{$propertyId}");
-            
-            if ($response->successful()) {
-                $propertyData = $response->json();
-                Log::info('Property data received:', $propertyData);
-                
-                // Try different possible field names for owner ID
-                $ownerId = $propertyData['data']['landlordID'] ?? 
-                          $propertyData['data']['landlord_id'] ?? 
-                          $propertyData['data']['owner_id'] ?? 
-                          $propertyData['data']['ownerID'] ?? 
-                          $propertyData['landlordID'] ?? 
-                          $propertyData['landlord_id'] ?? 
-                          $propertyData['owner_id'] ?? 
-                          $propertyData['ownerID'] ?? 
-                          null;
-                
-                Log::info("Extracted owner ID: {$ownerId}");
-                
-                if ($ownerId) {
-                    return $ownerId;
-                }
-            } else {
-                Log::warning("Failed to get property details: " . $response->status());
-                Log::warning("Response: " . $response->body());
-            }
-            
-            // Fallback: use the property ID itself (might work in some cases)
-            Log::warning("Using property ID as owner ID fallback");
-            return $propertyId;
-            
-        } catch (\Exception $e) {
-            Log::error('Error getting property owner ID: ' . $e->getMessage());
-            return $propertyId; // Fallback
-        }
-    }
 }
