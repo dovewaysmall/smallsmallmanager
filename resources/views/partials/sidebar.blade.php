@@ -340,6 +340,41 @@
                   </ul>
                 </li>
 
+                <li class="sidebar-item">
+                  <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                    <iconify-icon icon="solar:wallet-money-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Payouts</span>
+                  </a>
+                  <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('payouts') }}">
+                        <span class="icon-small"></span>
+                        Total Payouts
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('payouts.this-week') }}">
+                        <span class="icon-small"></span>
+                        Payouts(This Week)
+                      </a>
+                    </li>
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('payouts.this-month') }}">
+                        <span class="icon-small"></span>
+                        Payouts(This Month)
+                      </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                      <a class="sidebar-link" href="{{ route('payouts.this-year') }}">
+                        <span class="icon-small"></span>
+                        Payouts(This Year)
+                      </a>
+                    </li>
+                    
+                  </ul>
+                </li>
+
                 
               </ul>
             </nav>

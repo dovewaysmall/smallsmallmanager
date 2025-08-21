@@ -13,6 +13,7 @@ use App\Http\Controllers\PropertiesController;
 use App\Http\Controllers\LandlordsController;
 use App\Http\Controllers\VerificationsController;
 use App\Http\Controllers\RepairsController;
+use App\Http\Controllers\PayoutsController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
@@ -140,12 +141,27 @@ Route::post('/repairs/store', [RepairsController::class, 'store'])->name('repair
 Route::get('/repair/{id}', [RepairsController::class, 'show'])->name('repair.show');
 Route::get('/repair/{id}/edit', [RepairsController::class, 'edit'])->name('repair.edit');
 Route::put('/repair/{id}', [RepairsController::class, 'update'])->name('repair.update');
+Route::delete('/repair/{id}', [RepairsController::class, 'destroy'])->name('repair.destroy');
 Route::get('/repairs/this-week', [RepairsController::class, 'thisWeek'])->name('repairs.this-week');
 Route::post('/repairs/this-week/load', [RepairsController::class, 'loadRepairsThisWeek'])->name('repairs.this-week.load');
 Route::get('/repairs/this-month', [RepairsController::class, 'thisMonth'])->name('repairs.this-month');
 Route::post('/repairs/this-month/load', [RepairsController::class, 'loadRepairsThisMonth'])->name('repairs.this-month.load');
 Route::get('/repairs/this-year', [RepairsController::class, 'thisYear'])->name('repairs.this-year');
 Route::post('/repairs/this-year/load', [RepairsController::class, 'loadRepairsThisYear'])->name('repairs.this-year.load');
+
+Route::get('/payouts', [PayoutsController::class, 'index'])->name('payouts');
+Route::post('/payouts/load', [PayoutsController::class, 'loadPayouts'])->name('payouts.load');
+Route::get('/payouts/add', [PayoutsController::class, 'add'])->name('payouts.add');
+Route::post('/payouts/store', [PayoutsController::class, 'store'])->name('payouts.store');
+Route::get('/payout/{id}', [PayoutsController::class, 'show'])->name('payout.show');
+Route::get('/payout/{id}/receipt', [PayoutsController::class, 'receipt'])->name('payout.receipt');
+Route::delete('/payout/{id}', [PayoutsController::class, 'destroy'])->name('payout.destroy');
+Route::get('/payouts/this-week', [PayoutsController::class, 'thisWeek'])->name('payouts.this-week');
+Route::post('/payouts/this-week/load', [PayoutsController::class, 'loadPayoutsThisWeek'])->name('payouts.this-week.load');
+Route::get('/payouts/this-month', [PayoutsController::class, 'thisMonth'])->name('payouts.this-month');
+Route::post('/payouts/this-month/load', [PayoutsController::class, 'loadPayoutsThisMonth'])->name('payouts.this-month.load');
+Route::get('/payouts/this-year', [PayoutsController::class, 'thisYear'])->name('payouts.this-year');
+Route::post('/payouts/this-year/load', [PayoutsController::class, 'loadPayoutsThisYear'])->name('payouts.this-year.load');
 
 // Dashboard API routes
 Route::get('/api/dashboard/data', [DashboardController::class, 'getDashboardData'])->name('api.dashboard.data');

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Repairs')
+@section('title', 'Payouts')
 
 @section('content')
     <div class="body-wrapper">
@@ -9,7 +9,7 @@
             <div class="row align-items-center">
               <div class="col-12">
                 <div class="d-sm-flex align-items-center justify-space-between">
-                  <h4 class="mb-4 mb-sm-0 card-title">Repairs</h4>
+                  <h4 class="mb-4 mb-sm-0 card-title">Payouts</h4>
                   <nav aria-label="breadcrumb" class="ms-auto">
                     <ol class="breadcrumb">
                       <li class="breadcrumb-item d-flex align-items-center">
@@ -19,7 +19,7 @@
                       </li>
                       <li class="breadcrumb-item" aria-current="page">
                         <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
-                          Repairs
+                          Payouts
                         </span>
                       </li>
                     </ol>
@@ -34,7 +34,7 @@
                 <div class="row">
                     <div class="col-md-4 col-xl-3">
                         <form class="position-relative">
-                            <input type="text" class="form-control product-search ps-5" id="searchInput" placeholder="Search Repairs..." disabled />
+                            <input type="text" class="form-control product-search ps-5" id="searchInput" placeholder="Search Payouts..." disabled />
                             <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
                         </form>
                     </div>
@@ -44,8 +44,11 @@
                                 <i class="ti ti-trash me-1 fs-5"></i> Delete All Row
                             </a>
                         </div>
-                        <a href="{{ route('repairs.add') }}" class="btn btn-primary d-flex align-items-center">
-                            <i class="ti ti-tools text-white me-1 fs-5"></i> Add New Repair
+                        <a href="javascript:void(0)" class="btn btn-primary me-2 d-flex align-items-center">
+                            <i class="ti ti-wallet text-white me-1 fs-5"></i> Export Payouts
+                        </a>
+                        <a href="{{ route('payouts.add') }}" class="btn btn-success d-flex align-items-center">
+                            <i class="ti ti-plus text-white me-1 fs-5"></i> Add Payout
                         </a>
                     </div>
                 </div>
@@ -53,7 +56,7 @@
 
             <div class="card card-body">
                 <div class="table-responsive">
-                    <table id="repairsTable" class="table search-table align-middle text-nowrap">
+                    <table id="payoutsTable" class="table search-table align-middle text-nowrap">
                         <thead class="header-item">
                             <tr>
                                 <th>
@@ -64,29 +67,26 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th>Title</th>
-                                <th>Property</th>
-                                <th>Type</th>
-                                <th>Cost</th>
+                                <th>Recipient</th>
+                                <th>Amount</th>
                                 <th>Status</th>
                                 <th>Date</th>
-                                <th>Handler</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="repairsTableBody">
+                        <tbody id="payoutsTableBody">
                             <tr>
-                                <td colspan="9" class="text-center py-5">
+                                <td colspan="6" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center" id="loadingState">
                                         <div class="spinner-border text-primary mb-3" role="status">
                                             <span class="visually-hidden">Loading...</span>
                                         </div>
-                                        <p class="mb-0 text-muted">Loading repairs...</p>
+                                        <p class="mb-0 text-muted">Loading payouts...</p>
                                     </div>
                                     <div class="d-flex flex-column align-items-center d-none" id="errorState">
                                         <iconify-icon icon="solar:info-circle-line-duotone" class="fs-8 text-danger mb-2"></iconify-icon>
                                         <p class="mb-2 text-danger" id="errorMessage"></p>
-                                        <button onclick="loadRepairs()" class="btn btn-sm btn-outline-primary">
+                                        <button onclick="loadPayouts()" class="btn btn-sm btn-outline-primary">
                                             <i class="ti ti-refresh me-1"></i> Retry
                                         </button>
                                     </div>
@@ -97,9 +97,9 @@
                 </div>
                 
                 <!-- Pagination Controls -->
-                <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer" style="display: none !important;">
+                <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer" style="display: none;">
                     <div class="pagination-info">
-                        <span class="text-muted" id="paginationInfo">Showing 1 to 10 of 0 entries</span>
+                        <span class="text-muted" id="paginationInfo">Showing 0 to 0 of 0 entries</span>
                     </div>
                     <nav aria-label="Page navigation">
                         <ul class="pagination mb-0" id="paginationControls">
@@ -115,12 +115,12 @@
 
 @push('scripts')
 <script>
-let allRepairs = [];
-let filteredRepairs = [];
+let allPayouts = [];
+let filteredPayouts = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 let totalPages = 1;
-let propertyMap = {};
+let landlordMap = {};
 
 function showState(stateName) {
     document.getElementById('loadingState').classList.add('d-none');
@@ -131,9 +131,9 @@ function showState(stateName) {
     }
 }
 
-async function loadProperties() {
+async function loadLandlords() {
     try {
-        const response = await fetch('{{ route("properties.load") }}', {
+        const response = await fetch('{{ route("landlords.load") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -142,32 +142,50 @@ async function loadProperties() {
         });
         
         const data = await response.json();
-        if (data.success && data.properties) {
-            // Create property lookup map
-            propertyMap = {};
-            data.properties.forEach(property => {
-                const propertyName = property.property_title || property.property_name || property.address || `Property ${property.id}`;
-                propertyMap[property.id] = propertyName;
+        if (data.success && data.landlords) {
+            // Create landlord lookup map using userID
+            landlordMap = {};
+            data.landlords.forEach(landlord => {
+                const landlordId = landlord.userID || landlord.user_id || landlord.id;
+                const landlordName = `${landlord.firstName} ${landlord.lastName}` || 
+                                   `${landlord.first_name} ${landlord.last_name}` || 
+                                   landlord.name || 
+                                   landlord.full_name || 
+                                   `Landlord ${landlordId}`;
+                landlordMap[landlordId] = landlordName;
             });
+            console.log('Landlord map created:', landlordMap);
         }
     } catch (error) {
-        console.error('Error loading properties:', error);
+        console.error('Error loading landlords:', error);
     }
 }
 
-function loadRepairs() {
+function loadPayouts() {
     showState('loadingState');
     
-    fetch('{{ route("repairs.load") }}', {
+    // Check for CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        console.error('CSRF token not found');
+        showError('CSRF token not found. Please refresh the page.');
+        return;
+    }
+    
+    console.log('Loading payouts from:', '{{ route("payouts.load") }}');
+    console.log('CSRF token:', csrfToken.getAttribute('content'));
+    
+    fetch('{{ route("payouts.load") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-TOKEN': csrfToken.getAttribute('content')
         }
     })
     .then(response => {
+        console.log('Response status:', response.status);
+        
         if (response.status === 419) {
-            // CSRF token expired
             alert('Your session has expired. You will be redirected to login.');
             window.location.href = '{{ route("login") }}';
             return;
@@ -175,30 +193,29 @@ function loadRepairs() {
         return response.json();
     })
     .then(data => {
-        if (!data) return; // Handle early return from 419
+        console.log('API Response data:', data);
+        
+        if (!data) return;
         
         if (data.success) {
-            allRepairs = data.repairs;
-            filteredRepairs = allRepairs;
-            renderRepairs();
+            console.log('Payouts received:', data.payouts);
+            allPayouts = data.payouts || [];
+            filteredPayouts = allPayouts;
+            renderPayouts();
             document.getElementById('searchInput').disabled = false;
         } else {
+            console.error('API Error:', data.error);
             if (data.error && data.error.includes('Session expired')) {
                 alert('Your session has expired. You will be redirected to login.');
                 window.location.href = '{{ route("login") }}';
                 return;
             }
-            showError(data.error || 'Failed to load repairs');
+            showError(data.error || 'Failed to load payouts');
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        if (error.status === 419) {
-            alert('Your session has expired. You will be redirected to login.');
-            window.location.href = '{{ route("login") }}';
-            return;
-        }
-        showError('An error occurred while loading repairs');
+        console.error('Fetch error:', error);
+        showError('Network error occurred while loading payouts');
     });
 }
 
@@ -207,54 +224,53 @@ function showError(message) {
     showState('errorState');
 }
 
-function renderRepairs() {
-    const tbody = document.getElementById('repairsTableBody');
+function renderPayouts() {
+    const tbody = document.getElementById('payoutsTableBody');
     
-    if (filteredRepairs.length === 0) {
+    if (!allPayouts || allPayouts.length === 0 || !filteredPayouts || filteredPayouts.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="9" class="text-center py-5">
+                <td colspan="6" class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
-                        <iconify-icon icon="solar:tools-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
-                        <p class="mb-0 text-muted">No repairs found</p>
+                        <iconify-icon icon="solar:wallet-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
+                        <p class="mb-0 text-muted">No payouts found</p>
                     </div>
                 </td>
             </tr>
         `;
-        updatePaginationInfo();
         document.getElementById('paginationContainer').style.display = 'none';
         return;
     }
     
     // Calculate pagination
-    totalPages = Math.ceil(filteredRepairs.length / itemsPerPage);
+    totalPages = Math.ceil(filteredPayouts.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentPageRepairs = filteredRepairs.slice(startIndex, endIndex);
+    const currentPagePayouts = filteredPayouts.slice(startIndex, endIndex);
     
     let html = '';
-    currentPageRepairs.forEach((repair, index) => {
+    currentPagePayouts.forEach((payout, index) => {
         const globalIndex = startIndex + index;
         
-        // Handle API data structure
-        const repairId = repair.id || globalIndex + 1;
-        const propertyTitle = propertyMap[repair.property_id] || `Property ${repair.property_id}`;
-        const title = repair.title_of_repair || 'N/A';
-        const type = repair.type_of_repair || 'N/A';
-        const cost = repair.cost_of_repair ? `₦${parseFloat(repair.cost_of_repair).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 'N/A';
-        const status = repair.repair_status || 'pending';
-        const repairDate = repair.repair_date || 'N/A';
-        const handler = repair.handler_firstName && repair.handler_lastName 
-            ? `${repair.handler_firstName} ${repair.handler_lastName}` 
-            : (repair.who_is_handling_repair || 'Unassigned');
+        // Handle different API response structures
+        const payoutId = payout.id || payout.payout_id || 'N/A';
+        const reference = payout.reference || payout.transaction_reference || payout.ref || 'N/A';
         
-        // Format date if it exists
-        let formattedDate = repairDate;
-        if (repairDate !== 'N/A' && repairDate) {
+        // Get landlord name using landlord_id lookup
+        const landlordId = payout.landlord_id;
+        const recipient = landlordMap[landlordId] || payout.landlord_name || payout.recipient_name || payout.recipient || payout.user_name || landlordId || 'N/A';
+        
+        const amount = payout.amount || payout.payout_amount || '0.00';
+        const status = payout.status || payout.payout_status || 'pending';
+        const date = payout.date_paid || payout.created_at || payout.payout_date || payout.date || 'N/A';
+        
+        // Format date
+        let formattedDate = date;
+        if (date !== 'N/A' && date) {
             try {
-                formattedDate = new Date(repairDate).toLocaleDateString();
+                formattedDate = new Date(date).toLocaleDateString();
             } catch (e) {
-                formattedDate = repairDate;
+                formattedDate = date;
             }
         }
         
@@ -262,43 +278,19 @@ function renderRepairs() {
         let statusClass = 'bg-secondary';
         switch (status.toLowerCase()) {
             case 'completed':
-            case 'resolved':
-            case 'fixed':
+            case 'success':
+            case 'paid':
                 statusClass = 'bg-success';
                 break;
-            case 'cancelled':
-            case 'rejected':
-                statusClass = 'bg-danger';
-                break;
             case 'pending':
-            case 'requested':
                 statusClass = 'bg-warning text-dark';
                 break;
-            case 'on going':
-            case 'in_progress':
-            case 'ongoing':
-            case 'in-progress':
+            case 'failed':
+            case 'declined':
+                statusClass = 'bg-danger';
+                break;
+            case 'processing':
                 statusClass = 'bg-info';
-                break;
-        }
-        
-        // Type badge color
-        let typeClass = 'bg-secondary';
-        switch (type.toLowerCase()) {
-            case 'plumbing':
-                typeClass = 'bg-primary';
-                break;
-            case 'electrical':
-                typeClass = 'bg-warning text-dark';
-                break;
-            case 'hvac':
-                typeClass = 'bg-info';
-                break;
-            case 'appliances':
-                typeClass = 'bg-success';
-                break;
-            case 'structural':
-                typeClass = 'bg-danger';
                 break;
         }
         
@@ -313,18 +305,12 @@ function renderRepairs() {
                     </div>
                 </td>
                 <td>
-                    <span class="usr-email-addr" title="${repair.description_of_the_repair || title}">${title.length > 30 ? title.substring(0, 30) + '...' : title}</span>
-                </td>
-                <td>
                     <div class="d-flex align-items-center">
-                        <h6 class="user-name mb-0">${propertyTitle}</h6>
+                        <h6 class="user-name mb-0">${recipient}</h6>
                     </div>
                 </td>
                 <td>
-                    <span class="badge ${typeClass}">${type}</span>
-                </td>
-                <td>
-                    <span class="usr-phone">${cost}</span>
+                    <span class="usr-phone text-success fw-bold">₦${parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                 </td>
                 <td>
                     <span class="badge ${statusClass}">${status}</span>
@@ -333,14 +319,11 @@ function renderRepairs() {
                     <span class="usr-date">${formattedDate}</span>
                 </td>
                 <td>
-                    <span class="usr-location">${handler}</span>
-                </td>
-                <td>
                     <div class="action-btn d-flex align-items-center">
-                        <a href="{{ url('/repair') }}/${repairId}" class="btn btn-sm btn-primary me-2">
-                            View More
+                        <a href="/payout/${payoutId}" class="btn btn-sm btn-primary me-2">
+                            View Details
                         </a>
-                        <a href="javascript:void(0)" onclick="deleteRepair('${repairId}')" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
+                        <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" onclick="deletePayout('${payoutId}')" style="transition: all 0.2s ease;">
                             <iconify-icon icon="solar:trash-bin-trash-line-duotone" class="fs-5"></iconify-icon>
                         </a>
                     </div>
@@ -360,35 +343,27 @@ document.getElementById('searchInput').addEventListener('input', function() {
     const searchTerm = this.value.toLowerCase().trim();
     
     if (searchTerm === '') {
-        filteredRepairs = allRepairs;
+        filteredPayouts = allPayouts;
     } else {
-        filteredRepairs = allRepairs.filter(repair => {
-            const propertyTitle = (repair.property_title || repair.property_address || '').toLowerCase();
-            const title = (repair.title_of_repair || '').toLowerCase();
-            const type = (repair.type_of_repair || '').toLowerCase();
-            const status = (repair.repair_status || '').toLowerCase();
-            const handlerName = repair.handler_firstName && repair.handler_lastName 
-                ? `${repair.handler_firstName} ${repair.handler_lastName}`.toLowerCase()
-                : (repair.who_is_handling_repair || '').toLowerCase();
-            const cost = (repair.cost_of_repair || '').toString().toLowerCase();
+        filteredPayouts = allPayouts.filter(payout => {
+            const landlordId = payout.landlord_id;
+            const landlordName = landlordMap[landlordId] || '';
+            const recipient = (landlordName || payout.landlord_name || payout.recipient_name || payout.recipient || '').toLowerCase();
+            const status = (payout.status || '').toLowerCase();
             
-            return propertyTitle.includes(searchTerm) || 
-                   title.includes(searchTerm) || 
-                   type.includes(searchTerm) ||
-                   status.includes(searchTerm) ||
-                   handlerName.includes(searchTerm) ||
-                   cost.includes(searchTerm);
+            return recipient.includes(searchTerm) || 
+                   status.includes(searchTerm);
         });
     }
     
-    currentPage = 1; // Reset to first page when searching
-    renderRepairs();
+    currentPage = 1;
+    renderPayouts();
 });
 
 function updatePaginationInfo() {
-    const startItem = filteredRepairs.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
-    const endItem = Math.min(currentPage * itemsPerPage, filteredRepairs.length);
-    const totalItems = filteredRepairs.length;
+    const startItem = filteredPayouts.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+    const endItem = Math.min(currentPage * itemsPerPage, filteredPayouts.length);
+    const totalItems = filteredPayouts.length;
     
     document.getElementById('paginationInfo').textContent = 
         `Showing ${startItem} to ${endItem} of ${totalItems} entries`;
@@ -413,26 +388,9 @@ function updatePaginationControls() {
         </li>
     `;
     
-    // Calculate page range to show
+    // Calculate page range
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, currentPage + 2);
-    
-    // Adjust range if we're near the beginning or end
-    if (endPage - startPage < 4) {
-        if (startPage === 1) {
-            endPage = Math.min(totalPages, startPage + 4);
-        } else if (endPage === totalPages) {
-            startPage = Math.max(1, endPage - 4);
-        }
-    }
-    
-    // First page and ellipsis if needed
-    if (startPage > 1) {
-        html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(1)">1</a></li>`;
-        if (startPage > 2) {
-            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-        }
-    }
     
     // Page numbers
     for (let i = startPage; i <= endPage; i++) {
@@ -441,14 +399,6 @@ function updatePaginationControls() {
                 <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
             </li>
         `;
-    }
-    
-    // Last page and ellipsis if needed
-    if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-        }
-        html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${totalPages})">${totalPages}</a></li>`;
     }
     
     // Next button
@@ -469,29 +419,23 @@ function changePage(page) {
     }
     
     currentPage = page;
-    renderRepairs();
-    
-    // Prevent default link behavior
+    renderPayouts();
     event.preventDefault();
 }
 
-function viewRepair(repairId) {
-    window.location.href = `{{ url('/repair') }}/${repairId}`;
-}
-
-async function deleteRepair(repairId) {
-    if (!repairId) {
-        alert('Invalid repair ID');
+async function deletePayout(payoutId) {
+    if (!payoutId) {
+        alert('Invalid payout ID');
         return;
     }
     
-    const confirmDelete = confirm('Are you sure you want to delete this repair? This action cannot be undone.');
+    const confirmDelete = confirm('Are you sure you want to delete this payout? This action cannot be undone.');
     if (!confirmDelete) {
         return;
     }
     
     try {
-        const response = await fetch(`{{ url('/repair') }}/${repairId}`, {
+        const response = await fetch(`{{ url('/payout') }}/${payoutId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -499,36 +443,75 @@ async function deleteRepair(repairId) {
             }
         });
         
-        const data = await response.json();
+        console.log('Delete response status:', response.status);
+        console.log('Delete response ok:', response.ok);
         
-        if (data.success) {
+        // Check if response is successful (2xx status codes)
+        if (response.ok) {
+            let data = null;
+            try {
+                data = await response.json();
+                console.log('Delete response data:', data);
+            } catch (jsonError) {
+                console.log('Response is not JSON, but delete was successful');
+                // If response is not JSON but status is OK, assume success
+                data = { success: true };
+            }
+            
             // Show success message
-            alert('Repair deleted successfully!');
+            alert('Payout deleted successfully!');
             
-            // Remove the repair row from the table
-            const repairRows = document.querySelectorAll('.search-items');
-            repairRows.forEach(row => {
-                const viewMoreBtn = row.querySelector('a[href*="/repair/"]');
-                if (viewMoreBtn && viewMoreBtn.href.includes(`/repair/${repairId}`)) {
-                    row.remove();
-                }
-            });
+            // Remove the payout from allPayouts array
+            const payoutIndex = allPayouts.findIndex(p => 
+                String(p.id) === String(payoutId) || 
+                String(p.payout_id) === String(payoutId)
+            );
+            if (payoutIndex !== -1) {
+                allPayouts.splice(payoutIndex, 1);
+            }
             
-            // Optionally reload the repairs list
-            loadRepairs();
+            // Update filteredPayouts as well
+            const filteredIndex = filteredPayouts.findIndex(p => 
+                String(p.id) === String(payoutId) || 
+                String(p.payout_id) === String(payoutId)
+            );
+            if (filteredIndex !== -1) {
+                filteredPayouts.splice(filteredIndex, 1);
+            }
+            
+            // Recalculate pagination
+            totalPages = Math.ceil(filteredPayouts.length / itemsPerPage);
+            if (currentPage > totalPages && totalPages > 0) {
+                currentPage = totalPages;
+            } else if (totalPages === 0) {
+                currentPage = 1;
+            }
+            
+            // Re-render the table with updated data and pagination
+            renderPayouts();
+            
         } else {
-            alert('Error: ' + (data.error || data.message || 'Failed to delete repair'));
+            // Try to get error message from response
+            let errorMessage = 'Failed to delete payout';
+            try {
+                const data = await response.json();
+                errorMessage = data.error || data.message || errorMessage;
+            } catch (jsonError) {
+                errorMessage += ` (HTTP ${response.status})`;
+            }
+            console.error('Delete failed:', errorMessage);
+            alert('Error: ' + errorMessage);
         }
     } catch (error) {
-        console.error('Error deleting repair:', error);
-        alert('Network error occurred while deleting repair');
+        console.error('Error deleting payout:', error);
+        alert('Network error occurred while deleting payout: ' + error.message);
     }
 }
 
-// Auto-load repairs when page is ready
+// Auto-load payouts when page is ready
 document.addEventListener('DOMContentLoaded', async function() {
-    await loadProperties();
-    loadRepairs();
+    await loadLandlords();
+    loadPayouts();
 });
 </script>
 @endpush

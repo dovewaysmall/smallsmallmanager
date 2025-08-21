@@ -545,4 +545,74 @@ class RepairsController extends Controller
         }
     }
 
+    public function destroy($id)
+    {
+        try {
+            Log::info('=== SOFT DELETE REPAIR REQUEST STARTED ===');
+            Log::info('Repair ID to delete: ' . $id);
+            
+            $accessToken = session('access_token');
+            
+            if (!$accessToken) {
+                Log::warning('No access token found in session');
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Session expired. Please login again.'
+                ], 401);
+            }
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ];
+            
+            Log::info('Sending soft delete request to repairs API');
+            Log::info('API URL: http://api2.smallsmall.com/api/repairs/' . $id);
+
+            // Send DELETE request to API for soft delete
+            $response = Http::timeout(30)->withHeaders($headers)->delete('http://api2.smallsmall.com/api/repairs/' . $id);
+
+            Log::info('API Response Status: ' . $response->status());
+            Log::info('API Response Body: ' . $response->body());
+
+            if ($response->successful()) {
+                Log::info('Repair soft deleted successfully');
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Repair deleted successfully!'
+                ]);
+            } elseif ($response->status() === 401) {
+                Log::warning('Unauthorized response from repairs API');
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Session expired. Please login again.'
+                ], 401);
+            } elseif ($response->status() === 404) {
+                Log::warning('Repair not found for deletion');
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Repair not found.'
+                ], 404);
+            } else {
+                $statusCode = $response->status();
+                $responseBody = $response->body();
+                
+                Log::error('Delete Repair API error - Status: ' . $statusCode . ', Body: ' . $responseBody);
+                
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Failed to delete repair. API returned status: ' . $statusCode
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error('Delete Repair API Error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json([
+                'success' => false,
+                'error' => 'An error occurred while deleting the repair'
+            ], 500);
+        }
+    }
+
 }
