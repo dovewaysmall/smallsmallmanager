@@ -438,15 +438,70 @@ function displayPayoutDetails(payout) {
         }
         
         console.log('Final receipt URL:', receiptUrl);
-        document.getElementById('receiptLink').href = receiptUrl;
-        document.getElementById('pdfReceiptLink').href = pdfReceiptUrl;
-        document.getElementById('noReceipt').classList.add('d-none');
-        document.getElementById('receiptContent').classList.remove('d-none');
+        
+        // Use the Laravel route to serve the receipt file
+        const receiptFileUrl = `/payout/${currentPayoutId}/file`;
+        
+        // Check if the receipt file exists by trying to fetch it
+        checkReceiptExists(receiptFileUrl, pdfReceiptUrl);
     } else {
         console.log('No receipt found');
-        document.getElementById('noReceipt').classList.remove('d-none');
-        document.getElementById('receiptContent').classList.add('d-none');
+        showNoReceipt();
     }
+}
+
+async function checkReceiptExists(receiptUrl, pdfReceiptUrl) {
+    try {
+        // Try to fetch just the headers to check if file exists
+        const response = await fetch(receiptUrl, { 
+            method: 'HEAD',
+            cache: 'no-cache'
+        });
+        
+        if (response.ok) {
+            console.log('Receipt file exists, showing receipt content');
+            showReceiptContent(receiptUrl, pdfReceiptUrl);
+        } else {
+            console.warn(`Receipt file not found (${response.status}):`, receiptUrl);
+            showReceiptMissing(pdfReceiptUrl);
+        }
+    } catch (error) {
+        console.error('Error checking receipt file:', error);
+        showReceiptMissing(pdfReceiptUrl);
+    }
+}
+
+function showReceiptContent(receiptUrl, pdfReceiptUrl) {
+    document.getElementById('receiptLink').href = receiptUrl;
+    document.getElementById('pdfReceiptLink').href = pdfReceiptUrl;
+    document.getElementById('noReceipt').classList.add('d-none');
+    document.getElementById('receiptContent').classList.remove('d-none');
+}
+
+function showReceiptMissing(pdfReceiptUrl) {
+    // Show the no receipt state but with a warning about missing file
+    const noReceiptDiv = document.getElementById('noReceipt');
+    
+    noReceiptDiv.innerHTML = `
+        <div class="alert alert-warning" role="alert">
+            <iconify-icon icon="solar:file-corrupted-line-duotone" class="fs-2 me-2"></iconify-icon>
+            <strong>Receipt file not accessible</strong><br>
+            <small>The original receipt file may have been moved, deleted, or there may be a server configuration issue.</small>
+        </div>
+        <div class="text-center">
+            <a href="${pdfReceiptUrl}" target="_blank" class="btn btn-primary">
+                <i class="ti ti-file-type-pdf me-1"></i>Generate PDF Receipt
+            </a>
+        </div>
+    `;
+    
+    noReceiptDiv.classList.remove('d-none');
+    document.getElementById('receiptContent').classList.add('d-none');
+}
+
+function showNoReceipt() {
+    document.getElementById('noReceipt').classList.remove('d-none');
+    document.getElementById('receiptContent').classList.add('d-none');
 }
 
 function deletePayout() {

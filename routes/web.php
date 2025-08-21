@@ -155,6 +155,7 @@ Route::get('/payouts/add', [PayoutsController::class, 'add'])->name('payouts.add
 Route::post('/payouts/store', [PayoutsController::class, 'store'])->name('payouts.store');
 Route::get('/payout/{id}', [PayoutsController::class, 'show'])->name('payout.show');
 Route::get('/payout/{id}/receipt', [PayoutsController::class, 'receipt'])->name('payout.receipt');
+Route::get('/payout/{id}/file', [PayoutsController::class, 'receiptFile'])->name('payout.receipt.file');
 Route::delete('/payout/{id}', [PayoutsController::class, 'destroy'])->name('payout.destroy');
 Route::get('/payouts/this-week', [PayoutsController::class, 'thisWeek'])->name('payouts.this-week');
 Route::post('/payouts/this-week/load', [PayoutsController::class, 'loadPayoutsThisWeek'])->name('payouts.this-week.load');

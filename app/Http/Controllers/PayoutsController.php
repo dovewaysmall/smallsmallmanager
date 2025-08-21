@@ -362,6 +362,74 @@ class PayoutsController extends Controller
         return view('receipt-pdf');
     }
 
+    public function receiptFile($id)
+    {
+        try {
+            Log::info("Looking for receipt file for payout ID: {$id}");
+            
+            // Load all payouts to find the one with this ID
+            $accessToken = session('access_token');
+            if (!$accessToken) {
+                Log::error('No access token found in session');
+                abort(404, 'Receipt not found');
+            }
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $accessToken,
+                'Accept' => 'application/json',
+            ])->get('http://api2.smallsmall.com/api/payouts');
+
+            if (!$response->successful()) {
+                Log::error('API request failed', ['status' => $response->status()]);
+                abort(404, 'Receipt not found');
+            }
+
+            $data = $response->json();
+            if (!$data['success'] || !isset($data['payouts'])) {
+                Log::error('No payouts data in API response');
+                abort(404, 'Receipt not found');
+            }
+
+            // Find the specific payout
+            $payout = collect($data['payouts'])->first(function ($p) use ($id) {
+                return (string)($p['id'] ?? $p['payout_id']) === (string)$id;
+            });
+
+            if (!$payout) {
+                Log::error("Payout not found with ID: {$id}");
+                abort(404, 'Payout not found');
+            }
+
+            $receiptFileName = $payout['upload_receipt'] ?? null;
+            if (!$receiptFileName) {
+                Log::error("No receipt file found for payout: {$id}");
+                abort(404, 'Receipt file not found');
+            }
+
+            $filePath = storage_path("app/public/receipts/{$receiptFileName}");
+            
+            if (!file_exists($filePath)) {
+                Log::error("Receipt file does not exist: {$filePath}");
+                abort(404, 'Receipt file not found on server');
+            }
+
+            // Determine the MIME type
+            $mimeType = mime_content_type($filePath);
+            $fileName = basename($filePath);
+            
+            Log::info("Serving receipt file: {$filePath}");
+            
+            return response()->file($filePath, [
+                'Content-Type' => $mimeType,
+                'Content-Disposition' => 'inline; filename="' . $fileName . '"'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error serving receipt file', ['error' => $e->getMessage()]);
+            abort(404, 'Receipt not found');
+        }
+    }
+
     public function add()
     {
         return view('add-payout');
