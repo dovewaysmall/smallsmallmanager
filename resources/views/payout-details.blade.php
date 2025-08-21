@@ -141,6 +141,100 @@
             </div>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deletePayoutModal" tabindex="-1" aria-labelledby="deletePayoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title" id="deletePayoutModalLabel">
+                        <i class="ti ti-trash text-danger me-2"></i>
+                        Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <div class="text-center mb-4">
+                        <div class="mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: #fef2f2; border-radius: 50%;">
+                            <iconify-icon icon="solar:trash-bin-trash-bold-duotone" class="text-danger" style="font-size: 3rem;"></iconify-icon>
+                        </div>
+                        <h6 class="mb-2">Delete Payout</h6>
+                        <p class="text-muted mb-0">Are you sure you want to delete this payout? This action cannot be undone.</p>
+                    </div>
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <iconify-icon icon="solar:danger-triangle-line-duotone" class="me-2"></iconify-icon>
+                        <small>This will permanently remove the payout from the system.</small>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                        <i class="ti ti-trash me-1"></i>Delete Payout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title" id="successModalLabel">
+                        <i class="ti ti-check text-success me-2"></i>
+                        Success
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <div class="text-center">
+                        <div class="mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: #f0fdf4; border-radius: 50%;">
+                            <iconify-icon icon="solar:check-circle-bold-duotone" class="text-success" style="font-size: 3rem;"></iconify-icon>
+                        </div>
+                        <h6 class="mb-2">Payout Deleted</h6>
+                        <p class="text-muted mb-0" id="successMessage">The payout has been successfully deleted.</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="redirectToPayouts()">
+                        <i class="ti ti-check me-1"></i>OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title" id="errorModalLabel">
+                        <i class="ti ti-alert-circle text-danger me-2"></i>
+                        Error
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <div class="text-center">
+                        <div class="mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: #fef2f2; border-radius: 50%;">
+                            <iconify-icon icon="solar:close-circle-bold-duotone" class="text-danger" style="font-size: 3rem;"></iconify-icon>
+                        </div>
+                        <h6 class="mb-2">Delete Failed</h6>
+                        <p class="text-muted mb-0" id="errorModalMessage">An error occurred while deleting the payout.</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-1"></i>Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -356,16 +450,101 @@ function displayPayoutDetails(payout) {
 }
 
 function deletePayout() {
-    if (!currentPayoutId) return;
-    
-    if (confirm('Are you sure you want to delete this payout? This action cannot be undone.')) {
-        alert('Delete functionality will be implemented');
+    if (!currentPayoutId) {
+        showErrorModal('Invalid payout ID');
+        return;
     }
+    
+    const deleteModal = new bootstrap.Modal(document.getElementById('deletePayoutModal'));
+    deleteModal.show();
+}
+
+async function confirmDeletePayout() {
+    if (!currentPayoutId) {
+        return;
+    }
+    
+    // Close the confirmation modal
+    const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deletePayoutModal'));
+    deleteModal.hide();
+    
+    // Show loading state on the confirm button
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    const originalText = confirmBtn.innerHTML;
+    confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Deleting...';
+    confirmBtn.disabled = true;
+    
+    try {
+        const response = await fetch(`{{ url('/payout') }}/${currentPayoutId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        });
+        
+        console.log('Delete response status:', response.status);
+        console.log('Delete response ok:', response.ok);
+        
+        // Check if response is successful (2xx status codes)
+        if (response.ok) {
+            let data = null;
+            try {
+                data = await response.json();
+                console.log('Delete response data:', data);
+            } catch (jsonError) {
+                console.log('Response is not JSON, but delete was successful');
+                // If response is not JSON but status is OK, assume success
+                data = { success: true };
+            }
+            
+            // Show success modal
+            showSuccessModal('Payout deleted successfully!');
+            
+        } else {
+            // Try to get error message from response
+            let errorMessage = 'Failed to delete payout';
+            try {
+                const data = await response.json();
+                errorMessage = data.error || data.message || errorMessage;
+            } catch (jsonError) {
+                errorMessage += ` (HTTP ${response.status})`;
+            }
+            console.error('Delete failed:', errorMessage);
+            showErrorModal(errorMessage);
+        }
+    } catch (error) {
+        console.error('Error deleting payout:', error);
+        showErrorModal('Network error occurred while deleting payout: ' + error.message);
+    } finally {
+        // Reset the confirm button
+        confirmBtn.innerHTML = originalText;
+        confirmBtn.disabled = false;
+    }
+}
+
+function showSuccessModal(message) {
+    document.getElementById('successMessage').textContent = message;
+    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    successModal.show();
+}
+
+function showErrorModal(message) {
+    document.getElementById('errorModalMessage').textContent = message;
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    errorModal.show();
+}
+
+function redirectToPayouts() {
+    window.location.href = '{{ route("payouts") }}';
 }
 
 // Load payout details when page is ready
 document.addEventListener('DOMContentLoaded', function() {
     loadPayoutDetails();
+    
+    // Add event listener for confirm delete button
+    document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDeletePayout);
 });
 </script>
 @endpush
