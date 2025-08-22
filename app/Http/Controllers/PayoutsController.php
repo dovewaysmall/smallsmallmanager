@@ -410,7 +410,9 @@ class PayoutsController extends Controller
             
             if (!file_exists($filePath)) {
                 Log::error("Receipt file does not exist: {$filePath}");
-                abort(404, 'Receipt file not found on server');
+                
+                // Return a placeholder image or redirect to PDF receipt instead of 404
+                return redirect()->route('payout.receipt', ['id' => $id]);
             }
 
             // Determine the MIME type
