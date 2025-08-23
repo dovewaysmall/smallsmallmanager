@@ -44,9 +44,6 @@
                                 <i class="ti ti-trash me-1 fs-5"></i> Delete All Row
                             </a>
                         </div>
-                        <a href="javascript:void(0)" class="btn btn-primary me-2 d-flex align-items-center">
-                            <i class="ti ti-wallet text-white me-1 fs-5"></i> Export Payouts
-                        </a>
                         <a href="{{ route('payouts.add') }}" class="btn btn-success d-flex align-items-center">
                             <i class="ti ti-plus text-white me-1 fs-5"></i> Add Payout
                         </a>
