@@ -793,14 +793,13 @@ class LandlordsController extends Controller
                 // Handle different possible response structures
                 $allLandlords = $apiData['data'] ?? $apiData['landlords'] ?? $apiData ?? [];
                 
-                // Filter only onboarded landlords (assuming onboarded means landlord_status = 'active' or verified = true)
+                // Filter only onboarded landlords (landlord_status == 'Onboarded')
                 $onboardedLandlords = [];
                 foreach ($allLandlords as $landlord) {
-                    $status = strtolower($landlord['landlord_status'] ?? $landlord['status'] ?? '');
-                    $verified = $landlord['verified'] ?? false;
+                    $landlordStatus = $landlord['landlord_status'] ?? $landlord['status'] ?? '';
                     
-                    // Consider onboarded if status is active or verified is true
-                    if ($status === 'active' || $verified === true || $verified === 1 || $verified === '1') {
+                    // Only include landlords with exact status 'Onboarded'
+                    if ($landlordStatus === 'Onboarded') {
                         $onboardedLandlords[] = $landlord;
                     }
                 }
