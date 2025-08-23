@@ -55,59 +55,83 @@
           </div>
 
           <!-- Main Content -->
-          <div id="mainContent" class="row d-none">
-            <div class="col-lg-4">
-              <!-- Profile Card -->
-              <div class="card">
-                <div class="card-body text-center">
-                  <div class="position-relative mb-4">
-                    <img id="profilePicture" src="" alt="Profile" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
-                    <span id="verificationBadge" class="position-absolute bottom-0 end-0 badge bg-success rounded-pill">
-                      <i class="ti ti-check fs-4"></i>
-                    </span>
+          <div id="mainContent" class="d-none">
+            <!-- Actions Row -->
+            <div class="row justify-content-end">
+              <div class="col-auto">
+                <!-- Actions -->
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">Actions</h5>
                   </div>
-                  <h4 id="landlordName" class="mb-1"></h4>
-                  <p id="landlordEmail" class="text-muted mb-3"></p>
-                  <div class="d-flex justify-content-center gap-2">
-                    <span id="userTypeBadge" class="badge bg-primary-subtle text-primary"></span>
-                    <span id="statusBadge" class="badge bg-success-subtle text-success"></span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Quick Stats -->
-              <div class="card">
-                <div class="card-header">
-                  <h5 class="card-title mb-0">Quick Stats</h5>
-                </div>
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col-6">
-                      <div class="text-center">
-                        <iconify-icon icon="solar:home-line-duotone" class="fs-1 text-primary mb-2"></iconify-icon>
-                        <h6 class="mb-1">Properties</h6>
-                        <span id="propertiesCount" class="text-muted">-</span>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="text-center">
-                        <iconify-icon icon="solar:users-group-two-rounded-line-duotone" class="fs-1 text-success mb-2"></iconify-icon>
-                        <h6 class="mb-1">Tenants</h6>
-                        <span id="tenantsCount" class="text-muted">-</span>
-                      </div>
+                  <div class="card-body">
+                    <div class="d-flex gap-2 flex-wrap">
+                      <a href="{{ route('landlords') }}" class="btn btn-outline-secondary">
+                        <i class="ti ti-arrow-left me-1"></i> Back to Landlords
+                      </a>
+                      <a href="{{ route('landlord.edit', $userID ?? '') }}" class="btn btn-primary">
+                        <i class="ti ti-edit me-1"></i> Edit Landlord
+                      </a>
+                      <button type="button" class="btn btn-success" onclick="viewProperties()">
+                        <i class="ti ti-home me-1"></i> View Properties
+                      </button>
+                      <button type="button" class="btn btn-info" onclick="contactLandlord()">
+                        <i class="ti ti-phone me-1"></i> Contact
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="col-lg-8">
-              <!-- Personal Information -->
-              <div class="card">
-                <div class="card-header">
-                  <h5 class="card-title mb-0">Personal Information</h5>
+            <!-- Profile and Personal Information Row -->
+            <div class="row">
+              <div class="col-lg-4">
+                <!-- Profile Card -->
+                <div class="card">
+                  <div class="card-body text-center">
+                    <div class="position-relative mb-4">
+                      <img id="profilePicture" src="" alt="Profile" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                      <span id="verificationBadge" class="position-absolute bottom-0 end-0 badge bg-success rounded-pill">
+                        <i class="ti ti-check fs-4"></i>
+                      </span>
+                    </div>
+                    <h4 id="landlordName" class="mb-1"></h4>
+                    <p id="landlordEmail" class="text-muted mb-3"></p>
+                    <div class="d-flex justify-content-center gap-2">
+                      <span id="userTypeBadge" class="badge bg-primary-subtle text-primary"></span>
+                      <span id="statusBadge" class="badge bg-success-subtle text-success"></span>
+                    </div>
+                  </div>
                 </div>
-                <div class="card-body">
+
+                <!-- Quick Stats -->
+                <div class="card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-6">
+                        <div class="text-center">
+                          <iconify-icon icon="solar:home-line-duotone" class="fs-1 text-primary mb-2"></iconify-icon>
+                          <h6 class="mb-1">Properties</h6>
+                          <span id="propertiesCount" class="text-muted">-</span>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="text-center">
+                          <iconify-icon icon="solar:users-group-two-rounded-line-duotone" class="fs-1 text-success mb-2"></iconify-icon>
+                          <h6 class="mb-1">Tenants</h6>
+                          <span id="tenantsCount" class="text-muted">-</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-8">
+                <!-- Personal Information -->
+                <div class="card">
+                  <div class="card-body">
                   <div class="row">
                     <div class="col-md-6 mb-3">
                       <label class="form-label fw-semibold">User ID</label>
@@ -134,6 +158,10 @@
                       <p id="phone" class="form-control-plaintext"></p>
                     </div>
                     <div class="col-md-6 mb-3">
+                      <label class="form-label fw-semibold">Landlord Status</label>
+                      <p id="landlordStatus" class="form-control-plaintext"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
                       <label class="form-label fw-semibold">Verification Status</label>
                       <p id="verificationStatus" class="form-control-plaintext"></p>
                     </div>
@@ -145,44 +173,48 @@
                 </div>
               </div>
 
-              <!-- Additional Information -->
+            </div>
+          </div>
+
+          <!-- Banking Information & Additional Information Row - Full Width -->
+          <div class="row">
+            <!-- Banking Information -->
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title mb-0">Banking Information</h5>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Bank Name</label>
+                    <p id="bankName" class="form-control-plaintext text-muted"></p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Account Name</label>
+                    <p id="accountName" class="form-control-plaintext text-muted"></p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Account Number</label>
+                    <p id="accountNumber" class="form-control-plaintext text-muted"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="col-md-6">
               <div class="card">
                 <div class="card-header">
                   <h5 class="card-title mb-0">Additional Information</h5>
                 </div>
                 <div class="card-body">
-                  <div class="row">
-                    <div class="col-md-6 mb-3">
-                      <label class="form-label fw-semibold">Referral Code</label>
-                      <p id="referral" class="form-control-plaintext text-muted"></p>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                      <label class="form-label fw-semibold">Interest Areas</label>
-                      <p id="interest" class="form-control-plaintext text-muted"></p>
-                    </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Referral Code</label>
+                    <p id="referral" class="form-control-plaintext text-muted"></p>
                   </div>
-                </div>
-              </div>
-
-              <!-- Actions -->
-              <div class="card">
-                <div class="card-header">
-                  <h5 class="card-title mb-0">Actions</h5>
-                </div>
-                <div class="card-body">
-                  <div class="d-flex gap-2 flex-wrap">
-                    <a href="{{ route('landlords') }}" class="btn btn-outline-secondary">
-                      <i class="ti ti-arrow-left me-1"></i> Back to Landlords
-                    </a>
-                    <a href="{{ route('landlord.edit', $userID ?? '') }}" class="btn btn-primary">
-                      <i class="ti ti-edit me-1"></i> Edit Landlord
-                    </a>
-                    <button type="button" class="btn btn-success" onclick="viewProperties()">
-                      <i class="ti ti-home me-1"></i> View Properties
-                    </button>
-                    <button type="button" class="btn btn-info" onclick="contactLandlord()">
-                      <i class="ti ti-phone me-1"></i> Contact
-                    </button>
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Interest Areas</label>
+                    <p id="interest" class="form-control-plaintext text-muted"></p>
                   </div>
                 </div>
               </div>
@@ -353,12 +385,37 @@ function populateLandlordDetails(landlord) {
     document.getElementById('email').textContent = landlord.email || 'N/A';
     document.getElementById('phone').textContent = landlord.phone || 'N/A';
     
+    // Landlord Status - handle null values
+    const landlordStatus = landlord.landlord_status || 'not_yet_boarded';
+    let statusDisplay = '';
+    switch(landlordStatus) {
+        case 'not_yet_boarded':
+        case null:
+        case '':
+            statusDisplay = 'Not Yet Boarded';
+            break;
+        case 'boarded':
+            statusDisplay = 'Boarded';
+            break;
+        case 'unboarded':
+            statusDisplay = 'Unboarded';
+            break;
+        default:
+            statusDisplay = landlordStatus ? landlordStatus.charAt(0).toUpperCase() + landlordStatus.slice(1) : 'Not Yet Boarded';
+    }
+    document.getElementById('landlordStatus').textContent = statusDisplay;
+    
     // Verification Status
     const verificationText = landlord.verified && landlord.verified != '0' ? 'Verified' : 'Pending Verification';
     document.getElementById('verificationStatus').textContent = verificationText;
     
     // Account Status
     document.getElementById('accountStatus').textContent = (landlord.status || 'active').charAt(0).toUpperCase() + (landlord.status || 'active').slice(1);
+    
+    // Banking Information
+    document.getElementById('bankName').textContent = landlord.landlord_bank || 'Not provided';
+    document.getElementById('accountName').textContent = landlord.landlord_acc_name || 'Not provided';
+    document.getElementById('accountNumber').textContent = landlord.landlord_acc_no || 'Not provided';
     
     // Additional Information
     document.getElementById('referral').textContent = landlord.referral || 'No referral code';
@@ -401,7 +458,12 @@ function formatDate(dateString) {
 
 
 function viewProperties() {
-    alert('Property viewing functionality would be implemented here.');
+    const userID = document.getElementById('userID').textContent;
+    if (userID && userID !== 'N/A') {
+        window.location.href = `/landlord/${userID}/properties`;
+    } else {
+        alert('Unable to load properties - landlord ID not available.');
+    }
 }
 
 function contactLandlord() {

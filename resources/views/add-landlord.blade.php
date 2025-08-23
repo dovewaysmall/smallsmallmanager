@@ -65,6 +65,17 @@
                     </div>
 
                     <div class="mb-3">
+                      <label for="landlord_status" class="form-label">Landlord Status <span class="text-danger">*</span></label>
+                      <select class="form-control" id="landlord_status" name="landlord_status" required>
+                        <option value="">Select Status</option>
+                        <option value="Not Yet Boarded">Not Yet Boarded</option>
+                        <option value="Onboarded">Onboarded</option>
+                        <option value="Offboarded">Offboarded</option>
+                      </select>
+                      <div class="invalid-feedback" id="landlord_status-error"></div>
+                    </div>
+
+                    <div class="mb-3">
                       <label for="income" class="form-label">Monthly Income <span class="text-danger">*</span></label>
                       <input type="number" class="form-control" id="income" name="income" required min="0" step="0.01" value="0">
                       <div class="form-text">Enter landlord's monthly income in your local currency. Use 0 if unknown.</div>
@@ -76,6 +87,47 @@
                       <input type="password" class="form-control" id="password" name="password" required minlength="8" maxlength="255">
                       <div class="form-text">Password must be at least 8 characters long.</div>
                       <div class="invalid-feedback" id="password-error"></div>
+                    </div>
+
+                    <h5 class="mb-3">Banking Information</h5>
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="bank_name" class="form-label">Bank Name</label>
+                        <input type="text" class="form-control" id="bank_name" name="bank_name">
+                        <div class="invalid-feedback" id="bank_name-error"></div>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label for="account_name" class="form-label">Account Name</label>
+                        <input type="text" class="form-control" id="account_name" name="account_name">
+                        <div class="invalid-feedback" id="account_name-error"></div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="account_number" class="form-label">Account Number</label>
+                        <input type="text" class="form-control" id="account_number" name="account_number">
+                        <div class="invalid-feedback" id="account_number-error"></div>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label for="sort_code" class="form-label">Sort Code</label>
+                        <input type="text" class="form-control" id="sort_code" name="sort_code">
+                        <div class="invalid-feedback" id="sort_code-error"></div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="iban" class="form-label">IBAN</label>
+                        <input type="text" class="form-control" id="iban" name="iban">
+                        <div class="invalid-feedback" id="iban-error"></div>
+                      </div>
+                      <div class="col-md-6 mb-4">
+                        <label for="bvn" class="form-label">BVN</label>
+                        <input type="text" class="form-control" id="bvn" name="bvn">
+                        <div class="form-text">Bank Verification Number (optional)</div>
+                        <div class="invalid-feedback" id="bvn-error"></div>
+                      </div>
                     </div>
 
                     <div class="d-flex justify-content-between">
@@ -120,6 +172,8 @@
 <script>
 document.getElementById('addLandlordForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    
+    console.log('=== FORM SUBMISSION TRIGGERED ===');
     
     const submitBtn = document.getElementById('submitBtn');
     const originalBtnText = submitBtn.innerHTML;

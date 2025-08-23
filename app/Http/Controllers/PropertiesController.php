@@ -351,4 +351,134 @@ class PropertiesController extends Controller
             ], 500);
         }
     }
+
+    public function landlordProperties($landlordId)
+    {
+        Log::info("Landlord properties page accessed for landlordId: {$landlordId}");
+        
+        // Get landlord details to show name in heading
+        $landlord = $this->getLandlordDetails($landlordId);
+        $landlordName = 'Landlord';
+        
+        if ($landlord) {
+            $firstName = $landlord['firstName'] ?? '';
+            $lastName = $landlord['lastName'] ?? '';
+            $landlordName = trim("{$firstName} {$lastName}") ?: ($landlord['email'] ?? 'Landlord');
+        }
+        
+        return view('landlord-properties', compact('landlordId', 'landlordName'));
+    }
+
+    private function getLandlordDetails($landlordId)
+    {
+        try {
+            $accessToken = session('access_token');
+            
+            if (!$accessToken) {
+                return null;
+            }
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+            ];
+
+            // Try to get specific landlord details from API
+            $response = Http::timeout(30)->withHeaders($headers)->get("http://api2.smallsmall.com/api/landlords/{$landlordId}");
+
+            if ($response->successful()) {
+                $apiData = $response->json();
+                
+                if (isset($apiData['success']) && $apiData['success'] && isset($apiData['data'])) {
+                    return $apiData['data']['landlord_info'] ?? null;
+                }
+            }
+            
+            // If specific endpoint doesn't work, try to find in the list
+            $listResponse = Http::timeout(30)->withHeaders($headers)->get('http://api2.smallsmall.com/api/landlords');
+            
+            if ($listResponse->successful()) {
+                $listData = $listResponse->json();
+                $landlords = $listData['data'] ?? $listData['landlords'] ?? $listData ?? [];
+                
+                // Find the landlord with matching userID
+                foreach ($landlords as $landlord) {
+                    if (($landlord['userID'] ?? null) === $landlordId || ($landlord['id'] ?? null) === $landlordId) {
+                        return $landlord;
+                    }
+                }
+            }
+            
+            return null;
+        } catch (\Exception $e) {
+            Log::error('Error getting landlord details: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function loadLandlordProperties(Request $request, $landlordId)
+    {
+        try {
+            $accessToken = session('access_token');
+            
+            Log::info("Loading properties for landlord: {$landlordId}");
+            
+            if (!$accessToken) {
+                return response()->json([
+                    'error' => 'Session expired. Please login again.'
+                ], 401);
+            }
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+            ];
+
+            // Get all properties first
+            $response = Http::timeout(30)->withHeaders($headers)->get('http://api2.smallsmall.com/api/properties');
+
+            if ($response->successful()) {
+                $apiData = $response->json();
+                $allProperties = $apiData['data'] ?? $apiData['properties'] ?? $apiData ?? [];
+                
+                // Filter properties for this specific landlord
+                $landlordProperties = [];
+                foreach ($allProperties as $property) {
+                    $propertyLandlordId = $property['landlordID'] ?? $property['landlord_id'] ?? $property['property_owner'] ?? null;
+                    
+                    // Try different comparison methods
+                    if ($propertyLandlordId == $landlordId || 
+                        (string)$propertyLandlordId === (string)$landlordId ||
+                        (isset($property['landlord']) && 
+                         (($property['landlord']['userID'] ?? null) == $landlordId || 
+                          ($property['landlord']['id'] ?? null) == $landlordId))) {
+                        $landlordProperties[] = $property;
+                    }
+                }
+                
+                Log::info("Found {count} properties for landlord {$landlordId}", [
+                    'count' => count($landlordProperties),
+                    'landlord_id' => $landlordId
+                ]);
+                
+                return response()->json([
+                    'success' => true,
+                    'properties' => $landlordProperties
+                ]);
+            } elseif ($response->status() === 401) {
+                return response()->json([
+                    'error' => 'Session expired. Please login again.'
+                ], 401);
+            } else {
+                return response()->json([
+                    'error' => 'Failed to fetch properties from API.'
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error("Landlord Properties API Error: " . $e->getMessage());
+            return response()->json([
+                'error' => 'An error occurred while loading properties.'
+            ], 500);
+        }
+    }
 }

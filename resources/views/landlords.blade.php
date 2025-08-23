@@ -68,13 +68,14 @@
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Properties</th>
+                                <th>Landlord Status</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="landlordsTableBody">
                             <tr>
-                                <td colspan="7" class="text-center py-5">
+                                <td colspan="8" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center" id="loadingState">
                                         <div class="spinner-border text-primary mb-3" role="status">
                                             <span class="visually-hidden">Loading...</span>
@@ -185,7 +186,7 @@ function renderLandlords() {
     if (filteredLandlords.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" class="text-center py-5">
+                <td colspan="8" class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
                         <iconify-icon icon="solar:user-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
                         <p class="mb-0 text-muted">No landlords found</p>
@@ -216,9 +217,36 @@ function renderLandlords() {
         const email = landlord.email || 'N/A';
         const phone = landlord.phone || landlord.phoneNumber || 'N/A';
         const propertiesCount = landlord.property_count || landlord.properties_count || landlord.propertiesCount || 0;
+        const landlordStatus = landlord.landlord_status || 'not_yet_boarded';
         const status = landlord.status || 'Active';
         
         const fullName = `${firstName} ${lastName}`.trim();
+        
+        // Landlord Status formatting - handle null values
+        let landlordStatusDisplay = '';
+        let landlordStatusClass = 'bg-secondary';
+        switch(landlordStatus) {
+            case 'Not Yet Boarded':
+            case 'not_yet_boarded':
+            case null:
+            case '':
+                landlordStatusDisplay = 'Not Yet Boarded';
+                landlordStatusClass = 'bg-warning text-dark';
+                break;
+            case 'Onboarded':
+            case 'boarded':
+                landlordStatusDisplay = 'Onboarded';
+                landlordStatusClass = 'bg-success';
+                break;
+            case 'Offboarded':
+            case 'unboarded':
+                landlordStatusDisplay = 'Offboarded';
+                landlordStatusClass = 'bg-danger';
+                break;
+            default:
+                landlordStatusDisplay = landlordStatus ? landlordStatus : 'Not Yet Boarded';
+                landlordStatusClass = 'bg-warning text-dark';
+        }
         
         // Status badge color
         let statusClass = 'bg-secondary';
@@ -262,6 +290,9 @@ function renderLandlords() {
                     <span class="badge bg-info">${propertiesCount} Properties</span>
                 </td>
                 <td>
+                    <span class="badge ${landlordStatusClass}">${landlordStatusDisplay}</span>
+                </td>
+                <td>
                     <span class="badge ${statusClass}">${status}</span>
                 </td>
                 <td>
@@ -296,11 +327,13 @@ document.getElementById('searchInput').addEventListener('input', function() {
             const email = (landlord.email || '').toLowerCase();
             const phone = (landlord.phone || landlord.phoneNumber || '').toLowerCase();
             const status = (landlord.status || '').toLowerCase();
+            const landlordStatus = (landlord.landlord_status || '').toLowerCase();
             
             return fullName.includes(searchTerm) || 
                    email.includes(searchTerm) || 
                    phone.includes(searchTerm) ||
-                   status.includes(searchTerm);
+                   status.includes(searchTerm) ||
+                   landlordStatus.includes(searchTerm);
         });
     }
     

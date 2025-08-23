@@ -104,6 +104,8 @@ Route::get('/properties/this-month', [PropertiesController::class, 'thisMonth'])
 Route::post('/properties/this-month/load', [PropertiesController::class, 'loadPropertiesThisMonth'])->name('properties.this-month.load');
 Route::get('/properties/this-year', [PropertiesController::class, 'thisYear'])->name('properties.this-year');
 Route::post('/properties/this-year/load', [PropertiesController::class, 'loadPropertiesThisYear'])->name('properties.this-year.load');
+Route::get('/landlord/{landlordId}/properties', [PropertiesController::class, 'landlordProperties'])->name('landlord.properties');
+Route::post('/landlord/{landlordId}/properties/load', [PropertiesController::class, 'loadLandlordProperties'])->name('landlord.properties.load');
 Route::get('/assign-property-owner/{propertyId}', [PropertiesController::class, 'assignPropertyOwner'])->name('assign-property-owner');
 Route::get('/api/property-details/{propertyId}', [PropertiesController::class, 'getPropertyDetails'])->name('api.property-details');
 Route::post('/api/assign-property-owner', [PropertiesController::class, 'assignPropertyOwnerAPI'])->name('api.assign-property-owner');

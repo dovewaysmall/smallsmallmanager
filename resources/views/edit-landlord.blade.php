@@ -91,6 +91,18 @@
                       <div class="invalid-feedback" id="phone-error"></div>
                     </div>
 
+                    <div class="mb-3">
+                      <label for="landlord_status" class="form-label">Landlord Status <span class="text-danger">*</span></label>
+                      <select class="form-select" id="landlord_status" name="landlord_status" required>
+                        <option value="">Select Status</option>
+                        <option value="Not Yet Boarded">Not Yet Boarded</option>
+                        <option value="Onboarded">Onboarded</option>
+                        <option value="Offboarded">Offboarded</option>
+                      </select>
+                      <div class="form-text">Update the landlord's boarding status.</div>
+                      <div class="invalid-feedback" id="landlord_status-error"></div>
+                    </div>
+
                     <div class="mb-4">
                       <label for="verified" class="form-label">Verification Status</label>
                       <select class="form-select" id="verified" name="verified">
@@ -99,6 +111,28 @@
                       </select>
                       <div class="form-text">Update the landlord's verification status.</div>
                       <div class="invalid-feedback" id="verified-error"></div>
+                    </div>
+
+                    <h5 class="mb-3">Banking Information</h5>
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="landlord_bank" class="form-label">Bank Name</label>
+                        <input type="text" class="form-control" id="landlord_bank" name="landlord_bank">
+                        <div class="invalid-feedback" id="landlord_bank-error"></div>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label for="landlord_acc_name" class="form-label">Account Name</label>
+                        <input type="text" class="form-control" id="landlord_acc_name" name="landlord_acc_name">
+                        <div class="invalid-feedback" id="landlord_acc_name-error"></div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6 mb-4">
+                        <label for="landlord_acc_no" class="form-label">Account Number</label>
+                        <input type="text" class="form-control" id="landlord_acc_no" name="landlord_acc_no">
+                        <div class="invalid-feedback" id="landlord_acc_no-error"></div>
+                      </div>
                     </div>
 
                     <div class="alert alert-info">
@@ -192,6 +226,13 @@ function populateForm(landlord) {
     document.getElementById('email').value = landlord.email || '';
     document.getElementById('phone').value = landlord.phone || '';
     
+    // Handle landlord status - handle null values
+    const landlordStatus = landlord.landlord_status || 'Not Yet Boarded';
+    const statusField = document.getElementById('landlord_status');
+    if (statusField) {
+        statusField.value = landlordStatus;
+    }
+    
     // Handle verification status - convert different formats to boolean
     let verifiedValue = '0'; // default to not verified
     if (landlord.verified === 1 || landlord.verified === '1' || 
@@ -199,6 +240,11 @@ function populateForm(landlord) {
         verifiedValue = '1';
     }
     document.getElementById('verified').value = verifiedValue;
+    
+    // Banking Information
+    document.getElementById('landlord_bank').value = landlord.landlord_bank || '';
+    document.getElementById('landlord_acc_name').value = landlord.landlord_acc_name || '';
+    document.getElementById('landlord_acc_no').value = landlord.landlord_acc_no || '';
 }
 
 function showEditForm() {
@@ -239,6 +285,16 @@ document.getElementById('editLandlordForm').addEventListener('submit', function(
             }
         }
     });
+    
+    // Ensure landlord_status is explicitly included
+    const landlordStatusValue = document.getElementById('landlord_status').value;
+    if (landlordStatusValue && landlordStatusValue !== '') {
+        jsonData['landlord_status'] = landlordStatusValue;
+    } else {
+        // If no value selected, default to Not Yet Boarded
+        jsonData['landlord_status'] = 'Not Yet Boarded';
+    }
+    
     
     fetch(`/api/landlord-update/${userID}`, {
         method: 'PUT',
