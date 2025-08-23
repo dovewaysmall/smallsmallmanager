@@ -67,12 +67,11 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Phone</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="usersTableBody">
                             <tr>
-                                <td colspan="5" class="text-center py-5">
+                                <td colspan="4" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center" id="loadingState">
                                         <div class="spinner-border text-primary mb-3" role="status">
                                             <span class="visually-hidden">Loading...</span>
@@ -184,7 +183,7 @@ function renderUsers() {
     if (filteredUsers.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" class="text-center py-5">
+                <td colspan="4" class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
                         <iconify-icon icon="solar:users-group-rounded-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
                         <p class="mb-0 text-muted">No users found</p>
@@ -228,16 +227,6 @@ function renderUsers() {
                 </td>
                 <td>
                     <span class="usr-ph-no">${user.phone || 'N/A'}</span>
-                </td>
-                <td>
-                    <div class="action-btn">
-                        <a href="javascript:void(0)" class="text-primary edit">
-                            <i class="ti ti-eye fs-5"></i>
-                        </a>
-                        <a href="javascript:void(0)" class="text-dark delete ms-2">
-                            <i class="ti ti-trash fs-5"></i>
-                        </a>
-                    </div>
                 </td>
             </tr>
         `;
