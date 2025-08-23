@@ -57,27 +57,57 @@
                     <table id="propertiesTable" class="table search-table align-middle text-nowrap">
                         <thead class="header-item">
                             <tr>
+                                <th>
+                                    <div class="n-chk align-self-center text-center">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input primary" id="contact-check-all" />
+                                            <label class="form-check-label" for="contact-check-all"></label>
+                                        </div>
+                                    </div>
+                                </th>
                                 <th>Property ID</th>
                                 <th>Property Title</th>
                                 <th>Location</th>
                                 <th>Type</th>
                                 <th>Price</th>
                                 <th>Status</th>
+                                <th>Owner</th>
                                 <th>Date Added</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="propertiesTableBody">
                             <tr>
-                                <td colspan="8" class="text-center py-5">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
+                                <td colspan="10" class="text-center py-5">
+                                    <div class="d-flex flex-column align-items-center" id="loadingState">
+                                        <div class="spinner-border text-primary mb-3" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mb-0 text-muted">Loading properties...</p>
                                     </div>
-                                    <div class="mt-2">Loading properties...</div>
+                                    <div class="d-flex flex-column align-items-center d-none" id="errorState">
+                                        <iconify-icon icon="solar:info-circle-line-duotone" class="fs-8 text-danger mb-2"></iconify-icon>
+                                        <p class="mb-2 text-danger" id="errorMessage"></p>
+                                        <button onclick="loadProperties()" class="btn btn-sm btn-outline-primary">
+                                            <i class="ti ti-refresh me-1"></i> Retry
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                
+                <!-- Pagination Controls -->
+                <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer" style="display: none !important;">
+                    <div class="pagination-info">
+                        <span class="text-muted" id="paginationInfo">Showing 1 to 10 of 0 entries</span>
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination mb-0" id="paginationControls">
+                            <!-- Pagination buttons will be generated here -->
+                        </ul>
+                    </nav>
                 </div>
             </div>
           </div>
@@ -87,7 +117,22 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+let allProperties = [];
+let filteredProperties = [];
+let currentPage = 1;
+let itemsPerPage = 10;
+let totalPages = 1;
+
+function showState(stateName) {
+    document.getElementById('loadingState').classList.add('d-none');
+    document.getElementById('errorState').classList.add('d-none');
+    
+    if (stateName) {
+        document.getElementById(stateName).classList.remove('d-none');
+    }
+}
+
+function loadProperties() {
     const landlordId = '{{ $landlordId }}';
     
     if (!landlordId) {
@@ -95,11 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    loadProperties();
-});
-
-function loadProperties() {
-    const landlordId = '{{ $landlordId }}';
+    showState('loadingState');
     
     fetch(`/landlord/${landlordId}/properties/load`, {
         method: 'POST',
@@ -110,203 +151,312 @@ function loadProperties() {
         }
     })
     .then(response => {
-        if (response.status === 401) {
+        if (response.status === 419) {
+            alert('Your session has expired. You will be redirected to login.');
             window.location.href = '{{ route("login") }}';
             return;
         }
         return response.json();
     })
     .then(data => {
-        if (data && data.success) {
-            populatePropertiesTable(data.properties);
-        } else if (data && data.error) {
-            showError(data.error);
+        if (!data) return;
+        
+        if (data.success) {
+            allProperties = data.properties;
+            
+            // Sort by newest first
+            allProperties.sort((a, b) => {
+                const dateA = new Date(a.created_at || a.createdAt || a.date_created || 0);
+                const dateB = new Date(b.created_at || b.createdAt || b.date_created || 0);
+                
+                if (dateA.getTime() === dateB.getTime()) {
+                    const idA = parseInt(a.id || a.propertyId || 0);
+                    const idB = parseInt(b.id || b.propertyId || 0);
+                    return idB - idA;
+                }
+                
+                return dateB - dateA;
+            });
+            
+            filteredProperties = allProperties;
+            renderProperties();
+            document.getElementById('searchInput').disabled = false;
         } else {
-            showError('Failed to load properties.');
+            if (data.error && data.error.includes('Session expired')) {
+                alert('Your session has expired. You will be redirected to login.');
+                window.location.href = '{{ route("login") }}';
+                return;
+            }
+            showError(data.error || 'Failed to load properties');
         }
     })
     .catch(error => {
-        console.error('Error loading properties:', error);
-        showError('An error occurred while loading properties.');
+        console.error('Error:', error);
+        if (error.status === 419) {
+            alert('Your session has expired. You will be redirected to login.');
+            window.location.href = '{{ route("login") }}';
+            return;
+        }
+        showError('An error occurred while loading properties');
     });
 }
 
-function populatePropertiesTable(properties) {
+function showError(message) {
+    document.getElementById('errorMessage').textContent = message;
+    showState('errorState');
+}
+
+function renderProperties() {
     const tbody = document.getElementById('propertiesTableBody');
     
-    if (!properties || properties.length === 0) {
+    if (filteredProperties.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="8" class="text-center py-5">
+                <td colspan="10" class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
-                        <iconify-icon icon="solar:home-line-duotone" class="fs-1 text-muted mb-3"></iconify-icon>
-                        <h6 class="text-muted">No Properties Found</h6>
-                        <p class="text-muted mb-0">This landlord doesn't have any properties yet.</p>
+                        <iconify-icon icon="solar:home-angle-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
+                        <p class="mb-0 text-muted">No properties found for this landlord</p>
                     </div>
                 </td>
             </tr>
         `;
+        document.getElementById('paginationContainer').style.display = 'none';
         return;
     }
     
-    tbody.innerHTML = properties.map(property => {
-        const propertyId = property.id || property.propertyId || 'N/A';
-        const title = property.title || property.property_title || 'N/A';
-        const location = formatLocation(property);
-        const type = property.type || property.property_type || 'N/A';
-        const price = formatPrice(property.price || property.rent_price || property.rental_price);
-        const status = formatStatus(property.status || property.property_status);
-        const dateAdded = formatDate(property.created_at || property.date_added);
+    // Calculate pagination
+    totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentPageProperties = filteredProperties.slice(startIndex, endIndex);
+    
+    let html = '';
+    currentPageProperties.forEach((property, index) => {
+        const globalIndex = startIndex + index;
         
-        return `
-            <tr>
+        // Handle different possible field names from API
+        const propertyId = property.id || property.propertyId || globalIndex + 1;
+        const propertyID = property.propertyID || property.property_id || property.reference || `PROP-${propertyId}`;
+        const title = property.title || property.propertyTitle || property.name || 'N/A';
+        const location = property.location || property.address || property.city || 'N/A';
+        const type = property.type || property.propertyType || property.category || 'N/A';
+        const price = property.price || property.rent || property.amount || 'N/A';
+        const status = property.status || property.availability || 'Available';
+        const dateAdded = property.created_at || property.dateAdded || property.date || 'N/A';
+        const propertyOwner = property.property_owner || property.owner || property.landlord || null;
+        
+        // Format date if it exists
+        let formattedDate = dateAdded;
+        if (dateAdded !== 'N/A' && dateAdded) {
+            try {
+                formattedDate = new Date(dateAdded).toLocaleDateString();
+            } catch (e) {
+                formattedDate = dateAdded;
+            }
+        }
+        
+        // Format price
+        let formattedPrice = price;
+        if (price !== 'N/A' && price && !isNaN(price)) {
+            formattedPrice = '₦' + parseInt(price).toLocaleString();
+        }
+        
+        // Status badge color
+        let statusClass = 'bg-secondary';
+        switch (status.toLowerCase()) {
+            case 'available':
+            case 'active':
+                statusClass = 'bg-success';
+                break;
+            case 'rented':
+            case 'occupied':
+                statusClass = 'bg-info';
+                break;
+            case 'maintenance':
+                statusClass = 'bg-warning text-dark';
+                break;
+            case 'unavailable':
+            case 'inactive':
+                statusClass = 'bg-danger';
+                break;
+        }
+        
+        // Owner button logic - simplified for landlord-specific properties
+        let ownerButton = `<span class="badge bg-success">{{ $landlordName }}</span>`;
+        
+        html += `
+            <tr class="search-items">
                 <td>
-                    <div class="d-flex align-items-center">
-                        <div class="ms-3">
-                            <div class="user-meta-info">
-                                <h6 class="user-name mb-0">${propertyId}</h6>
-                            </div>
+                    <div class="n-chk align-self-center text-center">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input contact-chkbox primary" id="checkbox${globalIndex + 1}" />
+                            <label class="form-check-label" for="checkbox${globalIndex + 1}"></label>
                         </div>
                     </div>
                 </td>
                 <td>
-                    <span class="fw-normal">${title}</span>
+                    <span class="fw-medium">${propertyID}</span>
                 </td>
                 <td>
-                    <span class="fw-normal">${location}</span>
+                    <div class="d-flex align-items-center">
+                        <h6 class="user-name mb-0">${title}</h6>
+                    </div>
                 </td>
                 <td>
-                    <span class="fw-normal">${type}</span>
+                    <span class="usr-location">${location}</span>
                 </td>
                 <td>
-                    <span class="fw-normal">${price}</span>
+                    <span class="usr-type">${type}</span>
                 </td>
                 <td>
-                    ${status}
+                    <span class="usr-price">${formattedPrice}</span>
                 </td>
                 <td>
-                    <span class="fw-normal">${dateAdded}</span>
+                    <span class="badge ${statusClass}">${status}</span>
                 </td>
                 <td>
-                    <div class="action-btn">
-                        <a href="javascript:void(0)" class="text-info edit" onclick="viewProperty('${propertyId}')">
-                            <i class="ti ti-eye fs-5"></i>
+                    ${ownerButton}
+                </td>
+                <td>
+                    <span class="usr-date">${formattedDate}</span>
+                </td>
+                <td>
+                    <div class="action-btn d-flex align-items-center">
+                        <a href="javascript:void(0)" class="btn btn-sm btn-primary me-2">
+                            View Details
+                        </a>
+                        <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
+                            <iconify-icon icon="solar:trash-bin-trash-line-duotone" class="fs-5"></iconify-icon>
                         </a>
                     </div>
                 </td>
             </tr>
         `;
-    }).join('');
-    
-    // Enable search functionality
-    document.getElementById('searchInput').disabled = false;
-    setupSearch();
-}
-
-function formatLocation(property) {
-    const city = property.city || property.location_city || '';
-    const state = property.state || property.location_state || '';
-    const area = property.area || property.location_area || '';
-    
-    const parts = [area, city, state].filter(part => part && part !== '');
-    return parts.length > 0 ? parts.join(', ') : 'N/A';
-}
-
-function formatPrice(price) {
-    if (!price) return 'N/A';
-    
-    // Convert to number if it's a string
-    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
-    
-    if (isNaN(numPrice)) return 'N/A';
-    
-    return '₦' + numPrice.toLocaleString();
-}
-
-function formatStatus(status) {
-    if (!status) return '<span class="badge bg-secondary">N/A</span>';
-    
-    const statusLower = status.toLowerCase();
-    let badgeClass = 'bg-secondary';
-    let statusText = status;
-    
-    switch (statusLower) {
-        case 'available':
-        case 'active':
-            badgeClass = 'bg-success';
-            statusText = 'Available';
-            break;
-        case 'occupied':
-        case 'rented':
-            badgeClass = 'bg-warning';
-            statusText = 'Occupied';
-            break;
-        case 'maintenance':
-            badgeClass = 'bg-info';
-            statusText = 'Maintenance';
-            break;
-        case 'inactive':
-        case 'unavailable':
-            badgeClass = 'bg-danger';
-            statusText = 'Inactive';
-            break;
-    }
-    
-    return `<span class="badge ${badgeClass}">${statusText}</span>`;
-}
-
-function formatDate(dateString) {
-    if (!dateString) return 'N/A';
-    
-    try {
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-        }).format(date);
-    } catch (e) {
-        return dateString;
-    }
-}
-
-function setupSearch() {
-    const searchInput = document.getElementById('searchInput');
-    const tbody = document.getElementById('propertiesTableBody');
-    
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const rows = tbody.querySelectorAll('tr');
-        
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            if (text.includes(searchTerm)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
     });
+    
+    tbody.innerHTML = html;
+    updatePaginationControls();
+    updatePaginationInfo();
+    document.getElementById('paginationContainer').style.display = 'flex';
 }
 
-function viewProperty(propertyId) {
-    // This would typically link to a property details page
-    alert(`View property details for Property ID: ${propertyId}`);
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase().trim();
+    
+    if (searchTerm === '') {
+        filteredProperties = allProperties;
+    } else {
+        filteredProperties = allProperties.filter(property => {
+            const title = (property.title || property.propertyTitle || property.name || '').toLowerCase();
+            const location = (property.location || property.address || property.city || '').toLowerCase();
+            const type = (property.type || property.propertyType || property.category || '').toLowerCase();
+            const status = (property.status || property.availability || '').toLowerCase();
+            
+            return title.includes(searchTerm) || 
+                   location.includes(searchTerm) || 
+                   type.includes(searchTerm) ||
+                   status.includes(searchTerm);
+        });
+    }
+    
+    currentPage = 1; // Reset to first page when searching
+    renderProperties();
+});
+
+function updatePaginationInfo() {
+    const startItem = filteredProperties.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+    const endItem = Math.min(currentPage * itemsPerPage, filteredProperties.length);
+    const totalItems = filteredProperties.length;
+    
+    document.getElementById('paginationInfo').textContent = 
+        `Showing ${startItem} to ${endItem} of ${totalItems} entries`;
 }
 
-function showError(message) {
-    const tbody = document.getElementById('propertiesTableBody');
-    tbody.innerHTML = `
-        <tr>
-            <td colspan="8" class="text-center py-5">
-                <div class="d-flex flex-column align-items-center">
-                    <iconify-icon icon="solar:danger-circle-line-duotone" class="fs-1 text-danger mb-3"></iconify-icon>
-                    <h6 class="text-danger">Error</h6>
-                    <p class="text-muted mb-0">${message}</p>
-                </div>
-            </td>
-        </tr>
+function updatePaginationControls() {
+    const paginationControls = document.getElementById('paginationControls');
+    
+    if (totalPages <= 1) {
+        paginationControls.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    
+    // Previous button
+    html += `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage - 1})" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
     `;
+    
+    // Calculate page range to show
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, currentPage + 2);
+    
+    // Adjust range if we're near the beginning or end
+    if (endPage - startPage < 4) {
+        if (startPage === 1) {
+            endPage = Math.min(totalPages, startPage + 4);
+        } else if (endPage === totalPages) {
+            startPage = Math.max(1, endPage - 4);
+        }
+    }
+    
+    // First page and ellipsis if needed
+    if (startPage > 1) {
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(1)">1</a></li>`;
+        if (startPage > 2) {
+            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+    }
+    
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        html += `
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+            </li>
+        `;
+    }
+    
+    // Last page and ellipsis if needed
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${totalPages})">${totalPages}</a></li>`;
+    }
+    
+    // Next button
+    html += `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage + 1})" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    `;
+    
+    paginationControls.innerHTML = html;
 }
+
+function changePage(page) {
+    if (page < 1 || page > totalPages || page === currentPage) {
+        return;
+    }
+    
+    currentPage = page;
+    renderProperties();
+    
+    // Prevent default link behavior
+    event.preventDefault();
+}
+
+// Auto-load properties when page is ready
+document.addEventListener('DOMContentLoaded', function() {
+    loadProperties();
+});
 </script>
 @endpush

@@ -154,6 +154,21 @@ function loadProperties() {
         
         if (data.success) {
             allProperties = data.properties;
+            
+            // Sort by newest first
+            allProperties.sort((a, b) => {
+                const dateA = new Date(a.created_at || a.createdAt || a.date_created || 0);
+                const dateB = new Date(b.created_at || b.createdAt || b.date_created || 0);
+                
+                if (dateA.getTime() === dateB.getTime()) {
+                    const idA = parseInt(a.id || a.propertyId || 0);
+                    const idB = parseInt(b.id || b.propertyId || 0);
+                    return idB - idA;
+                }
+                
+                return dateB - dateA;
+            });
+            
             filteredProperties = allProperties;
             renderProperties();
             document.getElementById('searchInput').disabled = false;

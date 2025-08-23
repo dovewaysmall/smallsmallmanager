@@ -757,4 +757,210 @@ class LandlordsController extends Controller
             ], 500);
         }
     }
+
+    public function onboarded()
+    {
+        return view('landlords-onboarded');
+    }
+
+    public function loadOnboardedLandlords(Request $request)
+    {
+        try {
+            $accessToken = session('access_token');
+            
+            Log::info('Onboarded Landlords API - Token exists: ' . ($accessToken ? 'YES' : 'NO'));
+            
+            if (!$accessToken) {
+                Log::warning('No access token found in session');
+                return response()->json([
+                    'error' => 'Session expired. Please login again.'
+                ], 401);
+            }
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+            ];
+
+            Log::info('Onboarded Landlords API - Making request to: http://api2.smallsmall.com/api/landlords');
+            $response = Http::timeout(30)->withHeaders($headers)->get('http://api2.smallsmall.com/api/landlords');
+
+            Log::info('Onboarded Landlords API - Response Status: ' . $response->status());
+
+            if ($response->successful()) {
+                $apiData = $response->json();
+                
+                // Handle different possible response structures
+                $allLandlords = $apiData['data'] ?? $apiData['landlords'] ?? $apiData ?? [];
+                
+                // Filter only onboarded landlords (assuming onboarded means landlord_status = 'active' or verified = true)
+                $onboardedLandlords = [];
+                foreach ($allLandlords as $landlord) {
+                    $status = strtolower($landlord['landlord_status'] ?? $landlord['status'] ?? '');
+                    $verified = $landlord['verified'] ?? false;
+                    
+                    // Consider onboarded if status is active or verified is true
+                    if ($status === 'active' || $verified === true || $verified === 1 || $verified === '1') {
+                        $onboardedLandlords[] = $landlord;
+                    }
+                }
+                
+                return response()->json([
+                    'success' => true,
+                    'landlords' => $onboardedLandlords
+                ]);
+            } elseif ($response->status() === 401) {
+                return response()->json([
+                    'error' => 'Session expired. Please login again.'
+                ], 401);
+            } else {
+                return response()->json([
+                    'error' => 'Failed to fetch landlords from API.'
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error('Onboarded Landlords API Error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'An error occurred while loading onboarded landlords.'
+            ], 500);
+        }
+    }
+
+    public function offboarded()
+    {
+        return view('landlords-offboarded');
+    }
+
+    public function loadOffboardedLandlords(Request $request)
+    {
+        try {
+            $accessToken = session('access_token');
+            
+            Log::info('Offboarded Landlords API - Token exists: ' . ($accessToken ? 'YES' : 'NO'));
+            
+            if (!$accessToken) {
+                Log::warning('No access token found in session');
+                return response()->json([
+                    'error' => 'Session expired. Please login again.'
+                ], 401);
+            }
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+            ];
+
+            Log::info('Offboarded Landlords API - Making request to: http://api2.smallsmall.com/api/landlords');
+            $response = Http::timeout(30)->withHeaders($headers)->get('http://api2.smallsmall.com/api/landlords');
+
+            Log::info('Offboarded Landlords API - Response Status: ' . $response->status());
+
+            if ($response->successful()) {
+                $apiData = $response->json();
+                
+                // Handle different possible response structures
+                $allLandlords = $apiData['data'] ?? $apiData['landlords'] ?? $apiData ?? [];
+                
+                // Filter only offboarded landlords (assuming offboarded means landlord_status = 'inactive' or verified = false)
+                $offboardedLandlords = [];
+                foreach ($allLandlords as $landlord) {
+                    $status = strtolower($landlord['landlord_status'] ?? $landlord['status'] ?? '');
+                    $verified = $landlord['verified'] ?? false;
+                    
+                    // Consider offboarded if status is inactive and not verified
+                    if ($status === 'inactive' || ($verified === false && $status !== 'active')) {
+                        $offboardedLandlords[] = $landlord;
+                    }
+                }
+                
+                return response()->json([
+                    'success' => true,
+                    'landlords' => $offboardedLandlords
+                ]);
+            } elseif ($response->status() === 401) {
+                return response()->json([
+                    'error' => 'Session expired. Please login again.'
+                ], 401);
+            } else {
+                return response()->json([
+                    'error' => 'Failed to fetch landlords from API.'
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error('Offboarded Landlords API Error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'An error occurred while loading offboarded landlords.'
+            ], 500);
+        }
+    }
+
+    public function deleteLandlord($userID)
+    {
+        try {
+            $accessToken = session('access_token');
+            
+            if (!$accessToken) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Session expired. Please login again.'
+                ], 401);
+            }
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ];
+
+            Log::info("Attempting to delete landlord: {$userID}");
+            
+            $response = Http::timeout(30)->withHeaders($headers)->delete("http://api2.smallsmall.com/api/landlords/{$userID}");
+
+            Log::info("Delete Landlord API Response: Status {$response->status()}, Body: {$response->body()}");
+
+            if ($response->successful()) {
+                $responseData = $response->json();
+                Log::info('Landlord deleted successfully', ['userID' => $userID, 'response' => $responseData]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Landlord deleted successfully!',
+                    'userID' => $userID
+                ]);
+            } elseif ($response->status() === 401) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Session expired. Please login again.'
+                ], 401);
+            } elseif ($response->status() === 404) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Landlord not found or already deleted.'
+                ], 404);
+            } else {
+                $errorData = $response->json();
+                Log::error('Delete Landlord API Error', [
+                    'userID' => $userID,
+                    'status_code' => $response->status(),
+                    'response_body' => $errorData
+                ]);
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorData['message'] ?? 'Failed to delete landlord. Please try again.'
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            Log::error('Delete Landlord Error: ' . $e->getMessage(), [
+                'userID' => $userID,
+                'error_message' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while deleting the landlord.'
+            ], 500);
+        }
+    }
 }

@@ -110,6 +110,43 @@
         </div>
         </div>
     </div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteLandlordModal" tabindex="-1" aria-labelledby="deleteLandlordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title text-danger" id="deleteLandlordModalLabel">
+                    <i class="ti ti-alert-triangle me-2"></i>Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <iconify-icon icon="solar:danger-bold-duotone" class="fs-1 text-danger"></iconify-icon>
+                    </div>
+                    <h6 class="mb-3">Are you sure you want to delete this landlord?</h6>
+                    <p class="text-muted mb-3" id="deleteLandlordDetails">
+                        This will permanently remove the landlord from the system.
+                    </p>
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <iconify-icon icon="solar:info-circle-line-duotone" class="fs-4 me-2"></iconify-icon>
+                        <small>This action cannot be undone!</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteLandlordBtn">
+                    <i class="ti ti-trash me-1"></i> Delete Landlord
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -152,6 +189,21 @@ function loadLandlords() {
         
         if (data.success) {
             allLandlords = data.landlords;
+            // Sort by newest first (assuming created date or ID descending)
+            allLandlords.sort((a, b) => {
+                // Try multiple date fields that might exist
+                const dateA = new Date(a.created_at || a.createdAt || a.date_created || 0);
+                const dateB = new Date(b.created_at || b.createdAt || b.date_created || 0);
+                
+                // If dates are equal or not available, sort by ID descending
+                if (dateA.getTime() === dateB.getTime()) {
+                    const idA = parseInt(a.id || a.userID || 0);
+                    const idB = parseInt(b.id || b.userID || 0);
+                    return idB - idA;
+                }
+                
+                return dateB - dateA;
+            });
             filteredLandlords = allLandlords;
             renderLandlords();
             document.getElementById('searchInput').disabled = false;
@@ -300,7 +352,7 @@ function renderLandlords() {
                         <a href="/landlord/${landlord.userID || landlord.id}" class="btn btn-sm btn-primary me-2">
                             View Details
                         </a>
-                        <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
+                        <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onclick="confirmDeleteLandlord('${landlord.userID || landlord.id}', '${landlord.firstName || ''} ${landlord.lastName || ''}')" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
                             <iconify-icon icon="solar:trash-bin-trash-line-duotone" class="fs-5"></iconify-icon>
                         </a>
                     </div>
@@ -435,5 +487,152 @@ function changePage(page) {
 document.addEventListener('DOMContentLoaded', function() {
     loadLandlords();
 });
+
+// Delete landlord functions
+let landlordToDelete = null;
+
+function confirmDeleteLandlord(userID, landlordName) {
+    landlordToDelete = userID;
+    
+    // Update modal content
+    document.getElementById('deleteLandlordDetails').innerHTML = 
+        `<strong>${landlordName || 'User ID: ' + userID}</strong><br>This will permanently remove the landlord from the system.`;
+    
+    // Show the modal
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteLandlordModal'));
+    deleteModal.show();
+}
+
+// Handle delete confirmation
+document.getElementById('confirmDeleteLandlordBtn').addEventListener('click', function() {
+    if (!landlordToDelete) return;
+    
+    const btn = this;
+    const originalText = btn.innerHTML;
+    
+    // Show loading state
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Deleting...';
+    
+    // Make delete API call
+    fetch(`/api/landlord/${landlordToDelete}`, {
+        method: 'DELETE',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => {
+        if (response.status === 419) {
+            alert('Your session has expired. You will be redirected to login.');
+            window.location.href = '{{ route("login") }}';
+            return;
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (!data) return;
+        
+        if (data.success) {
+            // Close modal
+            const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteLandlordModal'));
+            deleteModal.hide();
+            
+            // Show success message
+            showSuccessToast('Landlord deleted successfully!');
+            
+            // Remove landlord from arrays
+            allLandlords = allLandlords.filter(l => (l.userID || l.id) != landlordToDelete);
+            filteredLandlords = filteredLandlords.filter(l => (l.userID || l.id) != landlordToDelete);
+            
+            // Re-render the table
+            renderLandlords();
+            
+            // Reset
+            landlordToDelete = null;
+        } else {
+            if (data.message && data.message.includes('Session expired')) {
+                alert('Your session has expired. You will be redirected to login.');
+                window.location.href = '{{ route("login") }}';
+                return;
+            }
+            showErrorToast(data.message || 'Failed to delete landlord');
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting landlord:', error);
+        if (error.status === 419) {
+            alert('Your session has expired. You will be redirected to login.');
+            window.location.href = '{{ route("login") }}';
+            return;
+        }
+        showErrorToast('An error occurred while deleting the landlord');
+    })
+    .finally(() => {
+        // Reset button
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+});
+
+// Toast notification functions
+function showSuccessToast(message) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3';
+    toast.style.zIndex = '9999';
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center">
+                <iconify-icon icon="solar:check-circle-bold" class="fs-4 me-2"></iconify-icon>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    // Remove from DOM after hiding
+    toast.addEventListener('hidden.bs.toast', () => {
+        toast.remove();
+    });
+}
+
+function showErrorToast(message) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3';
+    toast.style.zIndex = '9999';
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center">
+                <iconify-icon icon="solar:danger-circle-bold" class="fs-4 me-2"></iconify-icon>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    // Remove from DOM after hiding
+    toast.addEventListener('hidden.bs.toast', () => {
+        toast.remove();
+    });
+}
 </script>
 @endpush

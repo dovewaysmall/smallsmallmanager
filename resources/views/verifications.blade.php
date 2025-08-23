@@ -152,6 +152,21 @@ function loadVerifications() {
         
         if (data.success) {
             allVerifications = data.verifications;
+            
+            // Sort by newest first
+            allVerifications.sort((a, b) => {
+                const dateA = new Date(a.created_at || a.createdAt || a.date_created || 0);
+                const dateB = new Date(b.created_at || b.createdAt || b.date_created || 0);
+                
+                if (dateA.getTime() === dateB.getTime()) {
+                    const idA = parseInt(a.id || a.verificationId || 0);
+                    const idB = parseInt(b.id || b.verificationId || 0);
+                    return idB - idA;
+                }
+                
+                return dateB - dateA;
+            });
+            
             filteredVerifications = allVerifications;
             renderVerifications();
             document.getElementById('searchInput').disabled = false;

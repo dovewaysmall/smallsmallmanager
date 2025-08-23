@@ -294,6 +294,21 @@ function loadPayouts() {
         if (data.success) {
             console.log('Payouts received:', data.payouts);
             allPayouts = data.payouts || [];
+            
+            // Sort by newest first
+            allPayouts.sort((a, b) => {
+                const dateA = new Date(a.created_at || a.createdAt || a.date_created || a.payout_date || 0);
+                const dateB = new Date(b.created_at || b.createdAt || b.date_created || b.payout_date || 0);
+                
+                if (dateA.getTime() === dateB.getTime()) {
+                    const idA = parseInt(a.id || a.payoutId || 0);
+                    const idB = parseInt(b.id || b.payoutId || 0);
+                    return idB - idA;
+                }
+                
+                return dateB - dateA;
+            });
+            
             filteredPayouts = allPayouts;
             renderPayouts();
             document.getElementById('searchInput').disabled = false;

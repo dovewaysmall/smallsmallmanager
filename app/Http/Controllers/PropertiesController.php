@@ -481,4 +481,74 @@ class PropertiesController extends Controller
             ], 500);
         }
     }
+
+    public function deleteProperty($propertyId)
+    {
+        try {
+            $accessToken = session('access_token');
+            
+            if (!$accessToken) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Session expired. Please login again.'
+                ], 401);
+            }
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ];
+
+            Log::info("Attempting to delete property: {$propertyId}");
+            
+            $response = Http::timeout(30)->withHeaders($headers)->delete("http://api2.smallsmall.com/api/properties/{$propertyId}");
+
+            Log::info("Delete Property API Response: Status {$response->status()}, Body: {$response->body()}");
+
+            if ($response->successful()) {
+                $responseData = $response->json();
+                Log::info('Property deleted successfully', ['property_id' => $propertyId, 'response' => $responseData]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Property deleted successfully!',
+                    'property_id' => $propertyId
+                ]);
+            } elseif ($response->status() === 401) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Session expired. Please login again.'
+                ], 401);
+            } elseif ($response->status() === 404) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Property not found or already deleted.'
+                ], 404);
+            } else {
+                $errorData = $response->json();
+                Log::error('Delete Property API Error', [
+                    'property_id' => $propertyId,
+                    'status_code' => $response->status(),
+                    'response_body' => $errorData
+                ]);
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorData['message'] ?? 'Failed to delete property. Please try again.'
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            Log::error('Delete Property Error: ' . $e->getMessage(), [
+                'property_id' => $propertyId,
+                'error_message' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while deleting the property.'
+            ], 500);
+        }
+    }
 }

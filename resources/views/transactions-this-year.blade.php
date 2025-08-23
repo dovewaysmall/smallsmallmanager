@@ -151,6 +151,21 @@ function loadTransactions() {
         
         if (data.success) {
             allTransactions = data.transactions;
+            
+            // Sort by newest first
+            allTransactions.sort((a, b) => {
+                const dateA = new Date(a.created_at || a.createdAt || a.date_created || a.transaction_date || 0);
+                const dateB = new Date(b.created_at || b.createdAt || b.date_created || b.transaction_date || 0);
+                
+                if (dateA.getTime() === dateB.getTime()) {
+                    const idA = parseInt(a.id || a.transactionId || 0);
+                    const idB = parseInt(b.id || b.transactionId || 0);
+                    return idB - idA;
+                }
+                
+                return dateB - dateA;
+            });
+            
             filteredTransactions = allTransactions;
             renderTransactions();
             document.getElementById('searchInput').disabled = false;

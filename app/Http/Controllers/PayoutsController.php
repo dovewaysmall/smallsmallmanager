@@ -60,12 +60,14 @@ class PayoutsController extends Controller
 
             if ($response->successful()) {
                 $data = $response->json();
+                $payouts = $data['data'] ?? $data['payouts'] ?? $data ?? [];
+                
                 Log::info('Payouts data received successfully');
                 
                 return response()->json([
                     'success' => true,
-                    'payouts' => $data['data'] ?? $data['payouts'] ?? $data ?? [],
-                    'total' => count($data['data'] ?? $data['payouts'] ?? $data ?? [])
+                    'payouts' => $payouts,
+                    'total' => count($payouts)
                 ]);
             } elseif ($response->status() === 401) {
                 Log::warning('Unauthorized response from payouts API');

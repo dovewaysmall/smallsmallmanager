@@ -109,6 +109,7 @@ Route::post('/landlord/{landlordId}/properties/load', [PropertiesController::cla
 Route::get('/assign-property-owner/{propertyId}', [PropertiesController::class, 'assignPropertyOwner'])->name('assign-property-owner');
 Route::get('/api/property-details/{propertyId}', [PropertiesController::class, 'getPropertyDetails'])->name('api.property-details');
 Route::post('/api/assign-property-owner', [PropertiesController::class, 'assignPropertyOwnerAPI'])->name('api.assign-property-owner');
+Route::delete('/api/property/{propertyId}', [PropertiesController::class, 'deleteProperty'])->name('api.property.delete');
 
 Route::get('/landlords', [LandlordsController::class, 'index'])->name('landlords');
 Route::post('/landlords/load', [LandlordsController::class, 'loadLandlords'])->name('landlords.load');
@@ -118,12 +119,17 @@ Route::get('/landlord/{userID}', [LandlordsController::class, 'show'])->name('la
 Route::get('/landlord/{userID}/edit', [LandlordsController::class, 'edit'])->name('landlord.edit');
 Route::get('/api/landlord-details/{userID}', [LandlordsController::class, 'getLandlordDetails'])->name('api.landlord-details');
 Route::put('/api/landlord-update/{userID}', [LandlordsController::class, 'update'])->name('api.landlord-update');
+Route::delete('/api/landlord/{userID}', [LandlordsController::class, 'deleteLandlord'])->name('api.landlord.delete');
 Route::get('/landlords/this-week', [LandlordsController::class, 'thisWeek'])->name('landlords.this-week');
 Route::post('/landlords/this-week/load', [LandlordsController::class, 'loadLandlordsThisWeek'])->name('landlords.this-week.load');
 Route::get('/landlords/this-month', [LandlordsController::class, 'thisMonth'])->name('landlords.this-month');
 Route::post('/landlords/this-month/load', [LandlordsController::class, 'loadLandlordsThisMonth'])->name('landlords.this-month.load');
 Route::get('/landlords/this-year', [LandlordsController::class, 'thisYear'])->name('landlords.this-year');
 Route::post('/landlords/this-year/load', [LandlordsController::class, 'loadLandlordsThisYear'])->name('landlords.this-year.load');
+Route::get('/landlords/onboarded', [LandlordsController::class, 'onboarded'])->name('landlords.onboarded');
+Route::post('/landlords/onboarded/load', [LandlordsController::class, 'loadOnboardedLandlords'])->name('landlords.onboarded.load');
+Route::get('/landlords/offboarded', [LandlordsController::class, 'offboarded'])->name('landlords.offboarded');
+Route::post('/landlords/offboarded/load', [LandlordsController::class, 'loadOffboardedLandlords'])->name('landlords.offboarded.load');
 
 Route::get('/verifications', [VerificationsController::class, 'index'])->name('verifications');
 Route::post('/verifications/load', [VerificationsController::class, 'loadVerifications'])->name('verifications.load');
