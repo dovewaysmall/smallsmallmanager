@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tenants')
+@section('title', 'Subscribers')
 
 @section('content')
     <div class="body-wrapper">
@@ -9,7 +9,7 @@
             <div class="row align-items-center">
               <div class="col-12">
                 <div class="d-sm-flex align-items-center justify-space-between">
-                  <h4 class="mb-4 mb-sm-0 card-title">Tenants</h4>
+                  <h4 class="mb-4 mb-sm-0 card-title">Subscribers</h4>
                   <nav aria-label="breadcrumb" class="ms-auto">
                     <ol class="breadcrumb">
                       <li class="breadcrumb-item d-flex align-items-center">
@@ -19,7 +19,7 @@
                       </li>
                       <li class="breadcrumb-item" aria-current="page">
                         <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
-                          Tenants
+                          Subscribers
                         </span>
                       </li>
                     </ol>
@@ -34,7 +34,7 @@
                 <div class="row">
                     <div class="col-md-4 col-xl-3">
                         <form class="position-relative">
-                            <input type="text" class="form-control product-search ps-5" id="searchInput" placeholder="Search Tenants..." disabled />
+                            <input type="text" class="form-control product-search ps-5" id="searchInput" placeholder="Search Subscribers..." disabled />
                             <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
                         </form>
                     </div>
@@ -45,7 +45,7 @@
                             </a>
                         </div>
                         <a href="javascript:void(0)" class="btn btn-primary d-flex align-items-center">
-                            Add Tenant
+                            Add Subscriber
                         </a>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                                         <div class="spinner-border text-primary mb-3" role="status">
                                             <span class="visually-hidden">Loading...</span>
                                         </div>
-                                        <p class="mb-0 text-muted">Loading tenants...</p>
+                                        <p class="mb-0 text-muted">Loading subscribers...</p>
                                     </div>
                                     <div class="d-flex flex-column align-items-center d-none" id="errorState">
                                         <iconify-icon icon="solar:info-circle-line-duotone" class="fs-8 text-danger mb-2"></iconify-icon>
@@ -173,7 +173,7 @@ function loadTenants() {
                 window.location.href = '{{ route("login") }}';
                 return;
             }
-            showError(data.error || 'Failed to load tenants');
+            showError(data.error || 'Failed to load subscribers');
         }
     })
     .catch(error => {
@@ -183,7 +183,7 @@ function loadTenants() {
             window.location.href = '{{ route("login") }}';
             return;
         }
-        showError('An error occurred while loading tenants');
+        showError('An error occurred while loading subscribers');
     });
 }
 
@@ -201,7 +201,7 @@ function renderTenants() {
                 <td colspan="7" class="text-center py-5">
                     <div class="d-flex flex-column align-items-center">
                         <iconify-icon icon="solar:users-group-two-rounded-line-duotone" class="fs-8 text-muted mb-2"></iconify-icon>
-                        <p class="mb-0 text-muted">No tenants found</p>
+                        <p class="mb-0 text-muted">No subscribers found</p>
                     </div>
                 </td>
             </tr>
@@ -284,9 +284,6 @@ function renderTenants() {
                     <div class="action-btn">
                         <a href="/tenant/${userID}" class="btn btn-sm btn-primary me-2">
                             View More
-                        </a>
-                        <a href="javascript:void(0)" class="text-dark delete ms-2">
-                            <i class="ti ti-trash fs-5"></i>
                         </a>
                     </div>
                 </td>
