@@ -86,6 +86,8 @@ Route::get('/transactions/this-month', [TransactionsController::class, 'thisMont
 Route::post('/transactions/this-month/load', [TransactionsController::class, 'loadTransactionsThisMonth'])->name('transactions.this-month.load');
 Route::get('/transactions/this-year', [TransactionsController::class, 'thisYear'])->name('transactions.this-year');
 Route::post('/transactions/this-year/load', [TransactionsController::class, 'loadTransactionsThisYear'])->name('transactions.this-year.load');
+Route::get('/transaction/{id}', [TransactionsController::class, 'show'])->name('transaction.show');
+Route::delete('/api/transaction/{id}', [TransactionsController::class, 'deleteTransaction'])->name('api.transaction.delete');
 
 Route::get('/tenants', [TenantsController::class, 'index'])->name('tenants');
 Route::post('/tenants/load', [TenantsController::class, 'loadTenants'])->name('tenants.load');
