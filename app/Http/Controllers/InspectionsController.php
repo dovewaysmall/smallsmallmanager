@@ -50,6 +50,61 @@ class InspectionsController extends Controller
         }
     }
 
+    public function deleteInspection($id)
+    {
+        try {
+            Log::info('Deleting inspection', ['id' => $id]);
+            
+            $accessToken = session('access_token');
+            
+            if (!$accessToken) {
+                return response()->json([
+                    'error' => 'Session expired. Please login again.'
+                ], 401);
+            }
+
+            $headers = [
+                'Authorization' => "Bearer {$accessToken}",
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ];
+
+            Log::info('Inspection Delete API - Making request to: http://api2.smallsmall.com/api/inspections/' . $id);
+            $response = Http::timeout(30)->withHeaders($headers)->delete('http://api2.smallsmall.com/api/inspections/' . $id);
+
+            Log::info('Inspection Delete API - Response Status: ' . $response->status());
+            Log::info('Inspection Delete API - Response Body: ' . $response->body());
+
+            if ($response->successful()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Inspection deleted successfully.'
+                ]);
+            } elseif ($response->status() === 401) {
+                return response()->json([
+                    'error' => 'Session expired. Please login again.'
+                ], 401);
+            } elseif ($response->status() === 404) {
+                return response()->json([
+                    'error' => 'Inspection not found.'
+                ], 404);
+            } else {
+                return response()->json([
+                    'error' => 'Failed to delete inspection.'
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error('Inspection Delete API Error: ' . $e->getMessage(), [
+                'id' => $id,
+                'stack_trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'error' => 'An error occurred while deleting the inspection.'
+            ], 500);
+        }
+    }
+
     public function update($id, Request $request)
     {
         try {

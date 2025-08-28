@@ -44,9 +44,7 @@
                                 <i class="ti ti-trash me-1 fs-5"></i> Delete All Row
                             </a>
                         </div>
-                        <a href="javascript:void(0)" class="btn btn-primary d-flex align-items-center">
-                            <i class="ti ti-file-check text-white me-1 fs-5"></i> Apartment Not Available
-                        </a>
+                        
                     </div>
                 </div>
             </div>
@@ -108,6 +106,43 @@
                 </div>
             </div>
         </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteInspectionModal" tabindex="-1" aria-labelledby="deleteInspectionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title text-danger" id="deleteInspectionModalLabel">
+                        <i class="ti ti-alert-triangle me-2"></i>Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <iconify-icon icon="solar:danger-bold-duotone" class="fs-1 text-danger"></iconify-icon>
+                        </div>
+                        <h6 class="mb-3">Are you sure you want to delete this inspection?</h6>
+                        <p class="text-muted mb-3" id="deleteInspectionDetails">
+                            This will permanently remove the inspection from the system.
+                        </p>
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <iconify-icon icon="solar:info-circle-line-duotone" class="fs-4 me-2"></iconify-icon>
+                            <small>This action cannot be undone!</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-1"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteInspectionBtn">
+                        <i class="ti ti-trash me-1"></i> Delete Inspection
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -258,6 +293,7 @@ function renderInspections() {
             case 'failed':
             case 'rejected':
             case 'declined':
+            case 'apartment-not-available':
                 statusClass = 'bg-danger';
                 break;
             case 'pending':
@@ -306,7 +342,7 @@ function renderInspections() {
                         <a href="/inspection/${inspectionId}" class="btn btn-sm btn-primary me-2">
                             View More
                         </a>
-                        <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
+                        <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" onclick="deleteInspection('${inspectionId}')" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
                             <iconify-icon icon="solar:trash-bin-trash-line-duotone" class="fs-5"></iconify-icon>
                         </a>
                     </div>
@@ -441,5 +477,152 @@ function changePage(page) {
 document.addEventListener('DOMContentLoaded', function() {
     loadInspections();
 });
+
+let inspectionToDelete = null;
+
+// Delete inspection function
+function deleteInspection(inspectionId) {
+    inspectionToDelete = inspectionId;
+    
+    // Show the delete modal
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteInspectionModal'));
+    deleteModal.show();
+}
+
+// Handle delete confirmation
+document.getElementById('confirmDeleteInspectionBtn').addEventListener('click', function() {
+    if (!inspectionToDelete) return;
+    
+    const btn = this;
+    const originalText = btn.innerHTML;
+    
+    // Show loading state
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Deleting...';
+    
+    // Make delete API call
+    fetch(`/api/inspection/${inspectionToDelete}`, {
+        method: 'DELETE',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => {
+        if (response.status === 419) {
+            alert('Your session has expired. You will be redirected to login.');
+            window.location.href = '{{ route("login") }}';
+            return;
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Reset button state
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        
+        if (!data) return;
+        
+        if (data.success) {
+            // Hide modal
+            const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteInspectionModal'));
+            deleteModal.hide();
+            
+            // Show success message
+            showSuccessToast('Inspection deleted successfully!');
+            
+            // Remove inspection from arrays
+            allInspections = allInspections.filter(i => (i.id || i.inspectionId) != inspectionToDelete);
+            filteredInspections = filteredInspections.filter(i => (i.id || i.inspectionId) != inspectionToDelete);
+            
+            // Re-render the table
+            renderInspections();
+            
+            // Reset
+            inspectionToDelete = null;
+        } else {
+            if (data.error && data.error.includes('Session expired')) {
+                alert('Your session has expired. You will be redirected to login.');
+                window.location.href = '{{ route("login") }}';
+                return;
+            }
+            showErrorToast(data.error || 'Failed to delete inspection');
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting inspection:', error);
+        if (error.status === 419) {
+            alert('Your session has expired. You will be redirected to login.');
+            window.location.href = '{{ route("login") }}';
+            return;
+        }
+        showErrorToast('An error occurred while deleting the inspection');
+    })
+    .finally(() => {
+        // Reset button
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+});
+
+// Toast notification functions
+function showSuccessToast(message) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3';
+    toast.style.zIndex = '9999';
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center">
+                <iconify-icon icon="solar:check-circle-bold" class="fs-4 me-2"></iconify-icon>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    // Remove from DOM after hiding
+    toast.addEventListener('hidden.bs.toast', () => {
+        toast.remove();
+    });
+}
+
+function showErrorToast(message) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3';
+    toast.style.zIndex = '9999';
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center">
+                <iconify-icon icon="solar:danger-circle-bold" class="fs-4 me-2"></iconify-icon>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    // Remove from DOM after hiding
+    toast.addEventListener('hidden.bs.toast', () => {
+        toast.remove();
+    });
+}
 </script>
 @endpush

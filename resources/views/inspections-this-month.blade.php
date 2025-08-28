@@ -44,9 +44,7 @@
                                 <i class="ti ti-trash me-1 fs-5"></i> Delete All Row
                             </a>
                         </div>
-                        <a href="javascript:void(0)" class="btn btn-primary d-flex align-items-center">
-                            <i class="ti ti-file-check text-white me-1 fs-5"></i> Apartment Not Available
-                        </a>
+                        
                     </div>
                 </div>
             </div>

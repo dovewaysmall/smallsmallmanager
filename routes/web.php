@@ -76,6 +76,7 @@ Route::get('/inspections/this-year', [InspectionsController::class, 'thisYear'])
 Route::post('/inspections/this-year/load', [InspectionsController::class, 'loadInspectionsThisYear'])->name('inspections.this-year.load');
 Route::get('/inspection/{id}', [InspectionsController::class, 'show'])->name('inspection.show');
 Route::put('/inspection/{id}', [InspectionsController::class, 'update'])->name('inspection.update');
+Route::delete('/api/inspection/{id}', [InspectionsController::class, 'deleteInspection'])->name('api.inspection.delete');
 
 Route::get('/transactions', [TransactionsController::class, 'index'])->name('transactions');
 Route::post('/transactions/load', [TransactionsController::class, 'loadTransactions'])->name('transactions.load');
@@ -95,6 +96,7 @@ Route::post('/tenants/this-month/load', [TenantsController::class, 'loadTenantsT
 Route::get('/tenants/this-year', [TenantsController::class, 'thisYear'])->name('tenants.this-year');
 Route::post('/tenants/this-year/load', [TenantsController::class, 'loadTenantsThisYear'])->name('tenants.this-year.load');
 Route::get('/tenant/{userID}', [TenantsController::class, 'show'])->name('tenant.show');
+Route::get('/api/tenant-details/{userID}', [TenantsController::class, 'getTenantDetails'])->name('api.tenant-details');
 
 Route::get('/properties', [PropertiesController::class, 'index'])->name('properties');
 Route::post('/properties/load', [PropertiesController::class, 'loadProperties'])->name('properties.load');
