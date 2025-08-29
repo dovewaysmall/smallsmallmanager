@@ -6,12 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use App\Helpers\RoleHelper;
 
 class PayoutsController extends Controller
 {
     public function index()
     {
-        return view('payouts');
+        $canDelete = RoleHelper::canDelete();
+        return view('payouts', compact('canDelete'));
     }
 
     public function thisWeek()

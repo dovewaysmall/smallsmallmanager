@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Helpers\RoleHelper;
 
 class TransactionsController extends Controller
 {
     public function index()
     {
-        return view('transactions');
+        $canDelete = RoleHelper::canDelete();
+        return view('transactions', compact('canDelete'));
     }
 
     public function thisWeek()

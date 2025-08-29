@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Helpers\RoleHelper;
 
 class DashboardController extends Controller
 {
@@ -16,9 +17,12 @@ class DashboardController extends Controller
             return redirect()->route('login')->with('error', 'Session expired. Please login again.');
         }
         
-        // Return dashboard view immediately with loading states
-        // Data will be loaded via AJAX calls
-        return view('dashboard');
+        // Check user roles
+        $isCTO = RoleHelper::isCTO();
+        $isCX = RoleHelper::isCX();
+        
+        // Return dashboard view with role information
+        return view('dashboard', compact('isCTO', 'isCX'));
     }
     
     public function getDashboardData()

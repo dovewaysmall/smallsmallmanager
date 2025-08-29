@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Helpers\RoleHelper;
 
 class LandlordsController extends Controller
 {
     public function index()
     {
-        return view('landlords');
+        $canDelete = RoleHelper::canDelete();
+        return view('landlords', compact('canDelete'));
     }
 
     public function loadLandlords(Request $request)

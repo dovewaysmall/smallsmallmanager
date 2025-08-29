@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Helpers\RoleHelper;
 
 class InspectionsController extends Controller
 {
     public function index()
     {
-        return view('inspections');
+        $canDelete = RoleHelper::canDelete();
+        return view('inspections', compact('canDelete'));
     }
 
     public function show($id)

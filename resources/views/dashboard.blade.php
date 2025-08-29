@@ -5,6 +5,19 @@
 @section('content')
     <div class="body-wrapper">
       <div class="container-fluid">
+            @if($isCTO)
+            <div class="row mb-3">
+              <div class="col-12">
+                <h1 class="fw-bold">CTO Dashboard</h1>
+              </div>
+            </div>
+            @elseif($isCX)
+            <div class="row mb-3">
+              <div class="col-12">
+                <h1 class="fw-bold">CX Dashboard</h1>
+              </div>
+            </div>
+            @endif
             <div class="row">
               <div class="col-12">
                 <div class="card">
