@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Helpers\RoleHelper;
 
 class RepairsController extends Controller
 {
     public function index()
     {
-        return view('repairs');
+        $canDelete = RoleHelper::canDelete();
+        return view('repairs', compact('canDelete'));
     }
 
     public function loadRepairs(Request $request)

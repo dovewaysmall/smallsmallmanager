@@ -39,11 +39,13 @@
                         </form>
                     </div>
                     <div class="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0">
+                        @if($canDelete)
                         <div class="action-btn show-btn">
                             <a href="javascript:void(0)" class="delete-multiple bg-danger-subtle btn me-2 text-danger d-flex align-items-center">
                                 <i class="ti ti-trash me-1 fs-5"></i> Delete All Row
                             </a>
                         </div>
+                        @endif
                         <a href="{{ route('repairs.add') }}" class="btn btn-primary d-flex align-items-center">
                             <i class="ti ti-tools text-white me-1 fs-5"></i> Add New Repair
                         </a>
@@ -115,6 +117,7 @@
 
 @push('scripts')
 <script>
+const canDelete = @json($canDelete);
 let allRepairs = [];
 let filteredRepairs = [];
 let currentPage = 1;
@@ -355,9 +358,9 @@ function renderRepairs() {
                         <a href="{{ url('/repair') }}/${repairId}" class="btn btn-sm btn-primary me-2">
                             View More
                         </a>
-                        <a href="javascript:void(0)" onclick="deleteRepair('${repairId}')" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
+${canDelete ? `<a href="javascript:void(0)" onclick="deleteRepair('${repairId}')" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" style="transition: all 0.2s ease;" onmouseover="this.style.color='#000000'; this.style.transform='scale(1.1)'; this.querySelector('iconify-icon').style.color='#000000'" onmouseout="this.style.color='#dc3545'; this.style.transform='scale(1)'; this.querySelector('iconify-icon').style.color='#dc3545'">
                             <iconify-icon icon="solar:trash-bin-trash-line-duotone" class="fs-5"></iconify-icon>
-                        </a>
+                        </a>` : ''}
                     </div>
                 </td>
             </tr>
