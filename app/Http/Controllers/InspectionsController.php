@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Helpers\RoleHelper;
+use App\Services\UnioneEmailService;
 
 class InspectionsController extends Controller
 {
@@ -128,6 +129,17 @@ class InspectionsController extends Controller
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
             ];
+
+            // Get current inspection data to compare dates
+            $currentInspectionResponse = Http::timeout(30)->withHeaders($headers)->get("http://api2.smallsmall.com/api/inspections/{$id}");
+            $currentInspection = null;
+            $oldDate = null;
+            
+            if ($currentInspectionResponse->successful()) {
+                $currentInspectionData = $currentInspectionResponse->json();
+                $currentInspection = $currentInspectionData['data']['inspection'] ?? $currentInspectionData['inspection'] ?? $currentInspectionData;
+                $oldDate = $currentInspection['updated_inspection_date'] ?? $currentInspection['inspection_date'] ?? null;
+            }
 
             // Prepare data for API update - start with safe fields only
             $updateData = [];
@@ -400,13 +412,64 @@ class InspectionsController extends Controller
                     }
                 }
                 
+                // Check for date changes and send email notification
+                $dateChanged = false;
+                if ($request->updated_inspection_date && $oldDate && $request->updated_inspection_date !== $oldDate) {
+                    $dateChanged = true;
+                    Log::info("Inspection date changed from {$oldDate} to {$request->updated_inspection_date}");
+                }
+                
                 // Determine response based on actual changes vs intended changes
                 if ($rowsAffected > 0 || (!empty($updatedFields) && count($updatedFields) > 0)) {
                     Log::info("Inspection update successful - {$rowsAffected} rows affected, fields: " . implode(', ', $updatedFields));
+                    
+                    // Send email notification if date changed
+                    if ($dateChanged) {
+                        try {
+                            $emailService = new UnioneEmailService();
+                            $emailSent = $emailService->sendInspectionDateChangeNotification(
+                                $id, 
+                                $oldDate, 
+                                $request->updated_inspection_date,
+                                $currentInspection ?? []
+                            );
+                            
+                            if ($emailSent) {
+                                Log::info("Email notification sent for inspection date change - ID: {$id}");
+                            } else {
+                                Log::error("Failed to send email notification for inspection date change - ID: {$id}");
+                            }
+                        } catch (\Exception $e) {
+                            Log::error("Email notification error for inspection {$id}: " . $e->getMessage());
+                        }
+                    }
+                    
                     return redirect()->route('inspection.show', $id)->with('success', 'Inspection updated successfully.');
                 } elseif ($hasIntentionalChanges) {
                     // At least one field had different values - show success even if API didn't update
                     Log::info('Inspection update had intentional changes in fields: ' . implode(', ', $changedFields));
+                    
+                    // Send email notification if date changed
+                    if ($dateChanged) {
+                        try {
+                            $emailService = new UnioneEmailService();
+                            $emailSent = $emailService->sendInspectionDateChangeNotification(
+                                $id, 
+                                $oldDate, 
+                                $request->updated_inspection_date,
+                                $currentInspection ?? []
+                            );
+                            
+                            if ($emailSent) {
+                                Log::info("Email notification sent for inspection date change - ID: {$id}");
+                            } else {
+                                Log::error("Failed to send email notification for inspection date change - ID: {$id}");
+                            }
+                        } catch (\Exception $e) {
+                            Log::error("Email notification error for inspection {$id}: " . $e->getMessage());
+                        }
+                    }
+                    
                     return redirect()->route('inspection.show', $id)->with('success', 'Inspection updated successfully.');
                 } else {
                     // All submitted fields match current data - no actual changes needed
