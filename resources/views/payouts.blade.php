@@ -39,11 +39,13 @@
                         </form>
                     </div>
                     <div class="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0">
+                        @if($canDelete)
                         <div class="action-btn show-btn">
                             <a href="javascript:void(0)" class="delete-multiple bg-danger-subtle btn me-2 text-danger d-flex align-items-center">
                                 <i class="ti ti-trash me-1 fs-5"></i> Delete All Row
                             </a>
                         </div>
+                        @endif
                         <a href="{{ route('payouts.add') }}" class="btn btn-success d-flex align-items-center">
                             <i class="ti ti-plus text-white me-1 fs-5"></i> Add Payout
                         </a>
@@ -206,6 +208,7 @@
 
 @push('scripts')
 <script>
+const canDelete = @json($canDelete);
 let allPayouts = [];
 let filteredPayouts = [];
 let currentPage = 1;
@@ -429,9 +432,9 @@ function renderPayouts() {
                         <a href="/payout/${payoutId}" class="btn btn-sm btn-primary me-2">
                             View Details
                         </a>
-                        <a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" onclick="deletePayout('${payoutId}')" style="transition: all 0.2s ease;">
+${canDelete ? `<a href="javascript:void(0)" class="text-danger delete ms-2 d-flex align-items-center" title="Delete" onclick="deletePayout('${payoutId}')" style="transition: all 0.2s ease;">
                             <iconify-icon icon="solar:trash-bin-trash-line-duotone" class="fs-5"></iconify-icon>
-                        </a>
+                        </a>` : ''}
                     </div>
                 </td>
             </tr>
