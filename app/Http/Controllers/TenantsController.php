@@ -10,6 +10,13 @@ class TenantsController extends Controller
 {
     public function index()
     {
+        // Check authentication first
+        $accessToken = session('access_token');
+        if (!$accessToken) {
+            session()->flush();
+            return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+        }
+        
         return view('tenants');
     }
 

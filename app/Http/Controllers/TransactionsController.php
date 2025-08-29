@@ -11,22 +11,50 @@ class TransactionsController extends Controller
 {
     public function index()
     {
+        // Check authentication first
+        $accessToken = session('access_token');
+        if (!$accessToken) {
+            session()->flush();
+            return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+        }
+        
         $canDelete = RoleHelper::canDelete();
         return view('transactions', compact('canDelete'));
     }
 
     public function thisWeek()
     {
+        // Check authentication first
+        $accessToken = session('access_token');
+        if (!$accessToken) {
+            session()->flush();
+            return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+        }
+        
         return view('transactions-this-week');
     }
 
     public function thisMonth()
     {
+        // Check authentication first
+        $accessToken = session('access_token');
+        if (!$accessToken) {
+            session()->flush();
+            return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+        }
+        
         return view('transactions-this-month');
     }
 
     public function thisYear()
     {
+        // Check authentication first
+        $accessToken = session('access_token');
+        if (!$accessToken) {
+            session()->flush();
+            return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+        }
+        
         return view('transactions-this-year');
     }
 

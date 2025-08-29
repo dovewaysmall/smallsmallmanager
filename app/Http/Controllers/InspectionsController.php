@@ -11,6 +11,13 @@ class InspectionsController extends Controller
 {
     public function index()
     {
+        // Check authentication first
+        $accessToken = session('access_token');
+        if (!$accessToken) {
+            session()->flush();
+            return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+        }
+        
         $canDelete = RoleHelper::canDelete();
         return view('inspections', compact('canDelete'));
     }
@@ -439,16 +446,19 @@ class InspectionsController extends Controller
 
     public function thisWeek()
     {
+        if ($redirect = $this->checkAuthentication()) return $redirect;
         return view('inspections-this-week');
     }
 
     public function thisMonth()
     {
+        if ($redirect = $this->checkAuthentication()) return $redirect;
         return view('inspections-this-month');
     }
 
     public function thisYear()
     {
+        if ($redirect = $this->checkAuthentication()) return $redirect;
         return view('inspections-this-year');
     }
 
